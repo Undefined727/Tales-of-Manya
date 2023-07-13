@@ -1,5 +1,4 @@
-import pygame
-import Entity
+import pygame, Entity, Skill
 pygame.init()
 
 pygame.display.set_caption('Catgirl Dungeon')
@@ -26,10 +25,10 @@ HPBar2X = enemy2X
 HPBar3X = enemy3X
 HPBar4X = enemy4X
 
-HPBarY = enemyY + enemySizeY + screenX/100
+HPBarY = enemyY + enemySizeY + screenY/100
 
 HPBarSizeX = enemySizeX
-HPBarSizeY = screenX/50
+HPBarSizeY = screenY/35
 
 
 catgirlX = screenX/3
@@ -37,6 +36,12 @@ catgirlY = screenY/3
 
 catgirlSizeX = screenX/3
 catgirlSizeY = 2*screenY/3
+
+playerHPBarX = catgirlX
+playerHPBarY = catgirlY + catgirlSizeY - screenY/10
+
+playerHPBarSizeX = catgirlSizeX
+playerHPBarSizeY = screenY/25
 
 
 exitButtonX = 11*screenX/16
@@ -55,18 +60,22 @@ buttonSizeX = 4*screenX/16
 buttonSizeY = screenY/8
 
 
-skill1X = screenX/12
+skillSizeX = buttonSizeX/3
+skillSizeY = buttonSizeY
+
+skill1X = skillButtonX
+skill2X = skillButtonX + skillSizeX
+skill3X = skillButtonX + 2*skillSizeX
+
+skillY = skillButtonY-skillSizeY
 
 
-skillY = screenY/2
-
-skillSizeX = screenX/10
-skillSizeY = screenY/6
 
 # Initialize Visual Object Details
 
 font = pygame.font.SysFont('mono', 32)
 HPBarFont = pygame.font.SysFont('mono', 10)
+playerHPBarFont = pygame.font.SysFont('mono', 16)
 
 background = pygame.image.load("dungeonbackground.png")
 background = pygame.transform.scale(background, (screenX, screenY))
@@ -92,6 +101,22 @@ HPBar1LabelRect = HPBar1Label.get_rect()
 HPBar1LabelRect.center = (HPBar1X + HPBarSizeX/5, HPBarY + HPBarSizeY/2)
 
 
+HPBar2Label =  HPBarFont.render('0/10', False, (0, 0, 0))
+HPBar2LabelRect = HPBar2Label.get_rect()
+HPBar2LabelRect.center = (HPBar2X + HPBarSizeX/5, HPBarY + HPBarSizeY/2)
+
+
+HPBar3Label =  HPBarFont.render('0/10', False, (0, 0, 0))
+HPBar3LabelRect = HPBar3Label.get_rect()
+HPBar3LabelRect.center = (HPBar3X + HPBarSizeX/5, HPBarY + HPBarSizeY/2)
+
+HPBar4Label =  HPBarFont.render('0/10', False, (0, 0, 0))
+HPBar4LabelRect = HPBar4Label.get_rect()
+HPBar4LabelRect.center = (HPBar4X + HPBarSizeX/5, HPBarY + HPBarSizeY/2)
+
+playerHPBarLabel = playerHPBarFont.render('0/10', False, (0, 0, 0))
+playerHPBarLabelRect = playerHPBarLabel.get_rect()
+playerHPBarLabelRect.center = (playerHPBarX + playerHPBarSizeX/10, playerHPBarY + playerHPBarSizeY/2)
 
 
 catgirlImg = pygame.image.load("catgirl.png")
@@ -109,12 +134,26 @@ screen = pygame.display.set_mode([screenX, screenY])
 
 
 
-def RefreshSkillButtons():
+def RefreshSkillButtons(Player):
     # Add Skill Icons
-    screen.blit(swordImg, (skill1X, skillY))
+    skill1Img = pygame.image.load(Player.skills[0].img)
+    skill1Img = pygame.transform.scale(skill1Img, (skillSizeX, skillSizeY))
+    skill2Img = pygame.image.load(Player.skills[1].img)
+    skill2Img = pygame.transform.scale(skill2Img, (skillSizeX, skillSizeY))
+    skill3Img = pygame.image.load(Player.skills[2].img)
+    skill3Img = pygame.transform.scale(skill3Img, (skillSizeX, skillSizeY))
 
+    screen.blit(skill1Img, (skill1X, skillY))
+    screen.blit(skill2Img, (skill2X, skillY))
+    screen.blit(skill3Img, (skill3X, skillY))
 
-def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4):
+def RefreshEnemySelection():
+    pygame.draw.ellipse(screen, "white", (enemy1X, enemyY, enemySizeX, enemySizeY), 2)
+    pygame.draw.ellipse(screen, "white", (enemy2X, enemyY, enemySizeX, enemySizeY), 2)
+    pygame.draw.ellipse(screen, "white", (enemy3X, enemyY, enemySizeX, enemySizeY), 2)
+    pygame.draw.ellipse(screen, "white", (enemy4X, enemyY, enemySizeX, enemySizeY), 2)
+
+def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4, Player):
     # Fill the background
     screen.blit(background, (0, 0))
 
@@ -142,24 +181,41 @@ def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4):
     pygame.draw.rect(screen,pygame.Color('black'),pygame.Rect(HPBar1X,HPBarY,HPBarSizeX,HPBarSizeY), 2)
 
     pygame.draw.rect(screen,pygame.Color('red'),pygame.Rect(HPBar2X,HPBarY,HPBarSizeX,HPBarSizeY))
-    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar2X,HPBarY,HPBarSizeX*Enemy2.maxHP/Enemy2.HP,HPBarSizeY))
+    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar2X,HPBarY,HPBarSizeX*Enemy2.HP/Enemy2.maxHP,HPBarSizeY))
     pygame.draw.rect(screen,pygame.Color('black'),pygame.Rect(HPBar2X,HPBarY,HPBarSizeX,HPBarSizeY), 2)
 
     pygame.draw.rect(screen,pygame.Color('red'),pygame.Rect(HPBar3X,HPBarY,HPBarSizeX,HPBarSizeY))
-    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar3X,HPBarY,HPBarSizeX*Enemy3.maxHP/Enemy3.HP,HPBarSizeY))
+    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar3X,HPBarY,HPBarSizeX*Enemy3.HP/Enemy3.maxHP,HPBarSizeY))
     pygame.draw.rect(screen,pygame.Color('black'),pygame.Rect(HPBar3X,HPBarY,HPBarSizeX,HPBarSizeY), 2)
 
     pygame.draw.rect(screen,pygame.Color('red'),pygame.Rect(HPBar4X,HPBarY,HPBarSizeX,HPBarSizeY))
-    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar4X,HPBarY,HPBarSizeX*Enemy4.maxHP/Enemy4.HP,HPBarSizeY))
+    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(HPBar4X,HPBarY,HPBarSizeX*Enemy4.HP/Enemy4.maxHP,HPBarSizeY))
     pygame.draw.rect(screen,pygame.Color('black'),pygame.Rect(HPBar4X,HPBarY,HPBarSizeX,HPBarSizeY), 2)
 
     # Add Enemy HP Bar Label
     HPBar1Label =  HPBarFont.render(str(int(Enemy1.HP)) + '/' + str(int(Enemy1.maxHP)), False, (0, 0, 0))
     screen.blit(HPBar1Label, HPBar1LabelRect)
 
+    HPBar2Label =  HPBarFont.render(str(int(Enemy2.HP)) + '/' + str(int(Enemy2.maxHP)), False, (0, 0, 0))
+    screen.blit(HPBar2Label, HPBar2LabelRect)
+
+    HPBar3Label =  HPBarFont.render(str(int(Enemy3.HP)) + '/' + str(int(Enemy3.maxHP)), False, (0, 0, 0))
+    screen.blit(HPBar3Label, HPBar3LabelRect)
+
+    HPBar4Label =  HPBarFont.render(str(int(Enemy4.HP)) + '/' + str(int(Enemy4.maxHP)), False, (0, 0, 0))
+    screen.blit(HPBar4Label, HPBar4LabelRect)
+
 
     # Add Player
     screen.blit(catgirlImg, (catgirlX, catgirlY))
+
+    #Add Player HP Bar and Label
+    pygame.draw.rect(screen,pygame.Color('red'),pygame.Rect(playerHPBarX,playerHPBarY,playerHPBarSizeX,playerHPBarSizeY))
+    pygame.draw.rect(screen,pygame.Color('green'),pygame.Rect(playerHPBarX,playerHPBarY,playerHPBarSizeX*Player.HP/Player.maxHP,playerHPBarSizeY))
+    pygame.draw.rect(screen,pygame.Color('black'),pygame.Rect(playerHPBarX,playerHPBarY,playerHPBarSizeX,playerHPBarSizeY), 2)
+
+    playerHPBarLabel =  playerHPBarFont.render(str(int(Player.HP)) + '/' + str(int(Player.maxHP)), False, (0, 0, 0))
+    screen.blit(playerHPBarLabel, playerHPBarLabelRect)
 
     # Add Menu
     pygame.draw.rect(screen,pygame.Color('aliceblue'),pygame.Rect(exitButtonX,exitButtonY,buttonSizeX,buttonSizeY))
@@ -182,15 +238,22 @@ def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4):
 
 
 # Temporary Manual Character Creation
-Enemy1 = Entity.Entity("Wizard", 10, "wizard.png")
-Enemy2 = Entity.Entity("Frog", 10, "frog.png")
-Enemy3 = Entity.Entity("Wizard", 10, "wizard.png")
-Enemy4 = Entity.Entity("Frog", 10, "frog.png")
+Enemy1 = Entity.Entity("Wizard", "wizard.png", 10)
+Enemy2 = Entity.Entity("Frog", "frog.png", 10)
+Enemy3 = Entity.Entity("Wizard", "wizard.png", 10)
+Enemy4 = Entity.Entity("Frog", "frog.png", 10)
 
 
-Player = Entity.Entity("Catgirl", 20, "catgirl.png")
+Player = Entity.Entity("Catgirl", "catgirl.png", 20)
+Player.skills[0] = Skill.Skill("Basic Attack", "sword.png", 1, 0, 0, 0, 100, 0, 0, 0, "Physical", 0)
+Player.skills[1] = Skill.Skill("Berserk", "sword.png", 2, 0, 0, 200, 200, 0, 0, 0, "Physical", 0)
+Player.skills[2] = Skill.Skill("Spell of Healing", "wand.png", 1, 100, 0, 0, 0, 0, 0, 0, "Physical", 0)
+skillSelected = 0
+
+
 
 skillsShowing = False
+enemySelectionShowing = False
 while True:
     mouse = pygame.mouse.get_pos()
 
@@ -203,9 +266,42 @@ while True:
                 pygame.quit()
             elif skillButtonX <= mouse[0] <= skillButtonX+buttonSizeX and skillButtonY <= mouse[1] <= skillButtonY+buttonSizeY:
                 skillsShowing = not skillsShowing
-                Player.attack(Enemy1, 10)
             elif bagButtonX <= mouse[0] <= bagButtonX+buttonSizeX and bagButtonY <= mouse[1] <= bagButtonY+buttonSizeY:
                 pygame.quit()
+            elif skill1X <= mouse[0] <= skill1X+skillSizeX and skillY <= mouse[1] <= skillY+skillSizeY:
+                if skillsShowing: 
+                    skillSelected = 0
+                    if ((Player.skills[skillSelected].targetLevel == 2) or (Player.skills[skillSelected].healEnemy == 0 and Player.skills[skillSelected].damageEnemy == 0 and Player.skills[skillSelected].manaGiveEnemy == 0 and Player.skills[skillSelected].manaDrainEnemy == 0)):
+                        Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    else: enemySelectionShowing = True
+            elif skill2X <= mouse[0] <= skill2X+skillSizeX and skillY <= mouse[1] <= skillY+skillSizeY:
+                if skillsShowing: 
+                    skillSelected = 1
+                    if ((Player.skills[skillSelected].targetLevel == 2) or (Player.skills[skillSelected].healEnemy == 0 and Player.skills[skillSelected].damageEnemy == 0 and Player.skills[skillSelected].manaGiveEnemy == 0 and Player.skills[skillSelected].manaDrainEnemy == 0)):
+                        Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    else: enemySelectionShowing = True
+            elif skill3X <= mouse[0] <= skill3X+skillSizeX and skillY <= mouse[1] <= skillY+skillSizeY:
+                if skillsShowing: 
+                    skillSelected = 2
+                    if ((Player.skills[skillSelected].targetLevel == 2) or (Player.skills[skillSelected].healEnemy == 0 and Player.skills[skillSelected].damageEnemy == 0 and Player.skills[skillSelected].manaGiveEnemy == 0 and Player.skills[skillSelected].manaDrainEnemy == 0)):
+                        Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    else: enemySelectionShowing = True
+            elif (mouse[0]-(enemy1X+enemySizeX/2))*(mouse[0]-(enemy1X+enemySizeX/2)) + (enemySizeX/enemySizeY)*(enemySizeX/enemySizeY)*(mouse[1]-(enemyY+enemySizeY/2))*(mouse[1]-(enemyY+enemySizeY/2)) < ((enemySizeX/2)*(enemySizeX/2)):
+                if enemySelectionShowing:
+                    Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    enemySelectionShowing = False
+            elif (mouse[0]-(enemy2X+enemySizeX/2))*(mouse[0]-(enemy2X+enemySizeX/2)) + (enemySizeX/enemySizeY)*(enemySizeX/enemySizeY)*(mouse[1]-(enemyY+enemySizeY/2))*(mouse[1]-(enemyY+enemySizeY/2)) < ((enemySizeX/2)*(enemySizeX/2)):
+                if enemySelectionShowing:
+                    Player.useSkill(Enemy2, Enemy1, Enemy3, Enemy4, skillSelected)
+                    enemySelectionShowing = False
+            elif (mouse[0]-(enemy3X+enemySizeX/2))*(mouse[0]-(enemy3X+enemySizeX/2)) + (enemySizeX/enemySizeY)*(enemySizeX/enemySizeY)*(mouse[1]-(enemyY+enemySizeY/2))*(mouse[1]-(enemyY+enemySizeY/2)) < ((enemySizeX/2)*(enemySizeX/2)):
+                if enemySelectionShowing:
+                    Player.useSkill(Enemy3, Enemy1, Enemy2, Enemy4, skillSelected)
+                    enemySelectionShowing = False
+            elif (mouse[0]-(enemy4X+enemySizeX/2))*(mouse[0]-(enemy4X+enemySizeX/2)) + (enemySizeX/enemySizeY)*(enemySizeX/enemySizeY)*(mouse[1]-(enemyY+enemySizeY/2))*(mouse[1]-(enemyY+enemySizeY/2)) < ((enemySizeX/2)*(enemySizeX/2)):
+                if enemySelectionShowing:
+                    Player.useSkill(Enemy4, Enemy1, Enemy2, Enemy3, skillSelected)
+                    enemySelectionShowing = False
             elif glossaryButtonX <= mouse[0] <= glossaryButtonX+buttonSizeX and glossaryButtonY <= mouse[1] <= glossaryButtonY+buttonSizeY:
                 pygame.quit()
 
@@ -214,8 +310,9 @@ while True:
               
     
     
-    RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4)
-    if (skillsShowing): RefreshSkillButtons()
+    RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4, Player)
+    if (skillsShowing): RefreshSkillButtons(Player)
+    if (enemySelectionShowing): RefreshEnemySelection()
 
     # Flip the display
     pygame.display.flip()
