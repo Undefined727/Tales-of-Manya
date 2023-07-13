@@ -91,3 +91,12 @@ class Entity:
             if (self.HP > self.maxHP): self.HP = self.maxHP
             if (self.mana < 0): self.mana = 0
             if (self.mana > self.maxMana): self.mana = self.maxMana
+        else:
+            self.HP = self.HP - skill.damagePlayer*self.ATK/100
+            self.HP = self.HP + skill.healPlayer*self.magic/100
+            self.mana = self.mana + skill.manaGivePlayer*self.magic/100
+            if (self.HP < 0): self.HP = 0
+            if (self.HP > self.maxHP): self.HP = self.maxHP
+            if (self.mana < 0): self.mana = 0
+            if (self.mana > self.maxMana): self.mana = self.maxMana
+
