@@ -142,38 +142,25 @@ def RefreshSkillButtons(Player):
     visualEntity(Player.skills[1].img, skill2X, skillY, skillSizeX, skillSizeY, "null", "null", False, Player.skills[1].skillName, skill2X + skillSizeX/2, skillY + 2*skillSizeY/3, "mono", 10, (0, 0, 0), "green")
     visualEntity(Player.skills[2].img, skill3X, skillY, skillSizeX, skillSizeY, "null", "null", False, Player.skills[2].skillName, skill3X + skillSizeX/2, skillY + 2*skillSizeY/3, "mono", 10, (0, 0, 0), "green")
 
+def RefreshEnemySelection(enemies):
+    count = 0
+    for enemy in enemies:
+        visualEntity("null", (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), enemyY, enemySizeX, enemySizeY, "ellipse", "white", True, "null", 0, 0, "null", 0, (0, 0, 0), "null")
+        count = count + 1
 
-def RefreshEnemySelection():
-    visualEntity("null", enemy1X, enemyY, enemySizeX, enemySizeY, "ellipse", "white", True, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", enemy2X, enemyY, enemySizeX, enemySizeY, "ellipse", "white", True, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", enemy3X, enemyY, enemySizeX, enemySizeY, "ellipse", "white", True, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", enemy4X, enemyY, enemySizeX, enemySizeY, "ellipse", "white", True, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-
-def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4, Player):
+def RefreshMenu(enemies, Player):
     # Fill the background
     visualEntity("dungeonbackground.png", 0, 0, screenX, screenY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
 
     # Add Enemies
-    visualEntity(Enemy1.img, enemy1X, enemyY, enemySizeX, enemySizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity(Enemy2.img, enemy2X, enemyY, enemySizeX, enemySizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity(Enemy3.img, enemy3X, enemyY, enemySizeX, enemySizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity(Enemy4.img, enemy4X, enemyY, enemySizeX, enemySizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
+    count = 0
+    for enemy in enemies:
+        visualEntity(enemy.img, (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), enemyY, enemySizeX, enemySizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
+        visualEntity("null", (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "red", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
+        visualEntity("null", (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), HPBarY, HPBarSizeX*enemy.HP/enemy.maxHP, HPBarSizeY, "rectangle", "green", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
+        visualEntity("null", (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "black", True, str(int(enemy.HP)) + '/' + str(int(enemy.maxHP)), (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)) + HPBarSizeX/3, HPBarY + HPBarSizeY/2, "mono", 10, (0, 0, 0), "null")
+        count = count+1
 
-    # Add Enemy HP Bars
-    visualEntity("null", HPBar1X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "red", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar2X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "red", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar3X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "red", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar4X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "red", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    
-    visualEntity("null", HPBar1X, HPBarY, HPBarSizeX*Enemy1.HP/Enemy1.maxHP, HPBarSizeY, "rectangle", "green", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar2X, HPBarY, HPBarSizeX*Enemy2.HP/Enemy2.maxHP, HPBarSizeY, "rectangle", "green", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar3X, HPBarY, HPBarSizeX*Enemy3.HP/Enemy3.maxHP, HPBarSizeY, "rectangle", "green", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-    visualEntity("null", HPBar4X, HPBarY, HPBarSizeX*Enemy4.HP/Enemy4.maxHP, HPBarSizeY, "rectangle", "green", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
-
-    visualEntity("null", HPBar1X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "black", True, str(int(Enemy1.HP)) + '/' + str(int(Enemy1.maxHP)), HPBar1X + HPBarSizeX/3, HPBarY + HPBarSizeY/2, "mono", 10, (0, 0, 0), "null")
-    visualEntity("null", HPBar2X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "black", True, str(int(Enemy2.HP)) + '/' + str(int(Enemy2.maxHP)), HPBar2X + HPBarSizeX/3, HPBarY + HPBarSizeY/2, "mono", 10, (0, 0, 0), "null")
-    visualEntity("null", HPBar3X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "black", True, str(int(Enemy3.HP)) + '/' + str(int(Enemy3.maxHP)), HPBar3X + HPBarSizeX/3, HPBarY + HPBarSizeY/2, "mono", 10, (0, 0, 0), "null")
-    visualEntity("null", HPBar4X, HPBarY, HPBarSizeX, HPBarSizeY, "rectangle", "black", True, str(int(Enemy4.HP)) + '/' + str(int(Enemy4.maxHP)), HPBar4X + HPBarSizeX/3, HPBarY + HPBarSizeY/2, "mono", 10, (0, 0, 0), "null")
 
     # Add Player
     visualEntity(Player.img, catgirlX, catgirlY, catgirlSizeX, catgirlSizeY, "null", "null", False, "null", 0, 0, "null", 0, (0, 0, 0), "null")
@@ -199,16 +186,13 @@ def RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4, Player):
 
 
 # Temporary Manual Character Creation
-Enemy1 = Entity.Entity("Wizard", "wizard.png", 10)
-Enemy2 = Entity.Entity("Frog", "frog.png", 10)
-Enemy3 = Entity.Entity("Wizard", "wizard.png", 10)
-Enemy4 = Entity.Entity("Frog", "frog.png", 10)
+enemies = [Entity.Entity("Wizard", "wizard.png", 10), Entity.Entity("Frog", "frog.png", 10), Entity.Entity("Wizard", "wizard.png", 10), Entity.Entity("Frog", "frog.png", 10)]
 
 
 Player = Entity.Entity("Catgirl", "catgirl.png", 20)
-Player.skills[0] = Skill.Skill("Basic Attack", "sword.png", 1, 0, 0, 0, 100, 0, 0, 0, "Physical", 0)
-Player.skills[1] = Skill.Skill("Berserk", "sword.png", 2, 0, 0, 200, 200, 0, 0, 0, "Physical", 0)
-Player.skills[2] = Skill.Skill("Spell of Healing", "wand.png", 3, 100, 0, 0, 0, 0, 0, 0, "Physical", 0)
+Player.skills[0] = Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0)
+Player.skills[1] = Skill.Skill("Berserk", "sword.png", False, 0, 0, 0, 200, 0, 200, 0, 0, 0, 0, 0, 0, "Physical", 0)
+Player.skills[2] = Skill.Skill("Spell of Healing", "wand.png", False, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Physical", 0)
 skillSelected = 0
 
 
@@ -234,46 +218,38 @@ while True:
             elif mouseInRegion(mouse, "rectangle", skill1X, skillY, skillSizeX, skillSizeY):
                 if skillsShowing: 
                     skillSelected = 0
-                    if (Player.skills[skillSelected].targetLevel == 1):
+                    if (Player.skills[skillSelected].singleTarget):
                         enemySelectionShowing = True
-                    else: Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    else: Player.useSkill(enemies[0], enemies, skillSelected)
             elif mouseInRegion(mouse, "rectangle", skill2X, skillY, skillSizeX, skillSizeY):
                 if skillsShowing: 
                     skillSelected = 1
-                    if (Player.skills[skillSelected].targetLevel == 1):
+                    if (Player.skills[skillSelected].singleTarget):
                         enemySelectionShowing = True
-                    else: Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
+                    else: Player.useSkill(enemies[0], enemies, skillSelected)
             elif mouseInRegion(mouse, "rectangle", skill3X, skillY, skillSizeX, skillSizeY):
                 if skillsShowing: 
                     skillSelected = 2
-                    if (Player.skills[skillSelected].targetLevel == 1):
+                    if (Player.skills[skillSelected].singleTarget):
                         enemySelectionShowing = True
-                    else: Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
-            elif mouseInRegion(mouse, "ellipse", enemy1X, enemyY, enemySizeX, enemySizeY):
-                if enemySelectionShowing:
-                    Player.useSkill(Enemy1, Enemy2, Enemy3, Enemy4, skillSelected)
-                    enemySelectionShowing = False
-            elif mouseInRegion(mouse, "ellipse", enemy2X, enemyY, enemySizeX, enemySizeY):
-                if enemySelectionShowing:
-                    Player.useSkill(Enemy2, Enemy1, Enemy3, Enemy4, skillSelected)
-                    enemySelectionShowing = False
-            elif mouseInRegion(mouse, "ellipse", enemy3X, enemyY, enemySizeX, enemySizeY):
-                if enemySelectionShowing:
-                    Player.useSkill(Enemy3, Enemy1, Enemy2, Enemy4, skillSelected)
-                    enemySelectionShowing = False
-            elif mouseInRegion(mouse, "ellipse", enemy4X, enemyY, enemySizeX, enemySizeY):
-                if enemySelectionShowing:
-                    Player.useSkill(Enemy4, Enemy1, Enemy2, Enemy3, skillSelected)
-                    enemySelectionShowing = False
+                    else: Player.useSkill(enemies[0], enemies, skillSelected)
+            else:
+                count = 0
+                for enemy in enemies:
+                    if mouseInRegion(mouse, "ellipse", (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2)), enemyY, enemySizeX, enemySizeY):
+                        if enemySelectionShowing:
+                            Player.useSkill(enemy, enemies, skillSelected)
+                            enemySelectionShowing = False
+                    count = count+1
 
 
 
               
     
     
-    RefreshMenu(Enemy1, Enemy2, Enemy3, Enemy4, Player)
+    RefreshMenu(enemies, Player)
     if (skillsShowing): RefreshSkillButtons(Player)
-    if (enemySelectionShowing): RefreshEnemySelection()
+    if (enemySelectionShowing): RefreshEnemySelection(enemies)
 
     # Flip the display
     pygame.display.flip()

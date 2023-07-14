@@ -11,7 +11,7 @@ class Entity:
     ATK = 20
     SPD = 100
     level = 10
-    skills = [Skill.Skill("Basic Attack", "sword.png", 1, 0, 0, 0, 100, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", 1, 0, 0, 0, 100, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", 1, 0, 0, 0, 100, 0, 0, 0, "Physical", 0)]
+    skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0)]
     name = "Filler"
     img = "catgirl.png"
 
@@ -27,76 +27,43 @@ class Entity:
         self.DEF = level*10
         self.ATK = level*10
         
-    
-    def useSkill(self, Enemy1, Enemy2, Enemy3, Enemy4, skillNumber):
+
+    def useSkill(self, enemy, enemies, skillNumber):
         skill = self.skills[skillNumber]
+
         if (self.mana < skill.manaCost): return
-        if (skill.targetLevel == 1):
-            Enemy1.HP = Enemy1.HP - skill.damageEnemy*self.ATK/100
-            Enemy1.HP = Enemy1.HP + skill.healEnemy*self.magic/100
-            Enemy1.mana = Enemy1.mana + skill.manaGiveEnemy*self.magic/100
-            Enemy1.mana = Enemy1.mana - skill.manaDrainEnemy*self.magic/100
-            self.HP = self.HP - skill.damagePlayer*self.ATK/100
-            self.HP = self.HP + skill.healPlayer*self.magic/100
-            self.mana = self.mana + skill.manaGivePlayer*self.magic/100
+        else: self.mana = self.mana - skill.manaCost
 
 
-            if (Enemy1.HP < 0): Enemy1.HP = 0
-            if (Enemy1.HP > Enemy1.maxHP): Enemy1.HP = Enemy1.maxHP
-            if (Enemy1.mana < 0): Enemy1.mana = 0
-            if (Enemy1.mana > Enemy1.maxMana): Enemy1.mana = Enemy1.maxMana
-            if (self.HP < 0): self.HP = 0
-            if (self.HP > self.maxHP): self.HP = self.maxHP
-            if (self.mana < 0): self.mana = 0
-            if (self.mana > self.maxMana): self.mana = self.maxMana
-        if (skill.targetLevel == 2):
-            Enemy1.HP = Enemy1.HP - skill.damageEnemy*self.ATK/100
-            Enemy1.HP = Enemy1.HP + skill.healEnemy*self.magic/100
-            Enemy1.mana = Enemy1.mana + skill.manaGiveEnemy*self.magic/100
-            Enemy1.mana = Enemy1.mana - skill.manaDrainEnemy*self.magic/100
-            Enemy2.HP = Enemy1.HP - skill.damageEnemy*self.ATK/100
-            Enemy2.HP = Enemy1.HP + skill.healEnemy*self.magic/100
-            Enemy2.mana = Enemy1.mana + skill.manaGiveEnemy*self.magic/100
-            Enemy2.mana = Enemy1.mana - skill.manaDrainEnemy*self.magic/100
-            Enemy3.HP = Enemy1.HP - skill.damageEnemy*self.ATK/100
-            Enemy3.HP = Enemy1.HP + skill.healEnemy*self.magic/100
-            Enemy3.mana = Enemy1.mana + skill.manaGiveEnemy*self.magic/100
-            Enemy3.mana = Enemy1.mana - skill.manaDrainEnemy*self.magic/100
-            Enemy4.HP = Enemy1.HP - skill.damageEnemy*self.ATK/100
-            Enemy4.HP = Enemy1.HP + skill.healEnemy*self.magic/100
-            Enemy4.mana = Enemy1.mana + skill.manaGiveEnemy*self.magic/100
-            Enemy4.mana = Enemy1.mana - skill.manaDrainEnemy*self.magic/100
+        self.HP = self.HP - skill.damagePlayer*self.ATK/100
+        self.HP = self.HP + skill.healPlayer*self.magic/100
+        self.mana = self.mana + skill.manaGivePlayer*self.magic/100
+        self.mana = self.mana - skill.manaDrainPlayer*self.magic/100
+        if (self.HP < 0): self.HP = 0
+        if (self.HP > self.maxHP): self.HP = self.maxHP
+        if (self.mana < 0): self.mana = 0
+        if (self.mana > self.maxMana): self.mana = self.maxMana
 
-            self.HP = self.HP - skill.damagePlayer*self.ATK/100
-            self.HP = self.HP + skill.healPlayer*self.magic/100
-            self.mana = self.mana + skill.manaGivePlayer*self.magic/100
 
-            if (Enemy1.HP < 0): Enemy1.HP = 0
-            if (Enemy1.HP > Enemy1.maxHP): Enemy1.HP = Enemy1.maxHP
-            if (Enemy1.mana < 0): Enemy1.mana = 0
-            if (Enemy1.mana > Enemy1.maxMana): Enemy1.mana = Enemy1.maxMana
-            if (Enemy2.HP < 0): Enemy2.HP = 0
-            if (Enemy2.HP > Enemy2.maxHP): Enemy2.HP = Enemy2.maxHP
-            if (Enemy2.mana < 0): Enemy2.mana = 0
-            if (Enemy2.mana > Enemy2.maxMana): Enemy2.mana = Enemy2.maxMana
-            if (Enemy3.HP < 0): Enemy3.HP = 0
-            if (Enemy3.HP > Enemy3.maxHP): Enemy3.HP = Enemy3.maxHP
-            if (Enemy3.mana < 0): Enemy3.mana = 0
-            if (Enemy3.mana > Enemy3.maxMana): Enemy3.mana = Enemy3.maxMana
-            if (Enemy4.HP < 0): Enemy4.HP = 0
-            if (Enemy4.HP > Enemy4.maxHP): Enemy4.HP = Enemy4.maxHP
-            if (Enemy4.mana < 0): Enemy4.mana = 0
-            if (Enemy4.mana > Enemy4.maxMana): Enemy4.mana = Enemy4.maxMana
-            if (self.HP < 0): self.HP = 0
-            if (self.HP > self.maxHP): self.HP = self.maxHP
-            if (self.mana < 0): self.mana = 0
-            if (self.mana > self.maxMana): self.mana = self.maxMana
-        else:
-            self.HP = self.HP - skill.damagePlayer*self.ATK/100
-            self.HP = self.HP + skill.healPlayer*self.magic/100
-            self.mana = self.mana + skill.manaGivePlayer*self.magic/100
-            if (self.HP < 0): self.HP = 0
-            if (self.HP > self.maxHP): self.HP = self.maxHP
-            if (self.mana < 0): self.mana = 0
-            if (self.mana > self.maxMana): self.mana = self.maxMana
+        enemy.HP = enemy.HP - skill.damageEnemy*enemy.ATK/100
+        enemy.HP = enemy.HP + skill.healEnemy*enemy.magic/100
+        enemy.mana = enemy.mana + skill.manaGiveEnemy*enemy.magic/100
+        enemy.mana = enemy.mana - skill.manaDrainEnemy*enemy.magic/100
+        if (enemy.HP < 0): enemy.HP = 0
+        if (enemy.HP > enemy.maxHP): enemy.HP = enemy.maxHP
+        if (enemy.mana < 0): enemy.mana = 0
+        if (enemy.mana > enemy.maxMana): enemy.mana = enemy.maxMana
+
+
+
+        for currEnemy in enemies:
+            currEnemy.HP = currEnemy.HP - skill.damageAoE*currEnemy.ATK/100
+            currEnemy.HP = currEnemy.HP + skill.healAoE*currEnemy.magic/100
+            currEnemy.mana = currEnemy.mana + skill.manaGiveAoE*currEnemy.magic/100
+            currEnemy.mana = currEnemy.mana - skill.manaDrainAoE*currEnemy.magic/100
+            if (currEnemy.HP < 0): currEnemy.HP = 0
+            if (currEnemy.HP > currEnemy.maxHP): currEnemy.HP = currEnemy.maxHP
+            if (currEnemy.mana < 0): currEnemy.mana = 0
+            if (currEnemy.mana > currEnemy.maxMana): currEnemy.mana = currEnemy.maxMana
+
 
