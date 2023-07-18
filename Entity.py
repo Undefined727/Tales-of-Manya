@@ -45,10 +45,10 @@ class Entity:
         if (self.mana > self.maxMana): self.mana = self.maxMana
 
 
-        enemy.HP = enemy.HP - skill.damageEnemy*enemy.ATK/100
-        enemy.HP = enemy.HP + skill.healEnemy*enemy.magic/100
-        enemy.mana = enemy.mana + skill.manaGiveEnemy*enemy.magic/100
-        enemy.mana = enemy.mana - skill.manaDrainEnemy*enemy.magic/100
+        enemy.HP = enemy.HP - skill.damageEnemy*self.ATK/100
+        enemy.HP = enemy.HP + skill.healEnemy*self.magic/100
+        enemy.mana = enemy.mana + skill.manaGiveEnemy*self.magic/100
+        enemy.mana = enemy.mana - skill.manaDrainEnemy*self.magic/100
         if (enemy.HP < 0): enemy.HP = 0
         if (enemy.HP > enemy.maxHP): enemy.HP = enemy.maxHP
         if (enemy.mana < 0): enemy.mana = 0
