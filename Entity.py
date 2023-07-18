@@ -57,10 +57,10 @@ class Entity:
 
 
         for currEnemy in enemies:
-            currEnemy.HP = currEnemy.HP - skill.damageAoE*currEnemy.ATK/100
-            currEnemy.HP = currEnemy.HP + skill.healAoE*currEnemy.magic/100
-            currEnemy.mana = currEnemy.mana + skill.manaGiveAoE*currEnemy.magic/100
-            currEnemy.mana = currEnemy.mana - skill.manaDrainAoE*currEnemy.magic/100
+            currEnemy.HP = currEnemy.HP - skill.damageAoE*self.ATK/100
+            currEnemy.HP = currEnemy.HP + skill.healAoE*self.magic/100
+            currEnemy.mana = currEnemy.mana + skill.manaGiveAoE*self.magic/100
+            currEnemy.mana = currEnemy.mana - skill.manaDrainAoE*self.magic/100
             if (currEnemy.HP < 0): currEnemy.HP = 0
             if (currEnemy.HP > currEnemy.maxHP): currEnemy.HP = currEnemy.maxHP
             if (currEnemy.mana < 0): currEnemy.mana = 0
