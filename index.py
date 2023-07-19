@@ -4,11 +4,14 @@ pygame.init()
 pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('catgirl-icon.jpg'))
 
-# Initialize Screen Object Positions
 
+# Set up the drawing window
 screenX = 960
 screenY = 600
+screen = pygame.display.set_mode([screenX, screenY])
+visualEntities = []
 
+# Initialize Screen Object Positions
 enemy1X = screenX/9
 enemy2X = 3*screenX/9
 enemy3X = 5*screenX/9
@@ -50,14 +53,8 @@ skillY = skillButtonY-skillSizeY
 
 
 
-# Set up the drawing window
-screen = pygame.display.set_mode([screenX, screenY])
 
-def mouseInRegion(mouse, shape, xPosition, yPosition, width, length):
-    if (shape == "rectangle"):
-        return (xPosition <= mouse[0] <= xPosition+width and yPosition <= mouse[1] <= yPosition+length)
-    elif (shape == "ellipse"):
-        return ((mouse[0]-(xPosition+width/2))*(mouse[0]-(xPosition+width/2)) + (width/length)*(width/length)*(mouse[1]-(yPosition+length/2))*(mouse[1]-(yPosition+length/2)) < ((width/2)*(width/2)))
+
 
 class VisualEntity:
     name = "Default_Name"
@@ -111,9 +108,28 @@ class VisualEntity:
             self.textLabel = textFont.render(text, False, fontColor)
         self.textRect = self.textLabel.get_rect()
         self.textRect.center = (self.xPosition + self.width/2, self.yPosition + self.length/2)
-
-        
-visualEntities = []        
+   
+def refreshScreen():
+    # Fill the background
+    global visualEntities
+    for entity in visualEntities:
+        if (entity.isShowing):
+            if (entity.entityType == 0):
+                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+            elif (entity.entityType == 1):
+                if (entity.shape == "rectangle"):
+                    if (entity.isBorder):
+                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.length), 2)
+                    else:
+                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.length))
+                if (entity.shape == "ellipse"):
+                    if (entity.isBorder):
+                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.length), 2)
+                    else:
+                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.length))
+            elif (entity.entityType == 3):
+                screen.blit(entity.textLabel, entity.textRect)
+   
 
 skillsShowing = False
 enemySelectionShowing = False
@@ -130,6 +146,41 @@ Player.skills[2] = Skill.Skill("Spell of Healing", "wand.png", False, 200, 0, 0,
 skillSelected = 0
 
 
+
+
+
+
+def mouseInRegion(mouse, shape, xPosition, yPosition, width, length):
+    if (shape == "rectangle"):
+        return (xPosition <= mouse[0] <= xPosition+width and yPosition <= mouse[1] <= yPosition+length)
+    elif (shape == "ellipse"):
+        return ((mouse[0]-(xPosition+width/2))*(mouse[0]-(xPosition+width/2)) + (width/length)*(width/length)*(mouse[1]-(yPosition+length/2))*(mouse[1]-(yPosition+length/2)) < ((width/2)*(width/2)))
+
+# Is called when an enemy dies or something, handles drops and buttons and sprites
+def updateEnemies():
+    global enemies
+    global visualEntities
+    global Player
+    global playerHPBarSizeX
+    for item in visualEntities[:]:
+        if ("Enemy" in item.tags): visualEntities.remove(item)
+        if (item.name == "PlayerHPText"): item.updateText(str(int(Player.HP)) + "/" + str(Player.maxHP), "mono", 12, "black", None)
+        if (item.name == "PlayerHPGreen"): item.width = playerHPBarSizeX*Player.HP/Player.maxHP
+    for enemy in enemies[:]:
+        if (enemy.HP == 0):
+            enemies.remove(enemy)
+
+    count = 0
+    for enemy in enemies:
+        currEnemyX = (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1), 0, True, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy"], enemy.img))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "SelectionButton", 2, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], enemySelectionButtonFunction, (count), "ellipse"))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "Selection", 1, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], "white", True, "ellipse"))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPRed", 1, True, currEnemyX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "red", False, "rectangle"))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPGreen", 1, True, currEnemyX, HPBarY, HPBarSizeX*enemy.HP/enemy.maxHP, HPBarSizeY, ["Enemy"], "green", False, "rectangle"))
+        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPBorder", 0, True, currEnemyX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "HPBarBorder.png"))
+        visualEntities.append(VisualEntity("Enemy"+ str(count+1) + "HPText", 3, True, currEnemyX, HPBarY, HPBarSizeX/2, HPBarSizeY, ["Enemy"], str(int(enemy.HP)) + "/" + str(enemy.maxHP), "mono", 8, "black", None))
+        count = count+1
 
 # Button Functions
 def skillButtonFunction(*args):
@@ -178,52 +229,13 @@ def enemySelectionButtonFunction(*args):
         enemySelectionShowing = False
 
 
-def RefreshScreen(enemies, Player, skillsShowing, enemySelectionShowing):
-    # Fill the background
-    global visualEntities
-    for entity in visualEntities:
-        if (entity.isShowing):
-            if (entity.entityType == 0):
-                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            elif (entity.entityType == 1):
-                if (entity.shape == "rectangle"):
-                    if (entity.isBorder):
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.length), 2)
-                    else:
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.length))
-                if (entity.shape == "ellipse"):
-                    if (entity.isBorder):
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.length), 2)
-                    else:
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.length))
-            elif (entity.entityType == 3):
-                screen.blit(entity.textLabel, entity.textRect)
 
 
 
 
 
-# Is called when an enemy dies or something, handles drops and buttons and sprites
-def updateEnemies():
-    global enemies
-    global visualEntities
-    global Player
-    global playerHPBarSizeX
-    for item in visualEntities:
-        if ("Enemy" in item.tags): visualEntities.remove(item)
-        if (item.name == "PlayerHPText"): item.updateText(str(int(Player.HP)) + "/" + str(Player.maxHP), "mono", 12, "black", None)
-        if (item.name == "PlayerHPGreen"): item.width = playerHPBarSizeX*Player.HP/Player.maxHP
-    count = 0
-    for enemy in enemies:
-        currEnemyX = (((1.5 + 2*count)*screenX)/(len(enemies)*2+1) - (enemySizeX/2))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1), 0, True, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy"], enemy.img))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "SelectionButton", 2, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], enemySelectionButtonFunction, (count), "ellipse"))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "Selection", 1, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], "white", True, "ellipse"))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPRed", 1, True, currEnemyX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "red", False, "rectangle"))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPGreen", 1, True, currEnemyX, HPBarY, HPBarSizeX*enemy.HP/enemy.maxHP, HPBarSizeY, ["Enemy"], "green", False, "rectangle"))
-        visualEntities.append(VisualEntity("Enemy" + str(count+1) + "HPBorder", 0, True, currEnemyX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "HPBarBorder.png"))
-        visualEntities.append(VisualEntity("Enemy"+ str(count+1) + "HPText", 3, True, currEnemyX, HPBarY, HPBarSizeX/2, HPBarSizeY, ["Enemy"], str(int(enemy.HP)) + "/" + str(enemy.maxHP), "mono", 8, "black", None))
-        count = count+1
+
+
 
 
 
@@ -280,7 +292,7 @@ while True:
               
     
     
-    RefreshScreen(enemies, Player, skillsShowing, enemySelectionShowing)
+    refreshScreen()
 
     # Flip the display
     pygame.display.flip()
