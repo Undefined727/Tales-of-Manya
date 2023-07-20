@@ -11,7 +11,7 @@ class Entity:
     ATK = 20
     SPD = 100
     level = 10
-    skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0)]
+    skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)]
     name = "Filler"
     img = "catgirl.png"
 
@@ -21,8 +21,8 @@ class Entity:
         self.level = level
         self.maxHP = level*100
         self.HP = level*100
-        self.maxMana = level*100
-        self.mana = level*100
+        self.maxMana = 1000 + level*10
+        self.mana = 1000 + level*10
         self.magic = level*10
         self.DEF = level*10
         self.ATK = level*10
@@ -33,7 +33,6 @@ class Entity:
 
         if (self.mana < skill.manaCost): return
         else: self.mana = self.mana - skill.manaCost
-
 
         self.HP = self.HP - skill.damagePlayer*self.ATK/100
         self.HP = self.HP + skill.healPlayer*self.magic/100
