@@ -1,4 +1,4 @@
-import Skill
+import Skill, Item
 
 class Entity:
     maxHP = 100
@@ -9,11 +9,22 @@ class Entity:
     magic = 20
     DEF = 10
     ATK = 20
-    SPD = 100
+    HPPercent = 0
+    manaPercent = 0
+    magicPercent = 0
+    DEFPercent = 0
+    ATKPercent = 0
     level = 10
     skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)]
     name = "Filler"
     img = "catgirl.png"
+    weapon = Item.Item(1)
+    helmet = Item.Item(2)
+    chestplate = Item.Item(3)
+    leggings = Item.Item(4)
+    boots = Item.Item(5)
+    accessory1 = Item.Item(6)
+    accessory2 = Item.Item(7)
 
     def __init__(self, name, img, level):
         self.name = name
@@ -26,7 +37,50 @@ class Entity:
         self.magic = level*10
         self.DEF = level*10
         self.ATK = level*10
+        self.updateItems()
         
+    def updateItems(self):
+        self.maxHP = self.level*100
+        self.maxMana = 1000 + self.level*10
+        self.magic = self.level*10
+        self.DEF = self.level*10
+        self.ATK = self.level*10
+        self.HPPercent = 0
+        self.manaPercent = 0
+        self.magicPercent = 0
+        self.DEFPercent = 0
+        self.ATKPercent = 0
+        self.addItemStat(self.weapon)
+        self.addItemStat(self.helmet)
+        self.addItemStat(self.chestplate)
+        self.addItemStat(self.leggings)
+        self.addItemStat(self.boots)
+        self.addItemStat(self.accessory1)
+        self.addItemStat(self.accessory2)
+        self.maxHP = self.maxHP*(100+self.HPPercent)/100
+        self.maxMana = self.maxMana*(100+self.manaPercent)/100
+        self.magic = self.magic*(100+self.magicPercent)/100
+        self.DEF = self.DEF*(100+self.DEFPercent)/100
+        self.ATK = self.ATK*(100+self.ATKPercent)/100
+        self.HP = self.maxHP
+        self.mana = self.maxMana
+
+    
+    def addItemStat(self, item):
+        self.maxHP = self.maxHP+ int(item.flatHP)
+        self.maxMana = self.maxMana + int(item.flatMana)
+        self.magic = self.magic + int(item.flatMagic)
+        self.DEF = self.DEF + int(item.flatDEF)
+        self.ATK = self.ATK + int(item.flatATK)
+        self.HPPercent = self.HPPercent + int(item.HPPercent)
+        self.manaPercent = self.manaPercent + int(item.manaPercent)
+        self.magicPercent = self.magicPercent + int(item.magicPercent)
+        self.DEFPercent = self.DEFPercent + int(item.DEFPercent)
+        self.ATKPercent = self.ATKPercent + int(item.ATKPercent)
+
+
+
+
 
     def useSkill(self, enemy, enemies, skillNumber):
         skill = self.skills[skillNumber]
@@ -64,5 +118,3 @@ class Entity:
             if (currEnemy.HP > currEnemy.maxHP): currEnemy.HP = currEnemy.maxHP
             if (currEnemy.mana < 0): currEnemy.mana = 0
             if (currEnemy.mana > currEnemy.maxMana): currEnemy.mana = currEnemy.maxMana
-
-
