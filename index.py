@@ -384,6 +384,7 @@ enemies = [Entity.Entity("Wizard", "wizard.png", random.randint(5, 30)), Entity.
 
 
 initializeCombatMenu()
+#github comment hi
 while True:
     mouse = pygame.mouse.get_pos()
     for event in pygame.event.get():
