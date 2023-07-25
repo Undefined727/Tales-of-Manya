@@ -19,7 +19,7 @@ class Entity:
     name = "Filler"
     img = "catgirl.png"
     weapon = Item.Item(1)
-    helmet = Item.Item(2)
+    helmet = Item.Item(10)
     chestplate = Item.Item(3)
     leggings = Item.Item(4)
     boots = Item.Item(5)
