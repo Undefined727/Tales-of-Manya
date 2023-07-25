@@ -1,4 +1,4 @@
-import pygame, random, Entity, Skill
+import pygame, random, Entity, Skill, Item
 from sqlalchemy import create_engine, MetaData, Column, Table, Integer, String
 
 #Initializes databases
@@ -39,62 +39,7 @@ screenX = 960
 screenY = 600
 screen = pygame.display.set_mode([screenX, screenY])
 visualEntities = []
-
-# Initialize Screen Object Positions
-enemy1X = screenX/9
-enemy2X = 3*screenX/9
-enemy3X = 5*screenX/9
-enemy4X = 7*screenX/9
-enemyY = screenY/20
-enemySizeX = screenX/9
-enemySizeY = screenY/5
-HPBarY = enemyY + enemySizeY + screenY/100
-HPBarSizeX = enemySizeX
-HPBarSizeY = screenY/35
-HPBarBorderWidthX = HPBarSizeY
-HPBarBorderWidthY = HPBarSizeY
-catgirlX = screenX/3
-catgirlY = screenY/3
-catgirlSizeX = screenX/3
-catgirlSizeY = 2*screenY/3
-playerHPBarX = catgirlX
-playerHPBarY = catgirlY + catgirlSizeY - screenY/12
-playerHPBarSizeX = catgirlSizeX
-playerHPBarSizeY = screenY/25
-playerHPBarBorderWidthX = playerHPBarSizeY/2
-playerHPBarBorderWidthY = playerHPBarSizeY/2
-playerManaBarX = catgirlX
-playerManaBarY = playerHPBarY - 2*playerHPBarSizeY
-playerManaBarSizeX = 3*catgirlSizeX/4
-playerManaBarSizeY = screenY/25
-playerSkillPointSizeX = playerHPBarSizeX/16
-playerSkillPointSizeY = playerHPBarSizeX/16
-playerSkillPoint1X = playerManaBarX + playerManaBarSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
-playerSkillPoint2X = playerSkillPoint1X + playerSkillPointSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
-playerSkillPoint3X = playerSkillPoint2X + playerSkillPointSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
-playerSkillPointY = playerManaBarY + (playerManaBarSizeY - playerSkillPointSizeY)/2
-
-
-exitButtonX = 11*screenX/16
-exitButtonY = 5*screenY/6
-glossaryButtonX = 11*screenX/16
-glossaryButtonY = 4*screenY/6
-bagButtonX = screenX/16
-bagButtonY = 5*screenY/6
-skillButtonX = screenX/16
-skillButtonY = 4*screenY/6
-buttonSizeX = 4*screenX/16
-buttonSizeY = screenY/8
-skillSizeX = buttonSizeX/3
-skillSizeY = buttonSizeY
-skill1X = skillButtonX
-skill2X = skillButtonX + skillSizeX
-skill3X = skillButtonX + 2*skillSizeX
-skillY = skillButtonY-skillSizeY
-
-
-
-
+inventory = []
 
 
 class VisualEntity:
@@ -204,7 +149,18 @@ def updateEnemies():
     global enemies
     global visualEntities
     global Player
-    global playerHPBarSizeX
+    enemyY = screenY/20
+    enemySizeX = screenX/9
+    enemySizeY = screenY/5
+    HPBarY = enemyY + enemySizeY + screenY/100
+    HPBarSizeX = enemySizeX
+    HPBarSizeY = screenY/35
+    HPBarBorderWidthX = HPBarSizeY
+    HPBarBorderWidthY = HPBarSizeY
+    playerHPBarSizeX = screenX/3
+    playerHPBarSizeY = screenY/25
+    playerManaBarSizeX = screenX/4
+
     for item in visualEntities[:]:
         if ("Enemy" in item.tags): visualEntities.remove(item)
         if (item.name == "PlayerHPText"): item.updateText(str(int(Player.HP)) + "/" + str(Player.maxHP), "mono", 12, "black", None)
@@ -286,7 +242,7 @@ def enemySelectionButtonFunction(*args):
         enemySelectionShowing = False
 
 def exitButtonFunction(*args):
-    pygame.quit
+    pygame.quit()
 
 def bagButtonFunction(*args):
     initializeInventoryMenu()
@@ -295,23 +251,46 @@ def returnToCombatButtonFunction(*args):
     initializeCombatMenu()
 
 
-
-
-
-
-
-
-# This would normally be called from a file, this is where the buttons/visuals for the scene are imported into the program
-#y = json.loads(open("combat.json"))
-#file = open("combat.txt", "r")
-#for line in file:
-#  lineread = line
- # visualEntities.append(VisualEntity(*lineread))
-
-#for obj in visualEntities:
-#    print(obj.name)
 def initializeCombatMenu():
     global visualEntities
+
+    catgirlX = screenX/3
+    catgirlY = screenY/3
+    catgirlSizeX = screenX/3
+    catgirlSizeY = 2*screenY/3
+    playerHPBarX = catgirlX
+    playerHPBarY = catgirlY + catgirlSizeY - screenY/12
+    playerHPBarSizeX = catgirlSizeX
+    playerHPBarSizeY = screenY/25
+    playerHPBarBorderWidthX = playerHPBarSizeY/2
+    playerHPBarBorderWidthY = playerHPBarSizeY/2
+    playerManaBarX = catgirlX
+    playerManaBarY = playerHPBarY - 2*playerHPBarSizeY
+    playerManaBarSizeX = 3*catgirlSizeX/4
+    playerManaBarSizeY = screenY/25
+    playerSkillPointSizeX = playerHPBarSizeX/16
+    playerSkillPointSizeY = playerHPBarSizeX/16
+    playerSkillPoint1X = playerManaBarX + playerManaBarSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
+    playerSkillPoint2X = playerSkillPoint1X + playerSkillPointSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
+    playerSkillPoint3X = playerSkillPoint2X + playerSkillPointSizeX + (playerHPBarSizeX/4 - 3*playerSkillPointSizeX)/4
+    playerSkillPointY = playerManaBarY + (playerManaBarSizeY - playerSkillPointSizeY)/2
+    exitButtonX = 11*screenX/16
+    exitButtonY = 5*screenY/6
+    glossaryButtonX = 11*screenX/16
+    glossaryButtonY = 4*screenY/6
+    bagButtonX = screenX/16
+    bagButtonY = 5*screenY/6
+    skillButtonX = screenX/16
+    skillButtonY = 4*screenY/6
+    buttonSizeX = 4*screenX/16
+    buttonSizeY = screenY/8
+    skillSizeX = buttonSizeX/3
+    skillSizeY = buttonSizeY
+    skill1X = skillButtonX
+    skill2X = skillButtonX + skillSizeX
+    skill3X = skillButtonX + 2*skillSizeX
+    skillY = skillButtonY-skillSizeY
+
     visualEntities.clear()
     visualEntities.append(VisualEntity("Background", 0, True, 0, 0, screenX, screenY, ["Background"], "dungeonbackground.png"))
     visualEntities.append(VisualEntity("Player", 0, True, catgirlX, catgirlY, catgirlSizeX, catgirlSizeY, ["Player"], "catgirl.png"))
@@ -353,8 +332,51 @@ def initializeCombatMenu():
 
 def initializeInventoryMenu():
     global visualEntities
+    global Player
+
+    exitButtonX = screenX/16
+    exitButtonY = 5*screenY/6
+    buttonSizeX = 4*screenX/16
+    buttonSizeY = screenY/8
+    catgirlX = 29*screenX/48
+    catgirlY = 3*screenY/12
+    catgirlSizeX = screenX/3
+    catgirlSizeY = 2*screenY/3
+    itemSizeX = screenX/12
+    itemSizeY = screenX/12
+    helmetX = 21*screenX/24
+    helmetY = 4*screenY/24
+    chestplateX = 21*screenX/24
+    chestplateY = 8*screenY/24
+    leggingsX = 21*screenX/24
+    leggingsY = 12*screenY/24
+    bootsX = 21*screenX/24
+    bootsY = 16*screenY/24
+    accessory1X = 16*screenX/24
+    accessory1Y = 19*screenY/24
+    accessory2X = 37*screenX/48
+    accessory2Y = 19*screenY/24
+    weaponX = 29*screenX/48
+    weaponY = 10*screenY/24
+
+
     visualEntities.clear()
-    visualEntities.append(VisualEntity("Background", 0, True, 0, 0, screenX, screenY, ["Background"], "dungeonbackground.png"))
+    visualEntities.append(VisualEntity("Background", 0, True, 0, 0, screenX, screenY, ["Background"], "inventorybackground.png"))
+    visualEntities.append(VisualEntity("Player", 0, True, catgirlX, catgirlY, catgirlSizeX, catgirlSizeY, ["Player"], "catgirl.png"))
+    visualEntities.append(VisualEntity("HelmetBackground", 1, True, helmetX, helmetY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Helmet", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Helmet", 0, True, helmetX, helmetY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Helmet"], Player.helmet.img))
+    visualEntities.append(VisualEntity("ChestplateBackground", 1, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Chestplate", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Chestplate", 0, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Chestplate"], Player.chestplate.img))
+    visualEntities.append(VisualEntity("LeggingsBackground", 1, True, leggingsX, leggingsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Leggings", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Leggings", 0, True, leggingsX, leggingsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Leggings"], Player.leggings.img))
+    visualEntities.append(VisualEntity("BootsBackground", 1, True, bootsX, bootsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Boots", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Boots", 0, True, bootsX, bootsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Boots"], Player.boots.img))
+    visualEntities.append(VisualEntity("Accessory1Background", 1, True, accessory1X, accessory1Y, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Accessory1", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Accessory1", 0, True, accessory1X, accessory1Y, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Accessory1"], Player.accessory1.img))
+    visualEntities.append(VisualEntity("Accessory2Background", 1, True, accessory2X, accessory2Y, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Accessory2", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Accessory2", 0, True, accessory2X, accessory2Y, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Accessory2"], Player.accessory2.img))
+    visualEntities.append(VisualEntity("WeaponBackground", 1, True, weaponX, weaponY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Weapon", "Item Background"], "cadetblue", False, "rectangle"))
+    visualEntities.append(VisualEntity("Weapon", 0, True, weaponX, weaponY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Weapon"], Player.weapon.img))
     visualEntities.append(VisualEntity("ReturnToCombat", 0, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], "ExitButton.png"))
     visualEntities.append(VisualEntity("ReturnToCombatButton", 2, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], returnToCombatButtonFunction, None, "rectangle"))
 
@@ -367,12 +389,12 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if (event.type == pygame.MOUSEBUTTONDOWN):
             for entity in visualEntities:
                 if (entity.entityType == 2):
                     if mouseInRegion(mouse, entity.shape, entity.xPosition, entity.yPosition, entity.width, entity.length):
                         entity.func(entity.args)
-
+                        break
 
 
     if (actionPoints == 0): 

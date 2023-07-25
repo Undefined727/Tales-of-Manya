@@ -19,7 +19,7 @@ class Item:
 
     # In the future pulls from database, name, img, magic, DEF, ATK, HP, flatMagic, flatDEF, flatATK, flatHP
     def __init__(self, id):
-       itemdata_engine = create_engine('sqlite:///itemdata.db', echo = True)
+       itemdata_engine = create_engine('sqlite:///itemdata.db', echo = False)
        itemdata_connection = itemdata_engine.connect()
        s = "SELECT * FROM itemdata WHERE id='" + str(id) + "'"
        result = itemdata_connection.execute(s)
