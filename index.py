@@ -250,7 +250,8 @@ def bagButtonFunction(*args):
 def returnToCombatButtonFunction(*args):
     initializeCombatMenu()
 
-
+def itemClickFunction(*args):
+    pygame.quit()
 def initializeCombatMenu():
     global visualEntities
 
@@ -333,6 +334,7 @@ def initializeCombatMenu():
 def initializeInventoryMenu():
     global visualEntities
     global Player
+    global inventory
 
     exitButtonX = screenX/16
     exitButtonY = 5*screenY/6
@@ -377,6 +379,36 @@ def initializeInventoryMenu():
     visualEntities.append(VisualEntity("Accessory2", 0, True, accessory2X, accessory2Y, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Accessory2"], Player.accessory2.img))
     visualEntities.append(VisualEntity("WeaponBackground", 1, True, weaponX, weaponY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Weapon", "Item Background"], "cadetblue", False, "rectangle"))
     visualEntities.append(VisualEntity("Weapon", 0, True, weaponX, weaponY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Weapon"], Player.weapon.img))
+
+    visualEntities.append(VisualEntity("ButtonItemHelmet", 2, True, helmetX, helmetY, itemSizeX, itemSizeY,["Button", "Helmet","Item","Equipped Item"], itemClickFunction, Player.helmet, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemChestplate", 2, True, chestplateX, chestplateY, itemSizeX, itemSizeY,["Button", "Chestplate","Item","Equipped Item"], itemClickFunction, Player.chestplate, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemLeggings", 2, True, leggingsX, leggingsY, itemSizeX, itemSizeY,["Button", "Item","Leggings","Equipped Item"], itemClickFunction, Player.leggings, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemBoots", 2, True, bootsX, bootsY, itemSizeX, itemSizeY,["Button", "Item", "Boots","Equipped Item"], itemClickFunction, Player.boots, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemAccessory1", 2, True, accessory1X, accessory1Y, itemSizeX, itemSizeY,["Button", "Item", "Accessory1","Equipped Item"], itemClickFunction, Player.accessory1, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemAccessory2", 2, True, accessory2X, accessory2Y, itemSizeX, itemSizeY,["Button", "Item", "Accessory2","Equipped Item"], itemClickFunction, Player.accessory2, "rectangle"))
+    visualEntities.append(VisualEntity("ButtonItemWeapon", 2, True, weaponX, weaponY, itemSizeX, itemSizeY,["Button", "Item", "Weapon","Equipped Item"], itemClickFunction, Player.weapon, "rectangle"))
+
+
+
+    count = 0
+    itemrow= 0
+
+    buffer = screenX/24
+    for item in inventory:
+
+        curritemX = count*(itemSizeX + buffer) + buffer
+        curritemY = itemrow*(itemSizeY + buffer) + buffer
+
+        visualEntities.append(VisualEntity(item.name,0,True,curritemX,curritemY,itemSizeX,itemSizeY,["Item"],item.img))
+        visualEntities.append(VisualEntity("ButtonItem" + str(count+ itemrow *4),2,True,curritemX,curritemY,itemSizeX,itemSizeY,["Button","Item"],itemClickFunction,item,"rectangle"))
+        count+=1
+
+        if count > 3:
+            count = 0
+            itemrow +=1
+
+
+
     visualEntities.append(VisualEntity("ReturnToCombat", 0, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], "ExitButton.png"))
     visualEntities.append(VisualEntity("ReturnToCombatButton", 2, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], returnToCombatButtonFunction, None, "rectangle"))
 
@@ -384,7 +416,16 @@ enemies = [Entity.Entity("Wizard", "wizard.png", random.randint(5, 30)), Entity.
 
 
 initializeCombatMenu()
-#github comment hi
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(7))
+inventory.append(Item.Item(2))
+inventory.append(Item.Item(5))
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(9))
+inventory.append(Item.Item(9))
 while True:
     mouse = pygame.mouse.get_pos()
     for event in pygame.event.get():
