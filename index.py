@@ -160,18 +160,13 @@ def combatScreen():
         skillSelected = args[0]
 
         if (skillsShowing and (not party[activeCharacter-1].hasActed) and (party[activeCharacter-1].skills[skillSelected].manaCost <= party[activeCharacter-1].mana)): 
-            if (party[activeCharacter-1].singleTarget):
+            if (party[activeCharacter-1].skills[skillSelected].singleTarget):
                 enemySelectionShowing = True
                 for entity in visualEntities:
                     if ("Enemy Selection" in entity.tags):
                         entity.isShowing = True
             else: 
                 party[activeCharacter-1].useSkill(enemies[0], enemies, skillSelected)
-                actionPoints = actionPoints - party[activeCharacter-1].skills[skillSelected].actionPointCost
-                for entity in visualEntities:
-                    if(actionPoints < 3 and entity.name == "PlayerSkillPoint3"): entity.isBorder = True
-                    if(actionPoints < 2 and entity.name == "PlayerSkillPoint2"): entity.isBorder = True
-                    if(actionPoints < 1 and entity.name == "PlayerSkillPoint1"): entity.isBorder = True
                 updateEnemies()
                 for entity in visualEntities:
                     if ("Skill Selection" in entity.tags):
@@ -289,6 +284,7 @@ def combatScreen():
         if (party[activeCharacter-1].hasActed): 
             for enemy in enemies:
                 enemy.useSkill(party[activeCharacter-1], enemies, 0)
+            party[activeCharacter-1].hasActed = False
             updateEnemies()
               
         if (party[activeCharacter-1].HP == 0 or len(enemies) == 0):
