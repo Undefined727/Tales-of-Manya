@@ -18,6 +18,7 @@ class Entity:
     skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)]
     name = "Filler"
     img = "catgirl.png"
+    headImg = "catgirl_head.png"
     weapon = Item.Item(1)
     helmet = Item.Item(10)
     chestplate = Item.Item(3)
@@ -25,6 +26,7 @@ class Entity:
     boots = Item.Item(5)
     accessory1 = Item.Item(6)
     accessory2 = Item.Item(7)
+    hasActed = False
 
     def __init__(self, name, img, level):
         self.name = name
