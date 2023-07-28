@@ -1,47 +1,42 @@
+from sqlalchemy import create_engine
+
 class Skill:
-    #skillNumber implemented later
-    skillNumber = 0
-
-    skillName = "null"
-    img = "sword.png"
+    id = 0
+    name = None
+    img = None
+    element = None
     singleTarget = True
-
-    #AoE does not include Player
-    healPlayer = 0
-    healEnemy = 0
-    healAoE = 0
-    damagePlayer = 0
-    damageEnemy = 0
-    damageAoE = 0
-    manaGivePlayer = 0
-    manaGiveEnemy = 0
-    manaGiveAoE = 0
-    manaDrainPlayer = 0
-    manaDrainEnemy = 0
-    manaDrainAoE = 0
-    element = "Physical"
-    manaCost = 0
-    actionPointCost = 1
-    # Add Statuses
+    manaCost = None
+    damage = None
+    aoeDamage = None
+    healing = None
+    aoeHealing = None
+    # AoE effects do NOT include the target.
 
 
-    # When we add statuses/database this will change to be skillNumber and self
-    def __init__(self, skillName, img, singleTarget, healPlayer, healEnemy, healAoE, damagePlayer, damageEnemy, damageAoE, manaGivePlayer, manaGiveEnemy, manaGiveAoE, manaDrainPlayer, manaDrainEnemy, manaDrainAoE, element, manaCost, actionPointCost):
-        self.skillName = skillName
-        self.img = img
-        self.singleTarget = singleTarget
-        self.healPlayer = healPlayer
-        self.healEnemy = healEnemy
-        self.healAoE = healAoE
-        self.damagePlayer = damagePlayer
-        self.damageEnemy = damageEnemy
-        self.damageAoE = damageAoE
-        self.manaGivePlayer = manaGivePlayer
-        self.manaGiveEnemy = manaGiveEnemy
-        self.manaGiveAoE = manaGiveAoE
-        self.manaDrainPlayer = manaDrainPlayer
-        self.manaDrainEnemy = manaDrainEnemy
-        self.manaDrainAoE = manaDrainAoE
-        self.element = element
-        self.manaCost = manaCost
-        self.actionPointCost = actionPointCost
+    def __init__(self, id):
+        skilldata_engine = create_engine('sqlite:///skilldata.db', echo = False)
+        skilldata_connection = skilldata_engine.connect()
+        s = "SELECT * FROM skilldata WHERE id='" + str(id) + "'"
+        result = skilldata_connection.execute(s)
+        result = str(result.fetchone())
+        result = result[1:]
+        self.id = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.name = result[1:result.index(',')-1]
+        result = result[result.index(',')+2:]
+        self.img = result[1:result.index(',')-1]
+        result = result[result.index(',')+2:]
+        self.element = result[1:result.index(',')-1]
+        result = result[result.index(',')+2:]
+        self.singleTarget = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.manaCost = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.damage = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.aoeDamage = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.healing = int(result[:result.index(',')])
+        result = result[result.index(',')+2:]
+        self.aoeHealing = int(result[:result.index(')')])
