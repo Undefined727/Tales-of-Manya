@@ -1,30 +1,25 @@
 import pygame, os, random, VisualEntity, Entity, Skill, Item
 from sqlalchemy import create_engine, MetaData, Column, Table, Integer, String
 
-#AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 '''
-itemdata_engine = create_engine('sqlite:///itemdata.db', echo = True)
+skilldata_engine = create_engine('sqlite:///skilldata.db', echo = True)
 
-itemdata_meta = MetaData()
+skilldata_meta = MetaData()
 
-itemdata = Table(
-   'itemdata', itemdata_meta, 
+skilldata = Table(
+   'skilldata', skilldata_meta, 
    Column('id', Integer, primary_key = True), 
    Column('name', String),
-   Column('type', String),
-   Column('img', String), 
-   Column('magicPercent', Integer),
-   Column('manaPercent', Integer), 
-   Column('DEFPercent', Integer),
-   Column('ATKPercent', Integer),
-   Column('HPPercent', Integer),
-   Column('flatMagic', Integer), 
-   Column('flatMana', Integer),
-   Column('flatDEF', Integer),
-   Column('flatATK', Integer),
-   Column('flatHP', Integer))
+   Column('img', String),
+   Column('element', String),
+   Column('singleTarget', Integer),
+   Column('manaCost', Integer),
+   Column('damage', Integer),
+   Column('aoeDamage', Integer), 
+   Column('healing', Integer),
+   Column('aoeHealing', Integer))
 
-itemdata_meta.create_all(itemdata_engine)
+skilldata_meta.create_all(skilldata_engine)
 '''
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -41,9 +36,9 @@ inventory = []
 party = []
 
 party = [Entity.Entity("Catgirl", "catgirl.png", 20), Entity.Entity("Catgirl", "catgirl.png", 20), Entity.Entity("Catgirl", "catgirl.png", 20)]
-party[1].skills[0] = Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)
-party[1].skills[1] = Skill.Skill("Berserk", "sword.png", False, 0, 0, 0, 200, 0, 200, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)
-party[1].skills[2] = Skill.Skill("Spell of Healing", "wand.png", False, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Physical", 150, 1)
+party[1].skills[0] = Skill.Skill(1)
+party[1].skills[1] = Skill.Skill(2)
+party[1].skills[2] = Skill.Skill(3)
 
 inventory.append(Item.Item(9))
 inventory.append(Item.Item(9))
@@ -86,6 +81,35 @@ def mouseInRegion(mouse, shape, xPosition, yPosition, width, length):
         return (xPosition <= mouse[0] <= xPosition+width and yPosition <= mouse[1] <= yPosition+length)
     elif (shape == "ellipse"):
         return ((mouse[0]-(xPosition+width/2))*(mouse[0]-(xPosition+width/2)) + (width/length)*(width/length)*(mouse[1]-(yPosition+length/2))*(mouse[1]-(yPosition+length/2)) < ((width/2)*(width/2)))
+
+# activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
+# Reminder that AoE effects do NOT include the target of an ability
+# This does NOT verify that an ability can/should be used and simply executes the effects
+def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
+    if (len(enemies) == 0): return
+    party[activeCharacter].mana = party[activeCharacter].mana - skill.manaCost
+
+    party[activeCharacter].HP = party[activeCharacter].HP + skill.healing*party[activeCharacter].magic/100
+    for character in range(0, len(party)):
+        if (character != activeCharacter): party[character].HP = party[character].HP + skill.aoeHealing*party[activeCharacter].magic/100
+    
+    enemies[selectedEnemy].HP = enemies[selectedEnemy].HP - skill.damage*party[activeCharacter].ATK/100
+    for enemy in range(0, len(enemies)):
+        if (enemy != selectedEnemy): 
+            enemies[enemy].HP = enemies[enemy].HP - skill.aoeDamage*party[activeCharacter].ATK/100
+
+    # Special code for individual skills with unique effects will go here
+    if (skill.name == "Berserk"):
+        party[activeCharacter].HP = party[activeCharacter].HP - skill.damage*party[activeCharacter].ATK/100
+
+
+    for enemy in range(0, len(enemies)):
+        if (enemies[enemy].HP < 0): enemies[enemy].HP = 0
+        if (enemies[enemy].HP > enemies[enemy].maxHP): enemies[enemy].HP = enemies[enemy].maxHP
+    for character in range(0, len(party)):
+        if (party[character].HP < 0): party[character].HP = 0
+        if (party[character].HP > party[character].maxHP): party[character].HP = party[character].maxHP
+
 
 def combatScreen():
     global visualEntities
@@ -163,13 +187,13 @@ def combatScreen():
         skillSelected = args[0]
 
         if (skillsShowing and (not party[activeCharacter-1].hasActed) and (party[activeCharacter-1].skills[skillSelected].manaCost <= party[activeCharacter-1].mana)): 
-            if (party[activeCharacter-1].skills[skillSelected].singleTarget):
+            if (party[activeCharacter-1].skills[skillSelected].singleTarget == 1):
                 enemySelectionShowing = True
                 for entity in visualEntities:
                     if ("Enemy Selection" in entity.tags):
                         entity.isShowing = True
             else: 
-                party[activeCharacter-1].useSkill(enemies[0], enemies, skillSelected)
+                useSkill(enemies, 0, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
                 updateEnemies()
                 for entity in visualEntities:
                     if ("Skill Selection" in entity.tags):
@@ -183,8 +207,9 @@ def combatScreen():
         nonlocal enemies
         nonlocal enemySelectionShowing
         nonlocal skillsShowing
+        nonlocal activeCharacter
         if enemySelectionShowing:
-            party[activeCharacter-1].useSkill(enemies[enemySelected], enemies, skillSelected)
+            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
             party[activeCharacter-1].hasActed = True
             updateEnemies()
             for entity in visualEntities:
@@ -212,7 +237,7 @@ def combatScreen():
             if (item.name == "PlayerManaText"): item.updateText(str(int(party[activeCharacter-1].mana)) + "/" + str(party[activeCharacter-1].maxMana), "mono", 12, "black", None)
             if (item.name == "PlayerManaBlue"): item.width = playerHPBarSizeX*party[activeCharacter-1].mana/party[activeCharacter-1].maxMana
         for enemy in enemies[:]:
-            if (enemy.HP == 0):
+            if (enemy.HP <= 0):
                 enemies.remove(enemy)
 
         count = 0
@@ -251,16 +276,13 @@ def combatScreen():
     visualEntities.append(VisualEntity.VisualEntity("GlossaryButton", 2, True, glossaryButtonX, glossaryButtonY, buttonSizeX, buttonSizeY, ["Menu"], pygame.quit, None, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("Skill1", 0, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[0].img))
     visualEntities.append(VisualEntity.VisualEntity("Skill1Button", 2, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 0, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill1Text", 3, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[0].skillName, "mono", 8, "black", "yellow"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill1APText", 3, False, skill1X, skillY+skillSizeY/4, skillSizeX, skillSizeY, ["Skill Selection"], str(party[activeCharacter-1].skills[0].actionPointCost) + " AP", "mono", 12, "black", "yellow"))
+    visualEntities.append(VisualEntity.VisualEntity("Skill1Text", 3, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[0].name, "mono", 8, "black", "yellow"))
     visualEntities.append(VisualEntity.VisualEntity("Skill2", 0, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[1].img))
     visualEntities.append(VisualEntity.VisualEntity("Skill2Button", 2, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 1, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill2Text", 3, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[1].skillName, "mono", 8, "black", "yellow"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill2APText", 3, False, skill2X, skillY+skillSizeY/4, skillSizeX, skillSizeY, ["Skill Selection"], str(party[activeCharacter-1].skills[1].actionPointCost) + " AP", "mono", 12, "black", "yellow"))
+    visualEntities.append(VisualEntity.VisualEntity("Skill2Text", 3, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[1].name, "mono", 8, "black", "yellow"))
     visualEntities.append(VisualEntity.VisualEntity("Skill3", 0, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].img))
     visualEntities.append(VisualEntity.VisualEntity("Skill3Button", 2, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 2, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill3Text", 3, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].skillName, "mono", 8, "black", "yellow"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill3APText", 3, False, skill3X, skillY+skillSizeY/4, skillSizeX, skillSizeY, ["Skill Selection"], str(party[activeCharacter-1].skills[2].actionPointCost) + " AP", "mono", 12, "black", "yellow"))
+    visualEntities.append(VisualEntity.VisualEntity("Skill3Text", 3, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].name, "mono", 8, "black", "yellow"))
     updateEnemies()
 
     while True:
@@ -277,8 +299,10 @@ def combatScreen():
 
 
         if (party[activeCharacter-1].hasActed): 
+            count = 0
             for enemy in enemies:
-                enemy.useSkill(party[activeCharacter-1], enemies, 0)
+                useSkill(party, activeCharacter-1, count, enemies, enemy.skills[0])
+                count += 1
             party[activeCharacter-1].hasActed = False
             updateEnemies()
               
