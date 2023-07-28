@@ -15,7 +15,7 @@ class Entity:
     DEFPercent = 0
     ATKPercent = 0
     level = 10
-    skills = [Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1), Skill.Skill("Basic Attack", "sword.png", True, 0, 0, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, "Physical", 0, 1)]
+    skills = [Skill.Skill(1), Skill.Skill(1), Skill.Skill(1)]
     name = "Filler"
     img = "catgirl.png"
     headImg = "catgirl_head.png"
@@ -79,44 +79,3 @@ class Entity:
         self.magicPercent = self.magicPercent + int(item.magicPercent)
         self.DEFPercent = self.DEFPercent + int(item.DEFPercent)
         self.ATKPercent = self.ATKPercent + int(item.ATKPercent)
-
-
-
-
-
-    def useSkill(self, enemy, enemies, skillNumber):
-        skill = self.skills[skillNumber]
-
-        if (self.mana < skill.manaCost): return
-        else: self.mana = self.mana - skill.manaCost
-
-        self.HP = self.HP - skill.damagePlayer*self.ATK/100
-        self.HP = self.HP + skill.healPlayer*self.magic/100
-        self.mana = self.mana + skill.manaGivePlayer*self.magic/100
-        self.mana = self.mana - skill.manaDrainPlayer*self.magic/100
-        if (self.HP < 0): self.HP = 0
-        if (self.HP > self.maxHP): self.HP = self.maxHP
-        if (self.mana < 0): self.mana = 0
-        if (self.mana > self.maxMana): self.mana = self.maxMana
-
-
-        enemy.HP = enemy.HP - skill.damageEnemy*self.ATK/100
-        enemy.HP = enemy.HP + skill.healEnemy*self.magic/100
-        enemy.mana = enemy.mana + skill.manaGiveEnemy*self.magic/100
-        enemy.mana = enemy.mana - skill.manaDrainEnemy*self.magic/100
-        if (enemy.HP < 0): enemy.HP = 0
-        if (enemy.HP > enemy.maxHP): enemy.HP = enemy.maxHP
-        if (enemy.mana < 0): enemy.mana = 0
-        if (enemy.mana > enemy.maxMana): enemy.mana = enemy.maxMana
-
-
-
-        for currEnemy in enemies:
-            currEnemy.HP = currEnemy.HP - skill.damageAoE*self.ATK/100
-            currEnemy.HP = currEnemy.HP + skill.healAoE*self.magic/100
-            currEnemy.mana = currEnemy.mana + skill.manaGiveAoE*self.magic/100
-            currEnemy.mana = currEnemy.mana - skill.manaDrainAoE*self.magic/100
-            if (currEnemy.HP < 0): currEnemy.HP = 0
-            if (currEnemy.HP > currEnemy.maxHP): currEnemy.HP = currEnemy.maxHP
-            if (currEnemy.mana < 0): currEnemy.mana = 0
-            if (currEnemy.mana > currEnemy.maxMana): currEnemy.mana = currEnemy.maxMana
