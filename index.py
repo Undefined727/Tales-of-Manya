@@ -1,7 +1,7 @@
 import pygame, os, random, VisualEntity, Entity, Skill, Item
 from sqlalchemy import create_engine, MetaData, Column, Table, Integer, String
 
-#Initializes databases
+#AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
 '''
 itemdata_engine = create_engine('sqlite:///itemdata.db', echo = True)
 
