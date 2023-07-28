@@ -1,4 +1,5 @@
-import pygame
+from PIL import Image
+import pygame, numpy
 
 class VisualEntity:
     name = "Default_Name"
@@ -19,8 +20,9 @@ class VisualEntity:
     isBorder = False
     textLabel = None
     textRect = None
+    npArray = None
     
-    #Args listings are formatted as follows; Image: imgPath. Drawing: color, isBorder, shape. Button: func, args, shape. Text: text, font, fontSize, fontColor, highlightColor
+    #Args listings are formatted as follows; Image: imgPath. Drawing: color, isBorder, shape. Button: func, args, shape. Text: text, font, fontSize, fontColor, highlightColor. Custom Button: func, args, imgPath
     def __init__(self, name, entityType, isShowing, xPosition, yPosition, width, length, tags, *args):
         self.name = name
         self.entityType = entityType
@@ -42,7 +44,17 @@ class VisualEntity:
             self.func = args[0]
             self.args = args[1]
             self.shape = args[2]
-        else: self.updateText(args[0], args[1], args[2], args[3], args[4])
+        elif (entityType == 3):
+            self.updateText(args[0], args[1], args[2], args[3], args[4])
+        elif (entityType == 4):
+            self.func = args[0]
+            self.args = args[1]
+            img = Image.open("sprites/" + args[2])
+            img = img.resize((int(width), int(length)))
+            print(str(int(width)) + " " + str(int(length)))
+            self.npArray = numpy.asarray(img)
+        else:
+            print("bruh moment")
         
     def updateText(self, text, font, fontSize, fontColor, highlightColor):
         textFont = pygame.font.SysFont(font, fontSize)
@@ -52,3 +64,7 @@ class VisualEntity:
             self.textLabel = textFont.render(text, False, fontColor)
         self.textRect = self.textLabel.get_rect()
         self.textRect.center = (self.xPosition, self.yPosition)
+    
+    def updateImg(self, imgPath):
+        self.img = pygame.image.load("sprites/" + imgPath)
+        self.img = pygame.transform.scale(self.img, (self.width, self.length))
