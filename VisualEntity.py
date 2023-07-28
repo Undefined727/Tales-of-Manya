@@ -51,4 +51,4 @@ class VisualEntity:
         else:
             self.textLabel = textFont.render(text, False, fontColor)
         self.textRect = self.textLabel.get_rect()
-        self.textRect.center = (self.xPosition + self.width/2, self.yPosition + self.length/2)
+        self.textRect.center = (self.xPosition, self.yPosition)
