@@ -20,7 +20,7 @@ class Entity:
     img = "catgirl.png"
     headImg = "catgirl_head.png"
     weapon = Item.Item(1)
-    helmet = Item.Item(10)
+    helmet = None
     chestplate = Item.Item(3)
     leggings = Item.Item(4)
     boots = Item.Item(5)
@@ -69,6 +69,7 @@ class Entity:
 
     
     def addItemStat(self, item):
+        if (item == None): return
         self.maxHP = self.maxHP+ int(item.flatHP)
         self.maxMana = self.maxMana + int(item.flatMana)
         self.magic = self.magic + int(item.flatMagic)
