@@ -51,7 +51,6 @@ class VisualEntity:
             self.args = args[1]
             img = Image.open("sprites/" + args[2])
             img = img.resize((int(width), int(length)))
-            print(str(int(width)) + " " + str(int(length)))
             self.npArray = numpy.asarray(img)
         else:
             print("bruh moment")
