@@ -1,4 +1,4 @@
-import pygame, numpy, os, random, VisualEntity, Entity, Skill, Item
+import pygame, numpy, math, os, random, VisualEntity, Entity, Skill, Item
 from sqlalchemy import create_engine, MetaData, Column, Table, Integer, String
 
 '''
@@ -93,14 +93,14 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
     for character in range(0, len(party)):
         if (character != activeCharacter): party[character].HP = party[character].HP + skill.aoeHealing*party[activeCharacter].magic/100
     
-    enemies[selectedEnemy].HP = enemies[selectedEnemy].HP - skill.damage*party[activeCharacter].ATK/100
+    enemies[selectedEnemy].HP = enemies[selectedEnemy].HP - (skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[selectedEnemy].DEF/250)
     for enemy in range(0, len(enemies)):
         if (enemy != selectedEnemy): 
-            enemies[enemy].HP = enemies[enemy].HP - skill.aoeDamage*party[activeCharacter].ATK/100
+            enemies[enemy].HP = enemies[enemy].HP - ((skill.aoeDamage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[enemy].DEF/250))
 
     # Special code for individual skills with unique effects will go here
     if (skill.name == "Berserk"):
-        party[activeCharacter].HP = party[activeCharacter].HP - skill.damage*party[activeCharacter].ATK/100
+        party[activeCharacter].HP = party[activeCharacter].HP - ((skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, party[activeCharacter].DEF/250))
 
 
     for enemy in range(0, len(enemies)):
