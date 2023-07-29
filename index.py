@@ -33,9 +33,8 @@ screen = pygame.display.set_mode([screenX, screenY])
 
 visualEntities = []
 inventory = []
-party = []
-
-party = [Entity.Entity("Catgirl", "catgirl.png", 10),Entity.Entity("Catgirl", "catgirl.png", 20)]
+party = [Entity.Entity("Catgirl", "catgirl.png", 10)]
+party.append(Entity.Entity("Catgirl", "catgirl.png", 20))
 party[0].skills[0] = Skill.Skill(1)
 party[0].skills[1] = Skill.Skill(2)
 party[0].skills[2] = Skill.Skill(3)
@@ -198,7 +197,6 @@ def combatScreen():
 
     def changeCharacterFunction(*args):
         nonlocal activeCharacter
-        print(args[0])
         if (args[0] == "Left"): activeCharacter = ((activeCharacter)%len(party))+1
         else: activeCharacter = ((activeCharacter-2)%len(party))+1
         updateCharacters()
@@ -259,6 +257,7 @@ def combatScreen():
     def updateCharacters():
         global visualEntities
         global party
+        nonlocal activeCharacter
         nonlocal playerHPBarSizeX
         nonlocal inactiveCharacter1HPBarSizeX
         nonlocal inactiveCharacter2HPBarSizeX
@@ -282,6 +281,13 @@ def combatScreen():
             if (item.name == "InactiveCharacter2HPGreen"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].HP/party[(activeCharacter)%len(party)].maxHP
             if (item.name == "InactiveCharacter2ManaText"): item.updateText(str(int(party[(activeCharacter)%len(party)].mana)) + "/" + str(int(party[(activeCharacter)%len(party)].maxMana)), "mono", int(playerManaBarX/40), "black", None)
             if (item.name == "InactiveCharacter2ManaBlue"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].mana/party[(activeCharacter)%len(party)].maxMana
+            if (item.name == "Skill1"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[0].img)
+            if (item.name == "Skill2"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[1].img)
+            if (item.name == "Skill3"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[2].img)
+            if (item.name == "Skill1Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[0].name, "mono", int(playerHPBarSizeX/15), "black", "yellow")
+            if (item.name == "Skill2Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[1].name, "mono", int(playerHPBarSizeX/15), "black", "yellow")
+            if (item.name == "Skill3Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[2].name, "mono", int(playerHPBarSizeX/15), "black", "yellow")
+            
             if (("InactiveCharacter2" in item.tags) and (len(party)<3)) : item.isShowing = False
             if (("InactiveCharacter1" in item.tags) and (len(party) < 2)): item.isShowing = False
 
@@ -397,7 +403,6 @@ def combatScreen():
                         if (x >= 0 and x < int(entity.width) and y >= 0 and y < int(entity.length)): 
                             transparency = array[y, x, 3]
                             if (transparency != 0):
-                                print("test")
                                 entity.func(entity.args)
                                 break
 
@@ -574,7 +579,6 @@ def inventoryScreen():
                         if (x >= 0 and x < int(entity.width) and y >= 0 and y < int(entity.length)): 
                             transparency = array[y, x, 3]
                             if (transparency != 0):
-                                print("test")
                                 entity.func(entity.args)
                                 break
     

@@ -39,6 +39,7 @@ class Entity:
         self.magic = level*10
         self.DEF = level*10
         self.ATK = level*10
+        self.skills = [Skill.Skill(1), Skill.Skill(1), Skill.Skill(1)]
         self.updateItems()
         
     def updateItems(self):
