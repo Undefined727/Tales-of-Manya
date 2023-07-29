@@ -21,7 +21,7 @@ class Entity:
     headImg = "catgirl_head.png"
     weapon = Item.Item(1)
     helmet = None
-    chestplate = Item.Item(3)
+    chestplate = None
     leggings = Item.Item(4)
     boots = Item.Item(5)
     accessory1 = Item.Item(6)

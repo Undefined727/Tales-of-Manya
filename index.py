@@ -483,7 +483,8 @@ def inventoryScreen():
     if (party[0].helmet == None): visualEntities.append(VisualEntity.VisualEntity("Helmet", 0, True, helmetX, helmetY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Helmet"], "helmet_transparent.png"))
     else: visualEntities.append(VisualEntity.VisualEntity("Helmet", 0, True, helmetX, helmetY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Helmet"], party[0].helmet.img))
     visualEntities.append(VisualEntity.VisualEntity("ChestplateBackground", 1, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Chestplate", "Item Background"], "cadetblue", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Chestplate", 0, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Chestplate"], party[0].chestplate.img))
+    if (party[0].chestplate == None): visualEntities.append(VisualEntity.VisualEntity("Chestplate", 0, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Helmet"], "chestplate_transparent.png"))
+    else: visualEntities.append(VisualEntity.VisualEntity("Chestplate", 0, True, chestplateX, chestplateY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Chestplate"], party[0].chestplate.img))
     visualEntities.append(VisualEntity.VisualEntity("LeggingsBackground", 1, True, leggingsX, leggingsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Leggings", "Item Background"], "cadetblue", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("Leggings", 0, True, leggingsX, leggingsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Leggings"], party[0].leggings.img))
     visualEntities.append(VisualEntity.VisualEntity("BootsBackground", 1, True, bootsX, bootsY, itemSizeX, itemSizeY, ["Item", "Equipped Item", "Boots", "Item Background"], "cadetblue", False, "rectangle"))
@@ -551,6 +552,16 @@ def inventoryScreen():
                         if mouseInRegion(mouse, entity.shape, entity.xPosition, entity.yPosition, entity.width, entity.length):
                             entity.func(entity.args)
                             break
+                    if (entity.entityType == 4):
+                        array = entity.npArray
+                        x = int(mouse[0]-entity.xPosition)
+                        y = int(mouse[1]-entity.yPosition)
+                        if (x >= 0 and x < int(entity.width) and y >= 0 and y < int(entity.length)): 
+                            transparency = array[y, x, 3]
+                            if (transparency != 0):
+                                print("test")
+                                entity.func(entity.args)
+                                break
     
         refreshScreen()
         if (leaveScreen): break
