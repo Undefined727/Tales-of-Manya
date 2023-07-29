@@ -35,10 +35,10 @@ visualEntities = []
 inventory = []
 party = []
 
-party = [Entity.Entity("Catgirl", "catgirl.png", 10), Entity.Entity("Catgirl", "catgirl.png", 20), Entity.Entity("Catgirl", "catgirl.png", 15)]
-party[1].skills[0] = Skill.Skill(1)
-party[1].skills[1] = Skill.Skill(2)
-party[1].skills[2] = Skill.Skill(3)
+party = [Entity.Entity("Catgirl", "catgirl.png", 10),Entity.Entity("Catgirl", "catgirl.png", 20)]
+party[0].skills[0] = Skill.Skill(1)
+party[0].skills[1] = Skill.Skill(2)
+party[0].skills[2] = Skill.Skill(3)
 
 inventory.append(Item.Item(9))
 inventory.append(Item.Item(9))
@@ -110,13 +110,14 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
     for character in range(0, len(party)):
         if (party[character].HP < 0): party[character].HP = 0
         if (party[character].HP > party[character].maxHP): party[character].HP = party[character].maxHP
+    party[activeCharacter].hasActed = True
 
 
 def combatScreen():
     global visualEntities
     enemies = []
     enemies = [Entity.Entity("Wizard", "wizard.png", random.randint(5, 30)), Entity.Entity("Frog", "frog.png", random.randint(5, 30)), Entity.Entity("Wizard", "wizard.png", random.randint(5, 30)), Entity.Entity("Frog", "frog.png", random.randint(5, 30))]
-    activeCharacter = 2
+    activeCharacter = 1
     skillSelected = 0
     skillsShowing = False
     enemySelectionShowing = False
@@ -141,7 +142,7 @@ def combatScreen():
     playerHPBarY = playerManaBarY - 5*playerHPBarSizeY
     playerHPBarBorderWidthX = playerHPBarSizeX/3
     playerHPBarBorderWidthY = 3*playerHPBarSizeY/2
-    
+
 
     inactiveCharacter1HPBarX = inactiveCharacter1X - inactiveCharacterSizeX/2
     inactiveCharacter1HPBarY = inactiveCharacterY + 2*inactiveCharacterSizeY
@@ -198,8 +199,8 @@ def combatScreen():
     def changeCharacterFunction(*args):
         nonlocal activeCharacter
         print(args[0])
-        if (args[0] == "Left"): activeCharacter = ((activeCharacter)%3)+1
-        else: activeCharacter = ((activeCharacter-2)%3)+1
+        if (args[0] == "Left"): activeCharacter = ((activeCharacter)%len(party))+1
+        else: activeCharacter = ((activeCharacter-2)%len(party))+1
         updateCharacters()
 
     def skillButtonFunction(*args):
@@ -261,22 +262,29 @@ def combatScreen():
         nonlocal playerHPBarSizeX
         nonlocal inactiveCharacter1HPBarSizeX
         nonlocal inactiveCharacter2HPBarSizeX
+
         for item in visualEntities:
             if (item.name == "Player"): item.updateImg(str(party[activeCharacter-1].img))
             if (item.name == "PlayerHPText"): item.updateText(str(int(party[activeCharacter-1].HP)) + "/" + str(int(party[activeCharacter-1].maxHP)), "mono", int(playerHPBarX/40), "black", None)
             if (item.name == "PlayerHPGreen"): item.width = playerHPBarSizeX*party[activeCharacter-1].HP/party[activeCharacter-1].maxHP
             if (item.name == "PlayerManaText"): item.updateText(str(int(party[activeCharacter-1].mana)) + "/" + str(int(party[activeCharacter-1].maxMana)), "mono", int(playerManaBarX/40), "black", None)
             if (item.name == "PlayerManaBlue"): item.width = playerHPBarSizeX*party[activeCharacter-1].mana/party[activeCharacter-1].maxMana
-            if (item.name == "InactiveCharacter1Img"): item.updateImg(str(party[(activeCharacter-2)%3].headImg))
-            if (item.name == "InactiveCharacter1HPText"): item.updateText(str(int(party[(activeCharacter-2)%3].HP)) + "/" + str(int(party[(activeCharacter-2)%3].maxHP)), "mono", int(playerHPBarX/40), "black", None)
+            if (item.name == "InactiveCharacter1Img"): item.updateImg(str(party[(activeCharacter-2)%len(party)].headImg))
+            if (item.name == "InactiveCharacter1HPText"): item.updateText(str(int(party[(activeCharacter-2)%len(party)].HP)) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxHP)), "mono", int(playerHPBarX/40), "black", None)
             if (item.name == "InactiveCharacter1HPGreen"): item.width = inactiveCharacter1HPBarSizeX*party[activeCharacter-2].HP/party[activeCharacter-2].maxHP
-            if (item.name == "InactiveCharacter1ManaText"): item.updateText(str(int(party[(activeCharacter-2)%3].mana)) + "/" + str(int(party[(activeCharacter-2)%3].maxMana)), "mono", int(playerManaBarX/40), "black", None)
-            if (item.name == "InactiveCharacter1ManaBlue"): item.width = inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%3].mana/party[(activeCharacter-2)%3].maxMana
-            if (item.name == "InactiveCharacter2Img"): item.updateImg(str(party[(activeCharacter)%3].headImg))
-            if (item.name == "InactiveCharacter2HPText"): item.updateText(str(int(party[(activeCharacter)%3].HP)) + "/" + str(int(party[(activeCharacter)%3].maxHP)), "mono", int(playerHPBarX/40), "black", None)
-            if (item.name == "InactiveCharacter2HPGreen"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%3].HP/party[(activeCharacter)%3].maxHP
-            if (item.name == "InactiveCharacter2ManaText"): item.updateText(str(int(party[(activeCharacter)%3].mana)) + "/" + str(int(party[(activeCharacter)%3].maxMana)), "mono", int(playerManaBarX/40), "black", None)
-            if (item.name == "InactiveCharacter2ManaBlue"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%3].mana/party[(activeCharacter)%3].maxMana
+            if (item.name == "InactiveCharacter1ManaText"): item.updateText(str(int(party[(activeCharacter-2)%len(party)].mana)) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxMana)), "mono", int(playerManaBarX/40), "black", None)
+            if (item.name == "InactiveCharacter1ManaBlue"): item.width = inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%len(party)].mana/party[(activeCharacter-2)%len(party)].maxMana
+            if (item.name == "PlayerCheckmark"): item.isShowing = party[(activeCharacter - 1) % len(party)].hasActed
+            if (item.name == "InactiveCharacter1Checkmark" ): item.isShowing = party[(activeCharacter-2) % len(party)].hasActed
+            if (item.name == "InactiveCharacter2Checkmark"): item.isShowing = party[(activeCharacter) % len(party)].hasActed
+            if (item.name == "InactiveCharacter2Img"): item.updateImg(str(party[(activeCharacter)%len(party)].headImg))
+            if (item.name == "InactiveCharacter2HPText"): item.updateText(str(int(party[(activeCharacter)%len(party)].HP)) + "/" + str(int(party[(activeCharacter)%len(party)].maxHP)), "mono", int(playerHPBarX/40), "black", None)
+            if (item.name == "InactiveCharacter2HPGreen"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].HP/party[(activeCharacter)%len(party)].maxHP
+            if (item.name == "InactiveCharacter2ManaText"): item.updateText(str(int(party[(activeCharacter)%len(party)].mana)) + "/" + str(int(party[(activeCharacter)%len(party)].maxMana)), "mono", int(playerManaBarX/40), "black", None)
+            if (item.name == "InactiveCharacter2ManaBlue"): item.width = inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].mana/party[(activeCharacter)%len(party)].maxMana
+            if (("InactiveCharacter2" in item.tags) and (len(party)<3)) : item.isShowing = False
+            if (("InactiveCharacter1" in item.tags) and (len(party) < 2)): item.isShowing = False
+
 
     def updateEnemies():
         nonlocal enemies
@@ -322,26 +330,29 @@ def combatScreen():
     visualEntities.append(VisualEntity.VisualEntity("PlayerManaRed", 1, True, playerManaBarX, playerManaBarY, playerHPBarSizeX, playerHPBarSizeY, ["Player"], "red", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("PlayerManaBlue", 1, True, playerManaBarX, playerManaBarY, playerHPBarSizeX*party[activeCharacter-1].mana/party[activeCharacter-1].maxMana, playerHPBarSizeY, ["Player"], "blue", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("PlayerManaText", 3, True, playerManaBarX+playerHPBarSizeX/2, playerManaBarY+playerHPBarSizeY/2, playerHPBarSizeX/2, playerHPBarSizeY, ["Player"], str(int(party[activeCharacter-1].mana)) + "/" + str(int(party[activeCharacter-1].maxMana)), "mono", int(playerHPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("PlayerCheckmark", 0, False, activeCharacterX, activeCharacterY,activeCharacterSizeX, activeCharacterSizeY, ["Player", "Checkmark"],"Checkmark.png"))
     
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1Img", 0, True, inactiveCharacter1X, inactiveCharacterY, inactiveCharacterSizeX, inactiveCharacterSizeY, ["Player"], str(party[(activeCharacter-2)%3].headImg)))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPBorder", 0, True, inactiveCharacter1HPBarX-inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter1HPBarSizeX+2*inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarSizeY+2*inactiveCharacter1HPBarBorderWidthY, ["Player"], "HPBar.png"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPRed", 1, True, inactiveCharacter1HPBarX, inactiveCharacter1HPBarY, inactiveCharacter1HPBarSizeX, inactiveCharacter1HPBarSizeY, ["Player"], "red", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPGreen", 1, True, inactiveCharacter1HPBarX, inactiveCharacter1HPBarY, inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%3].HP/party[(activeCharacter-2)%3].maxHP, inactiveCharacter1HPBarSizeY, ["Player"], "green", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPText", 3, True, inactiveCharacter1HPBarX+inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarY+inactiveCharacter1HPBarSizeY/2, inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarSizeY, ["Player"], str(int(party[(activeCharacter-2)%3].HP)) + "/" + str(int(party[(activeCharacter-2)%3].maxHP)), "mono", int(inactiveCharacter1HPBarSizeX/10), "black", None))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaBorder", 0, True, inactiveCharacter1ManaBarX-inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1ManaBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter1HPBarSizeX+2*inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarSizeY+2*inactiveCharacter1HPBarBorderWidthY, ["Player"], "ManaBar.png"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaRed", 1, True, inactiveCharacter1ManaBarX, inactiveCharacter1ManaBarY, inactiveCharacter1HPBarSizeX, inactiveCharacter1HPBarSizeY, ["Player"], "red", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaBlue", 1, True, inactiveCharacter1ManaBarX, inactiveCharacter1ManaBarY, inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%3].mana/party[(activeCharacter-2)%3].maxMana, inactiveCharacter1HPBarSizeY, ["Player"], "blue", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaText", 3, True, inactiveCharacter1ManaBarX+inactiveCharacter1HPBarSizeX/2, inactiveCharacter1ManaBarY+inactiveCharacter1HPBarSizeY/2, inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarSizeY, ["Player"], str(int(party[(activeCharacter-2)%3].mana)) + "/" + str(int(party[(activeCharacter-2)%3].maxMana)), "mono", int(inactiveCharacter1HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1Img", 0, True, inactiveCharacter1X, inactiveCharacterY, inactiveCharacterSizeX, inactiveCharacterSizeY, ["InactiveCharacter1"], str(party[(activeCharacter-2)%len(party)].headImg)))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPBorder", 0, True, inactiveCharacter1HPBarX-inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter1HPBarSizeX+2*inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarSizeY+2*inactiveCharacter1HPBarBorderWidthY, ["InactiveCharacter1"], "HPBar.png"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPRed", 1, True, inactiveCharacter1HPBarX, inactiveCharacter1HPBarY, inactiveCharacter1HPBarSizeX, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], "red", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPGreen", 1, True, inactiveCharacter1HPBarX, inactiveCharacter1HPBarY, inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%len(party)].HP/party[(activeCharacter-2)%len(party)].maxHP, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], "green", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1HPText", 3, True, inactiveCharacter1HPBarX+inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarY+inactiveCharacter1HPBarSizeY/2, inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], str(int(party[(activeCharacter-2)%len(party)].HP)) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxHP)), "mono", int(inactiveCharacter1HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaBorder", 0, True, inactiveCharacter1ManaBarX-inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1ManaBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter1HPBarSizeX+2*inactiveCharacter1HPBarBorderWidthX, inactiveCharacter1HPBarSizeY+2*inactiveCharacter1HPBarBorderWidthY, ["InactiveCharacter1"], "ManaBar.png"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaRed", 1, True, inactiveCharacter1ManaBarX, inactiveCharacter1ManaBarY, inactiveCharacter1HPBarSizeX, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], "red", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaBlue", 1, True, inactiveCharacter1ManaBarX, inactiveCharacter1ManaBarY, inactiveCharacter1HPBarSizeX*party[(activeCharacter-2)%len(party)].mana/party[(activeCharacter-2)%len(party)].maxMana, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], "blue", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1ManaText", 3, True, inactiveCharacter1ManaBarX+inactiveCharacter1HPBarSizeX/2, inactiveCharacter1ManaBarY+inactiveCharacter1HPBarSizeY/2, inactiveCharacter1HPBarSizeX/2, inactiveCharacter1HPBarSizeY, ["InactiveCharacter1"], str(int(party[(activeCharacter-2)%len(party)].mana)) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxMana)), "mono", int(inactiveCharacter1HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter1Checkmark", 0, False, inactiveCharacter1X, inactiveCharacterY,inactiveCharacterSizeX, inactiveCharacterSizeY, ["InactiveCharacter1","Checkmark"],"Checkmark.png"))
     
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2Img", 0, True, inactiveCharacter2X, inactiveCharacterY, inactiveCharacterSizeX, inactiveCharacterSizeY, ["Player"], str(party[(activeCharacter)%3].headImg)))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPBorder", 0, True, inactiveCharacter2HPBarX-inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter2HPBarSizeX+2*inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarSizeY+2*inactiveCharacter2HPBarBorderWidthY, ["Player"], "HPBar.png"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPRed", 1, True, inactiveCharacter2HPBarX, inactiveCharacter2HPBarY, inactiveCharacter2HPBarSizeX, inactiveCharacter2HPBarSizeY, ["Player"], "red", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPGreen", 1, True, inactiveCharacter2HPBarX, inactiveCharacter2HPBarY, inactiveCharacter2HPBarSizeX*party[(activeCharacter)%3].HP/party[(activeCharacter)%3].maxHP, inactiveCharacter2HPBarSizeY, ["Player"], "green", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPText", 3, True, inactiveCharacter2HPBarX+inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarY+inactiveCharacter2HPBarSizeY/2, inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarSizeY, ["Player"], str(int(party[(activeCharacter)%3].HP)) + "/" + str(int(party[(activeCharacter)%3].maxHP)), "mono", int(inactiveCharacter2HPBarSizeX/10), "black", None))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaBorder", 0, True, inactiveCharacter2ManaBarX-inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2ManaBarY-inactiveCharacter2HPBarBorderWidthY, inactiveCharacter2HPBarSizeX+2*inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarSizeY+2*inactiveCharacter2HPBarBorderWidthY, ["Player"], "ManaBar.png"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaRed", 1, True, inactiveCharacter2ManaBarX, inactiveCharacter2ManaBarY, inactiveCharacter2HPBarSizeX, inactiveCharacter2HPBarSizeY, ["Player"], "red", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaBlue", 1, True, inactiveCharacter2ManaBarX, inactiveCharacter2ManaBarY, inactiveCharacter2HPBarSizeX*party[(activeCharacter)%3].mana/party[(activeCharacter)%3].maxMana, inactiveCharacter2HPBarSizeY, ["Player"], "blue", False, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaText", 3, True, inactiveCharacter2ManaBarX+inactiveCharacter2HPBarSizeX/2, inactiveCharacter2ManaBarY+inactiveCharacter2HPBarSizeY/2, inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarSizeY, ["Player"], str(int(party[(activeCharacter)%3].mana)) + "/" + str(int(party[(activeCharacter)%3].maxMana)), "mono", int(inactiveCharacter2HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2Img", 0, True, inactiveCharacter2X, inactiveCharacterY, inactiveCharacterSizeX, inactiveCharacterSizeY, ["InactiveCharacter2"], str(party[(activeCharacter)%len(party)].headImg)))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPBorder", 0, True, inactiveCharacter2HPBarX-inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarY-inactiveCharacter1HPBarBorderWidthY, inactiveCharacter2HPBarSizeX+2*inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarSizeY+2*inactiveCharacter2HPBarBorderWidthY, ["InactiveCharacter2"], "HPBar.png"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPRed", 1, True, inactiveCharacter2HPBarX, inactiveCharacter2HPBarY, inactiveCharacter2HPBarSizeX, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], "red", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPGreen", 1, True, inactiveCharacter2HPBarX, inactiveCharacter2HPBarY, inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].HP/party[(activeCharacter)%len(party)].maxHP, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], "green", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2HPText", 3, True, inactiveCharacter2HPBarX+inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarY+inactiveCharacter2HPBarSizeY/2, inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], str(int(party[(activeCharacter)%len(party)].HP)) + "/" + str(int(party[(activeCharacter)%len(party)].maxHP)), "mono", int(inactiveCharacter2HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaBorder", 0, True, inactiveCharacter2ManaBarX-inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2ManaBarY-inactiveCharacter2HPBarBorderWidthY, inactiveCharacter2HPBarSizeX+2*inactiveCharacter2HPBarBorderWidthX, inactiveCharacter2HPBarSizeY+2*inactiveCharacter2HPBarBorderWidthY, ["InactiveCharacter2"], "ManaBar.png"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaRed", 1, True, inactiveCharacter2ManaBarX, inactiveCharacter2ManaBarY, inactiveCharacter2HPBarSizeX, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], "red", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaBlue", 1, True, inactiveCharacter2ManaBarX, inactiveCharacter2ManaBarY, inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].mana/party[(activeCharacter)%len(party)].maxMana, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], "blue", False, "rectangle"))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaText", 3, True, inactiveCharacter2ManaBarX+inactiveCharacter2HPBarSizeX/2, inactiveCharacter2ManaBarY+inactiveCharacter2HPBarSizeY/2, inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], str(int(party[(activeCharacter)%len(party)].mana)) + "/" + str(int(party[(activeCharacter)%len(party)].maxMana)), "mono", int(inactiveCharacter2HPBarSizeX/10), "black", None))
+    visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2Checkmark", 0, False, inactiveCharacter2X, inactiveCharacterY,inactiveCharacterSizeX, inactiveCharacterSizeY, ["InactiveCharacter2", "Checkmark"],"Checkmark.png"))
 
     visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterRight", 4, True, changeCharacterRX, changeCharacterRY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], changeCharacterFunction, "Right", "change_active_right.png"))
     visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterRightImg", 0, True, changeCharacterRX, changeCharacterRY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], "change_active_right.png"))
@@ -390,14 +401,18 @@ def combatScreen():
                                 entity.func(entity.args)
                                 break
 
+        isEnemyTurn = True
+        for character in party:
 
-
-        if (party[activeCharacter-1].hasActed): 
+            if not character.hasActed:
+                isEnemyTurn = False
+        if (isEnemyTurn):
             count = 0
             for enemy in enemies:
                 useSkill(party, activeCharacter-1, count, enemies, enemy.skills[0])
                 count += 1
-            party[activeCharacter-1].hasActed = False
+            for character in party:
+                character.hasActed = False
             updateEnemies()
             updateCharacters()
               
