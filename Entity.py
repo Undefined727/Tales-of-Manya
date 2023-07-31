@@ -40,6 +40,14 @@ class Entity:
         self.DEF = level*10
         self.ATK = level*10
         self.skills = [Skill.Skill(1), Skill.Skill(1), Skill.Skill(1)]
+        self.weapon = Item.Item(1)
+        self.helmet = None
+        self.chestplate = None
+        self.leggings = Item.Item(4)
+        self.boots = Item.Item(5)
+        self.accessory1 = Item.Item(6)
+        self.accessory2 = Item.Item(7)
+        self.hasActed = False
         self.updateItems()
         
     def updateItems(self):
