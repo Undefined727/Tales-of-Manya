@@ -522,37 +522,37 @@ def inventoryScreen():
         updateStats()
         for entity in visualEntities:
             if (entity.name == "CharacterName"): entity.updateText(party[activeCharacter-1].name, "mono", int(nameFontSize), "black", "green")
-            if (entity.name == "CharacterLevel"): entity.updateText("Level " + str(party[activeCharacter-1].level), "mono", int(nameFontSize), "black", "green")
-            if ("Equipped Item" in entity.tags):
+            elif (entity.name == "CharacterLevel"): entity.updateText("Level " + str(party[activeCharacter-1].level), "mono", int(nameFontSize), "black", "green")
+            elif ("Equipped Item" in entity.tags):
                 if (entity.name == "Helmet"):
                     if (party[activeCharacter-1].helmet == None): entity.updateImg("helmet_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].helmet.img)
-                if (entity.name == "Chestplate"):
+                elif (entity.name == "Chestplate"):
                     if (party[activeCharacter-1].chestplate == None): entity.updateImg("chestplate_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].chestplate.img)
-                if (entity.name == "Leggings"):
+                elif (entity.name == "Leggings"):
                     if (party[activeCharacter-1].leggings == None): entity.updateImg("leggings_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].leggings.img)
-                if (entity.name == "Boots"):
+                elif (entity.name == "Boots"):
                     if (party[activeCharacter-1].boots == None): entity.updateImg("boots_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].boots.img)
-                if (entity.name == "Accessory1"):
+                elif (entity.name == "Accessory1"):
                     if (party[activeCharacter-1].accessory1 == None): entity.updateImg("accessory_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].accessory1.img)
-                if (entity.name == "Accessory2"):
+                elif (entity.name == "Accessory2"):
                     if (party[activeCharacter-1].accessory2 == None): entity.updateImg("accessory_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].accessory2.img)
-                if (entity.name == "Weapon"):
+                elif (entity.name == "Weapon"):
                     if (party[activeCharacter-1].weapon == None): entity.updateImg("weapon_transparent.png")
                     else: entity.updateImg(party[activeCharacter-1].weapon.img)
-                if (entity.entityType == 2):
+                elif (entity.entityType == 2):
                     if (entity.name == "HelmetButton"): entity.args = [party[activeCharacter-1].helmet, "Helmet"]
-                    if (entity.name == "ChestplateButton"): entity.args = [party[activeCharacter-1].chestplate, "Chestplate"]
-                    if (entity.name == "LeggingsButton"): entity.args = [party[activeCharacter-1].leggings, "Leggings"]
-                    if (entity.name == "BootsButton"): entity.args = [party[activeCharacter-1].boots, "Boots"]
-                    if (entity.name == "Accessory1Button"): entity.args = [party[activeCharacter-1].accessory1, "Accessory1"]
-                    if (entity.name == "Accessory2Button"): entity.args = [party[activeCharacter-1].accessory2, "Accessory2"]
-                    if (entity.name == "WeaponButton"): entity.args = [party[activeCharacter-1].weapon, "Weapon"]
+                    elif (entity.name == "ChestplateButton"): entity.args = [party[activeCharacter-1].chestplate, "Chestplate"]
+                    elif (entity.name == "LeggingsButton"): entity.args = [party[activeCharacter-1].leggings, "Leggings"]
+                    elif (entity.name == "BootsButton"): entity.args = [party[activeCharacter-1].boots, "Boots"]
+                    elif (entity.name == "Accessory1Button"): entity.args = [party[activeCharacter-1].accessory1, "Accessory1"]
+                    elif (entity.name == "Accessory2Button"): entity.args = [party[activeCharacter-1].accessory2, "Accessory2"]
+                    elif (entity.name == "WeaponButton"): entity.args = [party[activeCharacter-1].weapon, "Weapon"]
 
     def updateStats():
         global visualEntities

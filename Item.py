@@ -15,6 +15,7 @@ class Item:
     flatDEF = 0
     flatATK = 0
     flatHP = 0
+    description = "owo"
     #Statuses below when implemented
 
     # In the future pulls from database, name, img, magic, DEF, ATK, HP, flatMagic, flatDEF, flatATK, flatHP
@@ -51,4 +52,6 @@ class Item:
        result = result[result.index(',')+2:]
        self.flatATK = result[:result.index(',')]
        result = result[result.index(',')+2:]
-       self.flatHP = result[:result.index(')')]
+       self.flatHP = result[:result.index(',')]
+       result = result[result.index(',')+2:]
+       self.description = result[:result.index(')')]
