@@ -1,4 +1,4 @@
-import pygame, numpy, math, os, random, VisualEntity, Entity, Skill, Item
+import pygame, numpy, math, os, random, model.VisualEntity as VisualEntity, Entity, Skill, Item
 from sqlalchemy import create_engine, MetaData, Column, Table, Integer, String
 
 '''
