@@ -1,5 +1,5 @@
 from PIL import Image
-import model.VisualEntity as VisualEntity
+import VisualEntity
 import numpy
 
 class TransparentButtonEntity(VisualEntity):
@@ -13,6 +13,14 @@ class TransparentButtonEntity(VisualEntity):
         self.args = args
         img = Image.open("../sprites/" + path).resize(width, height)
         self.npArray = numpy.asarray(img)
+
+    def mouseInRegion(self, mouse):
+        x = int(mouse[0]-self.xPosition)
+        y = int(mouse[1]-self.yPosition)
+        if (x >= 0 and x < int(self.width) and y >= 0 and y < int(self.length)): 
+            transparency = self.npArray[y, x, 3]
+            if (transparency != 0): return True
+        return False
 
     @staticmethod
     def createFrom(json_object):

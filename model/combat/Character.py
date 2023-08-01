@@ -1,6 +1,6 @@
 import Skill, Item
 
-class Entity:
+class Character:
     maxHP = 100
     HP = 100
     maxMana = 100

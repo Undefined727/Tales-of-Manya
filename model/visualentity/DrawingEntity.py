@@ -1,4 +1,4 @@
-import model.VisualEntity as VisualEntity
+import VisualEntity as VisualEntity
 
 class DrawingEntity(VisualEntity):
     color = None
