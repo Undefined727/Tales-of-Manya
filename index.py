@@ -126,10 +126,11 @@ def combatScreen():
     file = open("screens/combatScreen.json", 'r')
     data = json.load(file)
     for item in data:
-        imageEntity = ImageEntity.createFrom(item)
-        imageEntity.resize(imageEntity.width*screen.get_width(), imageEntity.height*screen.get_height())
-        imageEntity.reposition(imageEntity.xPosition*screen.get_width(), imageEntity.yPosition*screen.get_height())
-        visualEntities.append(imageEntity)
+        if item["entityType"] == "Image":
+             imageEntity = ImageEntity.createFrom(item)
+             imageEntity.resize(imageEntity.width*screen.get_width(), imageEntity.height*screen.get_height())
+             imageEntity.reposition(imageEntity.xPosition*screen.get_width(), imageEntity.yPosition*screen.get_height())
+             visualEntities.append(imageEntity)
 
     
 
@@ -258,13 +259,15 @@ def combatScreen():
 
         count = 0
         for enemy in enemies:
+
             currEnemyX = (((1.5 + 2*count))/(len(enemies)*2+1) - (enemySizeX/2))
             currEnemyHPBarX = currEnemyX + enemySizeX/6
-            visualEntities.append(ImageEntity("Enemy" + str(count+1), True, currEnemyX, enemyY, enemySizeX, enemySizeY, [Tag.ENEMY], enemy.img))
+            print(currEnemyX)
+            #visualEntities.append(ImageEntity("Enemy" + str(count+1), True, currEnemyX, enemyY, enemySizeX, enemySizeY, [Tag.ENEMY], enemy.img))
 
             #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "SelectionButton", 2, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], enemySelectionButtonFunction, (count), "ellipse"))
             #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "Selection", 1, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], "white", True, "ellipse"))
-            visualEntities.append(ImageEntity("Enemy" + str(count + 1) + "HPBorder", True, currEnemyHPBarX-HPBarBorderWidthX, HPBarY-HPBarBorderWidthY, HPBarSizeX + 2*HPBarBorderWidthX, HPBarSizeY + 2*HPBarBorderWidthY, [Tag.ENEMY], "HPBar.png"))
+            visualEntities.append(ImageEntity("Enemy" + str(count + 1) + "enemyImg", True, currEnemyX/100, enemyY/100,enemySizeX, enemySizeY, [Tag.ENEMY], enemy.img))
             #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "HPRed", 1, True, currEnemyHPBarX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "red", False, "rectangle"))
             #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "HPGreen", 1, True, currEnemyHPBarX, HPBarY, HPBarSizeX*enemy.HP/enemy.maxHP, HPBarSizeY, ["Enemy"], "green", False, "rectangle"))
             #visualEntities.append(VisualEntity.VisualEntity("Enemy"+ str(count+1) + "HPText", 3, True, currEnemyHPBarX+HPBarSizeX/2, HPBarY+HPBarSizeY/2, HPBarSizeX/2, HPBarSizeY, ["Enemy"], str(int(enemy.HP)) + "/" + str(int(enemy.maxHP)), "mono", int(HPBarSizeX/10), "black", None))
@@ -327,6 +330,11 @@ def combatScreen():
     skill3X = 17
     skillY = 54
     
+   # 1 = drawing
+   # 3 = text
+   # 2 = button
+   # 0 = image
+   # 4 = transparent
    
     visualEntities.append(VisualEntity.VisualEntity("PlayerHPRed", 1, True, playerHPBarX, playerHPBarY, playerHPBarSizeX, playerHPBarSizeY, ["Player"], "red", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("PlayerHPGreen", 1, True, playerHPBarX, playerHPBarY, playerHPBarSizeX*party[activeCharacter-1].HP/party[activeCharacter-1].maxHP, playerHPBarSizeY, ["Player"], "green", False, "rectangle"))
@@ -373,6 +381,7 @@ def combatScreen():
     visualEntities.append(VisualEntity.VisualEntity("Skill3", 0, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].img))
     visualEntities.append(VisualEntity.VisualEntity("Skill3Button", 2, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 2, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("Skill3Text", 3, False, skill3X+skillSizeX/2, skillY+skillSizeY/2, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].name, "mono", int(skill3X/20), "black", "yellow"))
+    
     '''
 
     updateEnemies()
