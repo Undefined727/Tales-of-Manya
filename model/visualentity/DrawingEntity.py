@@ -11,14 +11,17 @@ class DrawingEntity(VisualEntity):
         self.isBorder = isBorder
         self.shape = shape
 
+    
+    def resize(self, width, height):
+        self.width = width
+        self.height = height
+
+    def reposition(self, xPosition, yPosition):
+        self.xPosition = xPosition
+        self.yPosition = yPosition
+
     @staticmethod
     def createFrom(json_object):
         newObject = DrawingEntity()
         newObject.__dict__.update(json_object)
         return newObject
-    def resize(self, width,height):
-        self.width = width
-        self.height = height
-    def reposition(self, xPosition, yPosition):
-        self.xPosition = xPosition
-        self.yPosition = yPosition

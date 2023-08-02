@@ -61,16 +61,15 @@ def refreshScreen():
     # Fill the background
     global visualEntities
     for entity in visualEntities:
-         if (type(entity) == ImageEntity):
-           if entity.isShowing:
-             screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-         elif (type(entity) == DrawingEntity):
-             if entity.isShowing:
+         if entity.isShowing:
+            if (type(entity) == ImageEntity):
+                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+            elif (type(entity) == DrawingEntity):
                  pygame.draw.rect(screen,entity.color,(int(entity.xPosition), int(entity.yPosition),int(entity.width),int(entity.height)))
 
-                # screen.blit(bar)
+            # screen.blit(bar)
 
-             '''
+            '''
              if entity.entityType == 0:
                  screen.blit(entity.img, (entity.xPosition, entity.yPosition))
              elif entity.entityType == 1:
@@ -135,16 +134,13 @@ def combatScreen():
     data = json.load(file)
     for item in data:
         if item["entityType"] == "Image":
-             imageEntity = ImageEntity.createFrom(item)
-             imageEntity.resize(imageEntity.width*screen.get_width(), imageEntity.height*screen.get_height())
-             imageEntity.reposition(imageEntity.xPosition*screen.get_width(), imageEntity.yPosition*screen.get_height())
-             visualEntities.append(imageEntity)
+             entity = ImageEntity.createFrom(item)
         elif item["entityType"] == "Drawing":
-            drawingEntity = DrawingEntity.createFrom(item)
-            drawingEntity.resize(drawingEntity.width*screen.get_width(), drawingEntity.height*screen.get_height())
-            drawingEntity.reposition(drawingEntity.xPosition * screen.get_width(),drawingEntity.yPosition * screen.get_height())
-
-            visualEntities.append(drawingEntity)
+            entity = DrawingEntity.createFrom(item)
+            
+        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
+        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+        visualEntities.append(entity)
 
     
 

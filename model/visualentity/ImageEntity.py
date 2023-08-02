@@ -3,9 +3,9 @@ import pygame
 
 class ImageEntity(VisualEntity):
     img = None
-    path = "catgirl.png"
+    path = "nekoarc.png"
 
-    def __init__(self, name = "Default_Image", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [],path = "catgirl.png"):
+    def __init__(self, name = "Default_Image", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [],path = "nekoarc.png"):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
 
         self.updateImg(path)
@@ -16,7 +16,6 @@ class ImageEntity(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
-        print(str(self.width) + " " + str(self.height))
         self.img = pygame.transform.scale(self.img, (self.width, self.height))
 
     def reposition(self, xPosition, yPosition):
