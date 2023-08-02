@@ -1,4 +1,4 @@
-import VisualEntity
+from model.visualentity.VisualEntity import VisualEntity
 
 class ButtonEntity(VisualEntity):
     func = None

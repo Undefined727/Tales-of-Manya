@@ -1,5 +1,5 @@
 from PIL import Image
-import VisualEntity
+from model.visualentity.VisualEntity import VisualEntity
 import numpy
 
 class TransparentButtonEntity(VisualEntity):

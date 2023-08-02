@@ -1,4 +1,5 @@
-import Skill, Item
+from model.combat.Skill import Skill
+from model.combat.Item import Item
 
 class Character:
     maxHP = 100
@@ -15,17 +16,17 @@ class Character:
     DEFPercent = 0
     ATKPercent = 0
     level = 10
-    skills = [Skill.Skill(1), Skill.Skill(1), Skill.Skill(1)]
+    skills = [Skill(1), Skill(1), Skill(1)]
     name = "Filler"
     img = "catgirl.png"
     headImg = "catgirl_head.png"
-    weapon = Item.Item(1)
+    weapon = Item(1)
     helmet = None
     chestplate = None
-    leggings = Item.Item(4)
-    boots = Item.Item(5)
-    accessory1 = Item.Item(6)
-    accessory2 = Item.Item(7)
+    leggings = Item(4)
+    boots = Item(5)
+    accessory1 = Item(6)
+    accessory2 = Item(7)
     hasActed = False
 
     def __init__(self, name, img, level):
@@ -39,14 +40,14 @@ class Character:
         self.magic = level*10
         self.DEF = level*10
         self.ATK = level*10
-        self.skills = [Skill.Skill(1), Skill.Skill(1), Skill.Skill(1)]
-        self.weapon = Item.Item(1)
+        self.skills = [Skill(1), Skill(1), Skill(1)]
+        self.weapon = Item(1)
         self.helmet = None
         self.chestplate = None
-        self.leggings = Item.Item(4)
-        self.boots = Item.Item(5)
-        self.accessory1 = Item.Item(6)
-        self.accessory2 = Item.Item(7)
+        self.leggings = Item(4)
+        self.boots = Item(5)
+        self.accessory1 = Item(6)
+        self.accessory2 = Item(7)
         self.hasActed = False
         self.updateItems()
         

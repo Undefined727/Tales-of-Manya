@@ -1,4 +1,4 @@
-import VisualEntity
+from model.visualentity.VisualEntity import VisualEntity
 import pygame
 
 class TextEntity(VisualEntity):

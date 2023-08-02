@@ -1,130 +1,211 @@
 [
     {
         "name": "Background",
-        "isShowing": "True",
-        "xPosition": "0",
-        "yPosition": "0",
-        "width": "1",
-        "height": "1",
-        "tags": "[]",
+        "isShowing": true,
+        "xPosition": 0,
+        "yPosition": 0,
+        "width": 1,
+        "height": 1,
+        "tags": [],
         "entityType": "Image",
-        "img": "dungeonbackground.png"
+        "path": "dungeonbackground.png"
     },
     {
         "name": "ActiveCharacter",
-        "isShowing": "True",
-        "xPosition": "0.38",
-        "yPosition": "0.50",
-        "width": "0.22",
-        "height": "0.44",
-        "tags": "[]",
+        "isShowing": true,
+        "xPosition": 0.38,
+        "yPosition": 0.50,
+        "width": 0.22,
+        "height": 0.44,
+        "tags": [],
         "entityType": "Image",
-        "img": "catgirl.png"
+        "path": "catgirl.png"
     },
     {
         "name": "ActiveCharacterHPBorder",
-        "isShowing": "True",
-        "xPosition": "0.40",
-        "yPosition": "0.32",
-        "width": "0.19",
-        "height": "0.8",
-        "tags": "[]",
+        "isShowing": true,
+        "xPosition": 0.40,
+        "yPosition": 0.32,
+        "width": 0.19,
+        "height": 0.08,
+        "tags": [],
         "entityType": "Image",
-        "img": "HPBar.png"
+        "path": "HPBar.png"
     },
     {
         "name": "ActiveCharacterManaBorder",
-        "isShowing": "True",
-        "xPosition": "0.40",
-        "yPosition": "0.42",
-        "width": "0.19",
-        "height": "0.8",
-        "tags": "[]",
+        "isShowing": true,
+        "xPosition": 0.40,
+        "yPosition": 0.42,
+        "width": 0.19,
+        "height": 0.08,
+        "tags": [],
         "entityType": "Image",
-        "img": "ManaBar.png"
+        "path": "ManaBar.png"
     },
     {
         "name": "ActiveCharacterCheckmark",
-        "isShowing": "False",
-        "xPosition": "0.38",
-        "yPosition": "0.42",
-        "width": "0.03",
-        "height": "0.03",
-        "tags": "[]",
+        "isShowing": false,
+        "xPosition": 0.38,
+        "yPosition": 0.42,
+        "width": 0.03,
+        "height": 0.03,
+        "tags": [],
         "entityType": "Image",
-        "img": "Checkmark.png"
+        "path": "Checkmark.png"
     },
     {
         "name": "InactiveCharacter1",
-        "isShowing": "True",
-        "xPosition": "0.27",
-        "yPosition": "0.67",
-        "width": "0.04",
-        "height": "0.08",
-        "tags": "[]",
+        "isShowing": true,
+        "xPosition": 0.27,
+        "yPosition": 0.67,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
         "entityType": "Image",
-        "img": "catgirl_head.png"
+        "path": "catgirl_head.png"
+    },
+    {
+        "name": "InactiveCharacter1HPBorder",
+        "isShowing": true,
+        "xPosition": 0.21,
+        "yPosition": 0.83,
+        "width": 0.25,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "HPBar.png"
+    },
+    {
+        "name": "InactiveCharacter1ManaBorder",
+        "isShowing": true,
+        "xPosition": 0.21,
+        "yPosition": 0.50,
+        "width": 0.25,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "ManaBar.png"
+    },
+    {
+        "name": "InactiveCharacter1Checkmark",
+        "isShowing": false,
+        "xPosition": 0.27,
+        "yPosition": 0.67,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "Checkmark.png"
+    },
+    {
+        "name": "InactiveCharacter2",
+        "isShowing": true,
+        "xPosition": 0.67,
+        "yPosition": 0.67,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "catgirl_head.png"
+    },
+    {
+        "name": "InactiveCharacter2HPBorder",
+        "isShowing": true,
+        "xPosition": 0.21,
+        "yPosition": 0.83,
+        "width": 0.25,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "HPBar.png"
+    },
+    {
+        "name": "InactiveCharacter2ManaBorder",
+        "isShowing": true,
+        "xPosition": 0.21,
+        "yPosition": 0.50,
+        "width": 0.25,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "ManaBar.png"
+    },
+    {
+        "name": "InactiveCharacter2Checkmark",
+        "isShowing": false,
+        "xPosition": 0.27,
+        "yPosition": 0.67,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "Checkmark.png"
+    },
+    {
+        "name": "ChangeCharacterRightImg",
+        "isShowing": true,
+        "xPosition": 0.67,
+        "yPosition": 0.05,
+        "width": 0.04,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_right.png"
+    },
+    {
+        "name": "ChangeCharacterLeftImg",
+        "isShowing": true,
+        "xPosition": 0.27,
+        "yPosition": 0.05,
+        "width": 0.04,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
+    },
+    {
+        "name": "ExitButtonImg",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
+    },
+    {
+        "name": "SkillButtonImg",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
+    },
+    {
+        "name": "BagButtonImg",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
+    },
+    {
+        "name": "GlossaryButtonImg",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
     }
 ]
-
-
-    activeCharacterX = 38
-    activeCharacterY = 5
-    activeCharacterSizeX = 22
-    activeCharacterSizeY = 44
-    inactiveCharacterSizeX = 4
-    inactiveCharacterSizeY = 8
-    inactiveCharacter1X = 27
-    inactiveCharacter2X = 67
-    inactiveCharacterY = 67
-    playerHPBarSizeX = 11
-    playerHPBarSizeY = 2
-    playerManaBarX = 44
-    playerManaBarY = 45
-    playerHPBarX = 44
-    playerHPBarY = 35
-    playerHPBarBorderWidthX = 4
-    playerHPBarBorderWidthY = 3
-
-
-    inactiveCharacter1HPBarX = inactiveCharacter1X - inactiveCharacterSizeX/2
-    inactiveCharacter1HPBarY = inactiveCharacterY + 2*inactiveCharacterSizeY
-    inactiveCharacter1HPBarSizeX = 2 * inactiveCharacterSizeX
-    inactiveCharacter1HPBarSizeY = inactiveCharacterSizeY/5
-    inactiveCharacter1HPBarBorderWidthX = inactiveCharacter1HPBarSizeX/3
-    inactiveCharacter1HPBarBorderWidthY = 3*inactiveCharacter1HPBarSizeY/2
-    inactiveCharacter1ManaBarX = inactiveCharacter1HPBarX
-    inactiveCharacter1ManaBarY = inactiveCharacter1HPBarY + inactiveCharacterSizeY
-
-    inactiveCharacter2HPBarX = inactiveCharacter2X - inactiveCharacterSizeX/2
-    inactiveCharacter2HPBarY = inactiveCharacterY + 2*inactiveCharacterSizeY
-    inactiveCharacter2HPBarSizeX = 2 * inactiveCharacterSizeX
-    inactiveCharacter2HPBarSizeY = inactiveCharacterSizeY/5
-    inactiveCharacter2HPBarBorderWidthX = inactiveCharacter2HPBarSizeX/3
-    inactiveCharacter2HPBarBorderWidthY = 3*inactiveCharacter2HPBarSizeY/2
-    inactiveCharacter2ManaBarX = inactiveCharacter2HPBarX
-    inactiveCharacter2ManaBarY = inactiveCharacter2HPBarY + inactiveCharacterSizeY
-
-    changeCharacterLX = inactiveCharacter1X
-    changeCharacterLY = activeCharacterY
-    changeCharacterRX = inactiveCharacter2X
-    changeCharacterRY = activeCharacterY
-    changeCharacterSizeX = playerHPBarBorderWidthX
-    changeCharacterSizeY = playerHPBarBorderWidthX
-    
-    exitButtonX = 27*screenX/32
-    exitButtonY = 5*screenY/6
-    glossaryButtonX = 27*screenX/32
-    glossaryButtonY = 4*screenY/6
-    bagButtonX = screenX/32
-    bagButtonY = 5*screenY/6
-    skillButtonX = screenX/32
-    skillButtonY = 4*screenY/6
-    buttonSizeX = 2*screenX/16
-    buttonSizeY = screenY/8
-    skillSizeX = buttonSizeX/2
-    skillSizeY = buttonSizeY
-    skill1X = skillButtonX
-    skill2X = skillButtonX + skillSizeX
-    skill3X = skillButtonX + 2*skillSizeX
-    skillY = skillButtonY-skillSizeY
