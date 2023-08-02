@@ -222,12 +222,12 @@
         "entityType": "Image",
         "path": "sword.png"
     },{
-        "name": "manabar",
+        "name": "InactiveCharacter2manabar",
         "isShowing": true,
-        "xPosition": 0.780,
-        "yPosition": 0.70,
-        "width": 0.09,
-        "height": 0.07,
+        "xPosition": 0.8,
+        "yPosition": 0.72,
+        "width": 0.05,
+        "height": 0.03,
         "tags": [],
         "entityType": "Drawing",
         "color": "blue",

@@ -1,6 +1,7 @@
 import pygame, numpy, math, os, random, json
 from model.visualentity.Tag import Tag
 from model.visualentity.ImageEntity import ImageEntity
+from model.visualentity.DrawingEntity import DrawingEntity
 from model.combat.Skill import Skill
 from model.combat.Character import Character
 from model.combat.Item import Item
@@ -60,13 +61,20 @@ def refreshScreen():
     # Fill the background
     global visualEntities
     for entity in visualEntities:
-        if entity.isShowing:
-            screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            '''
-            if entity.entityType == 0:
-                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            elif entity.entityType == 1:
-                if entity.shape == "rectangle":
+         if (type(entity) == ImageEntity):
+           if entity.isShowing:
+             screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+         elif (type(entity) == DrawingEntity):
+             if entity.isShowing:
+                 pygame.draw.rect(screen,entity.color,(int(entity.xPosition), int(entity.yPosition),int(entity.width),int(entity.height)))
+
+                # screen.blit(bar)
+
+             '''
+             if entity.entityType == 0:
+                 screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+             elif entity.entityType == 1:
+                    if entity.shape == "re  ctangle":
                     if entity.isBorder:
                         pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.length), 2)
                     else:
@@ -131,6 +139,12 @@ def combatScreen():
              imageEntity.resize(imageEntity.width*screen.get_width(), imageEntity.height*screen.get_height())
              imageEntity.reposition(imageEntity.xPosition*screen.get_width(), imageEntity.yPosition*screen.get_height())
              visualEntities.append(imageEntity)
+        elif item["entityType"] == "Drawing":
+            drawingEntity = DrawingEntity.createFrom(item)
+            drawingEntity.resize(drawingEntity.width*screen.get_width(), drawingEntity.height*screen.get_height())
+            drawingEntity.reposition(drawingEntity.xPosition * screen.get_width(),drawingEntity.yPosition * screen.get_height())
+
+            visualEntities.append(drawingEntity)
 
     
 
