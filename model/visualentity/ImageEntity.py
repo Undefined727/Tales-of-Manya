@@ -22,6 +22,11 @@ class ImageEntity(VisualEntity):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def addGap(self, xAdd, yAdd):
+        self.xPosition += xAdd
+        self.yPosition += yAdd
+
+
 
     @staticmethod
     def createFrom(json_object):

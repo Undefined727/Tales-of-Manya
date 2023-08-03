@@ -2,9 +2,11 @@ import pygame, numpy, math, os, random, json
 from model.visualentity.Tag import Tag
 from model.visualentity.ImageEntity import ImageEntity
 from model.visualentity.DrawingEntity import DrawingEntity
+from model.visualentity.TextEntity import TextEntity
 from model.combat.Skill import Skill
 from model.combat.Character import Character
 from model.combat.Item import Item
+from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
 import json
 
 '''
@@ -65,10 +67,9 @@ def refreshScreen():
             if (type(entity) == ImageEntity):
                 screen.blit(entity.img, (entity.xPosition, entity.yPosition))
             elif (type(entity) == DrawingEntity):
-                 pygame.draw.rect(screen,entity.color,(int(entity.xPosition), int(entity.yPosition),int(entity.width),int(entity.height)))
-
-            # screen.blit(bar)
-
+                pygame.draw.rect(screen,entity.color,(int(entity.xPosition), int(entity.yPosition),int(entity.width),int(entity.height)))
+            elif (type(entity) == TextEntity):
+                screen.blit(entity.textLabel, entity.textRect)
             '''
              if entity.entityType == 0:
                  screen.blit(entity.img, (entity.xPosition, entity.yPosition))
@@ -120,7 +121,6 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
 def combatScreen():
     global visualEntities
-    enemies = []
     enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
     activeCharacter = 1
     skillSelected = 0
@@ -251,100 +251,26 @@ def combatScreen():
 
     def updateEnemies():
         nonlocal enemies
-        global visualEntities
-        enemyY = screenY/20
-        enemySizeX = screenX/9
-        enemySizeY = screenY/5
-        HPBarY = enemyY + enemySizeY + screenY/100
-        HPBarSizeX = 2*enemySizeX/3
-        HPBarSizeY = enemySizeY/15
-        HPBarBorderWidthX = HPBarSizeX/3
-        HPBarBorderWidthY = 3*HPBarSizeY/2
-
-        for item in visualEntities[:]:
-            if (Tag.ENEMY in item.tags): visualEntities.remove(item)
+        enemySpacing = screenX/(1+len(enemies)*2)
+        
+        for entity in visualEntities[:]:
+            if (Tag.ENEMY in entity.tags):
+                visualEntities.remove(entity)
         for enemy in enemies[:]:
             if (enemy.HP <= 0):
                 enemies.remove(enemy)
 
         count = 0
         for enemy in enemies:
-
-            currEnemyX = (((1.5 + 2*count))/(len(enemies)*2+1) - (enemySizeX/2))
-            currEnemyHPBarX = currEnemyX + enemySizeX/6
-            print(currEnemyX)
-            #visualEntities.append(ImageEntity("Enemy" + str(count+1), True, currEnemyX, enemyY, enemySizeX, enemySizeY, [Tag.ENEMY], enemy.img))
-
-            #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "SelectionButton", 2, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], enemySelectionButtonFunction, (count), "ellipse"))
-            #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "Selection", 1, False, currEnemyX, enemyY, enemySizeX, enemySizeY, ["Enemy", "Enemy Selection"], "white", True, "ellipse"))
-            visualEntities.append(ImageEntity("Enemy" + str(count + 1) + "enemyImg", True, currEnemyX/100, enemyY/100,enemySizeX, enemySizeY, [Tag.ENEMY], enemy.img))
-            #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "HPRed", 1, True, currEnemyHPBarX, HPBarY, HPBarSizeX, HPBarSizeY, ["Enemy"], "red", False, "rectangle"))
-            #visualEntities.append(VisualEntity.VisualEntity("Enemy" + str(count+1) + "HPGreen", 1, True, currEnemyHPBarX, HPBarY, HPBarSizeX*enemy.HP/enemy.maxHP, HPBarSizeY, ["Enemy"], "green", False, "rectangle"))
-            #visualEntities.append(VisualEntity.VisualEntity("Enemy"+ str(count+1) + "HPText", 3, True, currEnemyHPBarX+HPBarSizeX/2, HPBarY+HPBarSizeY/2, HPBarSizeX/2, HPBarSizeY, ["Enemy"], str(int(enemy.HP)) + "/" + str(int(enemy.maxHP)), "mono", int(HPBarSizeX/10), "black", None))
+            currEnemyX = enemySpacing*(2*count+1)
+            displayedEnemy = CombatEnemyEntity(currEnemyX, screenY/10, enemySpacing, screenY/3, enemy)
+            visualEntities.append(displayedEnemy.enemyImg)
+            visualEntities.append(displayedEnemy.enemyHPBarBorder)
+            visualEntities.append(displayedEnemy.enemyHPBarRed)
+            visualEntities.append(displayedEnemy.enemyHPBarGreen)
+            visualEntities.append(displayedEnemy.enemyHPBarText)
             count = count+1
-
     '''
-    activeCharacterX = 38
-    activeCharacterY = 5
-    activeCharacterSizeX = 22
-    activeCharacterSizeY = 44
-    inactiveCharacterSizeX = 4
-    inactiveCharacterSizeY = 8
-    inactiveCharacter1X = 27
-    inactiveCharacter2X = 67
-    inactiveCharacterY = 67
-    playerHPBarSizeX = 11
-    playerHPBarSizeY = 2
-    playerManaBarX = 44
-    playerManaBarY = 45
-    playerHPBarX = 44
-    playerHPBarY = 35
-    playerHPBarBorderWidthX = 4
-    playerHPBarBorderWidthY = 3
-    inactiveCharacter1HPBarX = 25
-    inactiveCharacter1HPBarY = 83
-    inactiveCharacter1HPBarSizeX = 8
-    inactiveCharacter1HPBarSizeY = 2
-    inactiveCharacter1HPBarBorderWidthX = 3
-    inactiveCharacter1HPBarBorderWidthY = 2.4
-    inactiveCharacter1ManaBarX = 25
-    inactiveCharacter1ManaBarY = 91
-    inactiveCharacter2HPBarX = 65
-    inactiveCharacter2HPBarY = 83
-    inactiveCharacter2HPBarSizeX = 8
-    inactiveCharacter2HPBarSizeY = 2
-    inactiveCharacter2HPBarBorderWidthX = 3
-    inactiveCharacter2HPBarBorderWidthY = 3
-    inactiveCharacter2ManaBarX = 65
-    inactiveCharacter2ManaBarY = 91
-    changeCharacterLX = 27
-    changeCharacterLY = 5
-    changeCharacterRX = 67
-    changeCharacterRY = 5
-    changeCharacterSizeX = 4
-    changeCharacterSizeY = 3
-    exitButtonX = 84
-    exitButtonY = 83
-    glossaryButtonX = 84
-    glossaryButtonY = 67
-    bagButtonX = 3
-    bagButtonY = 83
-    skillButtonX = 3
-    skillButtonY = 67
-    buttonSizeX = 13
-    buttonSizeY = 13
-    skillSizeX = 7
-    skillSizeY = 13
-    skill1X = 3
-    skill2X = 10
-    skill3X = 17
-    skillY = 54
-    
-   # 1 = drawing
-   # 3 = text
-   # 2 = button
-   # 0 = image
-   # 4 = transparent
    
     visualEntities.append(VisualEntity.VisualEntity("PlayerHPRed", 1, True, playerHPBarX, playerHPBarY, playerHPBarSizeX, playerHPBarSizeY, ["Player"], "red", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("PlayerHPGreen", 1, True, playerHPBarX, playerHPBarY, playerHPBarSizeX*party[activeCharacter-1].HP/party[activeCharacter-1].maxHP, playerHPBarSizeY, ["Player"], "green", False, "rectangle"))
@@ -369,29 +295,6 @@ def combatScreen():
     visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaBlue", 1, True, inactiveCharacter2ManaBarX, inactiveCharacter2ManaBarY, inactiveCharacter2HPBarSizeX*party[(activeCharacter)%len(party)].mana/party[(activeCharacter)%len(party)].maxMana, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], "blue", False, "rectangle"))
     visualEntities.append(VisualEntity.VisualEntity("InactiveCharacter2ManaText", 3, True, inactiveCharacter2ManaBarX+inactiveCharacter2HPBarSizeX/2, inactiveCharacter2ManaBarY+inactiveCharacter2HPBarSizeY/2, inactiveCharacter2HPBarSizeX/2, inactiveCharacter2HPBarSizeY, ["InactiveCharacter2"], str(int(party[(activeCharacter)%len(party)].mana)) + "/" + str(int(party[(activeCharacter)%len(party)].maxMana)), "mono", int(inactiveCharacter2HPBarSizeX/10), "black", None))
 
-    visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterRight", 4, True, changeCharacterRX, changeCharacterRY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], changeCharacterFunction, "Right", "change_active_right.png"))
-    visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterRightImg", 0, True, changeCharacterRX, changeCharacterRY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], "change_active_right.png"))
-    visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterLeft", 4, True, changeCharacterLX, changeCharacterLY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], changeCharacterFunction, "Left", "change_active_left.png"))
-    visualEntities.append(VisualEntity.VisualEntity("ChangeCharacterLeftImg", 0, True, changeCharacterLX, changeCharacterLY, changeCharacterSizeX, changeCharacterSizeY, ["Change Character"], "change_active_left.png"))
-
-    visualEntities.append(VisualEntity.VisualEntity("Exit", 0, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], "ExitButton.png"))
-    visualEntities.append(VisualEntity.VisualEntity("ExitButton", 2, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], exitButtonFunction, None, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill", 0, True, skillButtonX, skillButtonY, buttonSizeX, buttonSizeY, ["Menu"], "SkillButton.png"))
-    visualEntities.append(VisualEntity.VisualEntity("SkillButton", 2, True, skillButtonX, skillButtonY, buttonSizeX, buttonSizeY, ["Menu"], skillButtonFunction, None, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Bag", 0, True, bagButtonX, bagButtonY, buttonSizeX, buttonSizeY, ["Menu"], "BagButton.png"))
-    visualEntities.append(VisualEntity.VisualEntity("BagButton", 4, True, bagButtonX, bagButtonY, buttonSizeX, buttonSizeY, ["Menu"], bagButtonFunction, None, "BagButton.png"))
-    visualEntities.append(VisualEntity.VisualEntity("Glossary", 0, True, glossaryButtonX, glossaryButtonY, buttonSizeX, buttonSizeY, ["Menu"], "GlossaryButton.png"))
-    visualEntities.append(VisualEntity.VisualEntity("GlossaryButton", 2, True, glossaryButtonX, glossaryButtonY, buttonSizeX, buttonSizeY, ["Menu"], pygame.quit, None, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill1", 0, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[0].img))
-    visualEntities.append(VisualEntity.VisualEntity("Skill1Button", 2, False, skill1X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 0, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill1Text", 3, False, skill1X+skillSizeX/2, skillY+skillSizeY/2, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[0].name, "mono", int(skill1X/3), "black", "yellow"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill2", 0, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[1].img))
-    visualEntities.append(VisualEntity.VisualEntity("Skill2Button", 2, False, skill2X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 1, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill2Text", 3, False, skill2X+skillSizeX/2, skillY+skillSizeY/2, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[1].name, "mono", int(skill2X/10), "black", "yellow"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill3", 0, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].img))
-    visualEntities.append(VisualEntity.VisualEntity("Skill3Button", 2, False, skill3X, skillY, skillSizeX, skillSizeY, ["Skill Selection"], individualSkillButtonFunction, 2, "rectangle"))
-    visualEntities.append(VisualEntity.VisualEntity("Skill3Text", 3, False, skill3X+skillSizeX/2, skillY+skillSizeY/2, skillSizeX, skillSizeY, ["Skill Selection"], party[activeCharacter-1].skills[2].name, "mono", int(skill3X/20), "black", "yellow"))
-    
     '''
 
     updateEnemies()
@@ -431,6 +334,9 @@ def combatScreen():
             for entity in visualEntities:
                 if("Skill Point" in entity.tags): entity.isBorder = False
     
+
+
+
         refreshScreen()
         if (leaveScreen): break
     if (nextScreen == "Inventory"):
