@@ -1,6 +1,6 @@
-import model.item.Item as Item
-import item.ItemSlot as ItemSlot
-import util.IllegalArgumentException as IllegalArgumentException
+from model.item.Item import Item
+from item.ItemSlot import ItemSlot
+from util.IllegalArgumentException import IllegalArgumentException
 
 class CharacterLoadout:
     slots = {}

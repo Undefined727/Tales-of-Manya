@@ -39,8 +39,9 @@ class Character:
         self.skills     = [Skill(1), Skill(1), Skill(1)]
 
     def getBonuses(self, bonus_type):
-        # This helps other functions to fetch the flat and percentage bonuses of
-        # their respective stat and add them up into a single value
+        # This helps other functions to fetch either the flat and percentage
+        # bonuses of their respective stat and add them up into a single
+        # value.
 
         from_buffs = self.buff_bonuses.get(bonus_type)
         from_loadout = self.loadout_bonuses.get(bonus_type)
