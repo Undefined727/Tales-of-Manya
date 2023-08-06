@@ -6,24 +6,25 @@ import pygame
 
 
 
-img = Image.open("maps/" + "test.png")
+img = Image.open("maps/samplemap.png")
 npArray = numpy.array(img)
 height, width, dim = npArray.shape
+tiles = []
 
-print(height, width)
+for y in range(0, height):
+    for x in range(0, width):
+        if ((npArray[y, x] == [107, 82, 10, 255]).all()): tiles.append(Tile("sprites/tiles/tree.png", 1, True))
+        elif ((npArray[y, x] == (210, 132, 53, 255)).all()): tiles.append(Tile("sprites/tiles/bridge.png", 1))
+        elif ((npArray[y, x] == (0, 0, 0, 255)).all()): tiles.append(Tile("sprites/tiles/wall.png", 1, True))
+        elif ((npArray[y, x] == (36, 98, 200, 255)).all()): tiles.append(Tile("sprites/tiles/water.png", 1, True))
+        elif ((npArray[y, x] == (193, 174, 2, 255)).all()): tiles.append(Tile("sprites/tiles/wet_sand.png", 1))
+        elif ((npArray[y, x] == (204, 225, 77, 255)).all()): tiles.append(Tile("sprites/tiles/sand.png", 1))
+        elif ((npArray[y, x] == (58, 255, 0, 255)).all()): tiles.append(Tile("sprites/tiles/grass4.png", 4))
+        elif ((npArray[y, x] == (51, 223, 0, 255)).all()): tiles.append(Tile("sprites/tiles/grass3.png", 3))
+        elif ((npArray[y, x] == (44, 189, 1, 255)).all()): tiles.append(Tile("sprites/tiles/grass2.png", 2))
+        elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("sprites/tiles/grass1.png", 1))
+        else: tiles.append(Tile("sprites/nekoarc.png", 4))
 
-
-
-
-
-
-
-img = Image.open("maps/" + "test.png")
-npArray = numpy.array(img)
-height, width, dim = npArray.shape
-
-image = Image.fromarray(npArray, "RGB")
-image.save("maps/convert.png")
 
 
 pygame.init()
@@ -31,16 +32,6 @@ screenX, screenY = 1000, 700
 tileSize = 48
 screen = pygame.display.set_mode([screenX, screenY])
 character = Tile("sprites/catgirl_head.png", 1)
-
-tiles = []
-
-for y in range(0, height):
-    for x in range(0, width):
-        if (npArray[y, x, 1] == 255): tiles.append(Tile("sprites/tiles/grass.png", 1))
-        elif (npArray[y, x, 2] == 255): tiles.append(Tile("sprites/tiles/grass2.png", 1))
-        else: tiles.append(Tile("sprites/tiles/grass3.png", 4))
-
-
 
 
 cameraX = width/2
@@ -72,6 +63,7 @@ while True:
             if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.floor(characterX-speed) + math.ceil(characterY)*width])))):
                 characterX -= speed
                 cameraX = characterX
+                character.height = tiles[int(characterX) + int(characterY)*width].height
     if keys[pygame.K_RIGHT]:
         if (not ((math.floor(characterX+1+speed) + math.ceil(characterY)*width) >= len(tiles))):
             rect.x, rect.y = convertToScreen(characterX+1+speed, characterY)
@@ -81,6 +73,7 @@ while True:
                 if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.floor(characterX+1+speed) + math.ceil(characterY)*width])))):
                     characterX += speed
                     cameraX = characterX
+                    character.height = tiles[int(characterX) + int(characterY)*width].height
     if keys[pygame.K_UP]:
         rect.x, rect.y = convertToScreen(characterX, characterY-speed)
         floorRect.x, floorRect.y = convertToScreen(math.floor(characterX), math.floor(characterY-speed))
@@ -89,6 +82,7 @@ while True:
             if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.ceil(characterX) + math.floor(characterY-speed)*width])))):
                 characterY -= speed
                 cameraY = characterY
+                character.height = tiles[int(characterX) + int(characterY)*width].height
     if keys[pygame.K_DOWN]:
         if (not ((math.floor(characterX) + math.floor(characterY+1+speed)*width) >= len(tiles))):
             rect.x, rect.y = convertToScreen(characterX, characterY+1+speed)
@@ -98,6 +92,7 @@ while True:
                 if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.ceil(characterX) + math.floor(characterY+1+speed)*width])))):
                     characterY += speed
                     cameraY = characterY
+                    character.height = tiles[int(characterX) + int(characterY)*width].height
 
 
     if (characterX < 0): characterX = 0
