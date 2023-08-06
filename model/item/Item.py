@@ -1,9 +1,10 @@
 from sqlalchemy import create_engine
+from model.item.ItemSlot import ItemSlot
 
 class Item:
     id = -1
     name = "Default"
-    type = "weapon"
+    slot = ItemSlot
     img = "catgirl.png"
     magicPercent = 0
     manaPercent = 0
@@ -55,3 +56,6 @@ class Item:
        self.flatHP = result[:result.index(',')]
        result = result[result.index(',')+2:]
        self.description = result[:result.index(')')]
+       
+    def getSlot(self):
+        return self.slot
