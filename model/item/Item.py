@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-import ItemSlot
+from model.item.ItemSlot import ItemSlot
 
 class Item:
     id = -1
