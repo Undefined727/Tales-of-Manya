@@ -6,7 +6,6 @@ class VisualEntity:
     width = 0
     height = 0
     tags = []
-    img = None
 
     def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = []):
         self.name = name

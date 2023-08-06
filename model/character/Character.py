@@ -1,4 +1,5 @@
-import DynamicStat, CharacterLoadout
+from model.character.CharacterLoadout import CharacterLoadout
+from model.character.DynamicStat import DynamicStat
 from model.effect.EffectsList import EffectsList
 from model.effect.EffectType import EffectType
 import model.skill.Skill as Skill
