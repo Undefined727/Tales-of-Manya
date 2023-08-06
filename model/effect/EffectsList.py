@@ -1,4 +1,5 @@
-import Effect, EffectType
+from model.effect.Effect import Effect
+from model.effect.EffectType import EffectType
 import util.IllegalArgumentException as IllegalArgumentException
 
 class EffectsList:

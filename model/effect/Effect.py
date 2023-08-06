@@ -1,4 +1,5 @@
-import EffectType, EffectTag
+from model.effect.EffectTag import EffectTag
+from model.effect.EffectType import EffectType
 from util.IllegalArgumentException import IllegalArgumentException
 
 class Effect:

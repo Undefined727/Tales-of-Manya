@@ -1,0 +1,283 @@
+[
+    {
+        "name": "Background",
+        "isShowing": true,
+        "xPosition": 0,
+        "yPosition": 0,
+        "width": 1,
+        "height": 1,
+        "tags": [],
+        "entityType": "Image",
+        "path": "dungeonbackground.png"
+    },{
+        "name": "ActiveCharacter",
+        "isShowing": true,
+        "xPosition": 0.38,
+        "yPosition": 0.48,
+        "width": 0.22,
+        "height": 0.44,
+        "tags": [],
+        "entityType": "Image",
+        "path": "catgirl.png"
+    },{
+        "name": "ActiveCharacterHPBorder",
+        "isShowing": true,
+        "xPosition": 0.38,
+        "yPosition": 0.40,
+        "width": 0.25,
+        "height": 0.10,
+        "tags": [],
+        "entityType": "Image",
+        "path": "HPBar.png"
+    },{
+        "name": "ActiveCharacterManaBorder",
+        "isShowing": true,
+        "xPosition": 0.38,
+        "yPosition": 0.90,
+        "width": 0.25,
+        "height": 0.10,
+        "tags": [],
+        "entityType": "Image",
+        "path": "ManaBar.png"
+    },{
+        "name": "ActiveCharacterCheckmark",
+        "isShowing": true,
+        "xPosition": 0.40,
+        "yPosition": 0.50,
+        "width": 0.22,
+        "height": 0.40,
+        "tags": [],
+        "entityType": "Image",
+        "path": "Checkmark.png"
+    },{
+        "name": "InactiveCharacter1",
+        "isShowing": true,
+        "xPosition": 0.15,
+        "yPosition": 0.60,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "catgirl_head.png"
+    },{
+        "name": "InactiveCharacter1HPBorder",
+        "isShowing": true,
+        "xPosition": 0.128,
+        "yPosition": 0.53,
+        "width": 0.09,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "HPBar.png"
+    },{
+        "name": "InactiveCharacter1ManaBorder",
+        "isShowing": true,
+        "xPosition": 0.128,
+        "yPosition": 0.70,
+        "width": 0.09,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "ManaBar.png"
+    },{
+        "name": "InactiveCharacter1Checkmark1",
+        "isShowing": true,
+        "xPosition": 0.15,
+        "yPosition": 0.60,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "Checkmark.png"
+    },{
+        "name": "InactiveCharacter2",
+        "isShowing": true,
+        "xPosition": 0.80,
+        "yPosition": 0.60,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "catgirl_head.png"
+    },{
+        "name": "InactiveCharacter2HPBorder",
+        "isShowing": true,
+        "xPosition": 0.780,
+        "yPosition": 0.53,
+        "width": 0.09,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "HPBar.png"
+    },{
+        "name": "InactiveCharacter2ManaBorder",
+        "isShowing": true,
+        "xPosition": 0.780,
+        "yPosition": 0.70,
+        "width": 0.09,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "ManaBar.png"
+    },
+    {
+        "name": "InactiveCharacter2Checkmark1",
+        "isShowing": true,
+        "xPosition": 0.80,
+        "yPosition": 0.60,
+        "width": 0.04,
+        "height": 0.08,
+        "tags": [],
+        "entityType": "Image",
+        "path": "Checkmark.png"
+    },{
+        "name": "ChangeCharacterRightImg",
+        "isShowing": true,
+        "xPosition": 0.80,
+        "yPosition": 0.45,
+        "width": 0.05,
+        "height": 0.04,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_right.png"
+    },{
+        "name": "ChangeCharacterLeftImg",
+        "isShowing": true,
+        "xPosition": 0.15,
+        "yPosition": 0.45,
+        "width": 0.05,
+        "height": 0.04,
+        "tags": [],
+        "entityType": "Image",
+        "path": "change_active_left.png"
+    },{
+        "name": "OpenWorldButtonImg",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "OpenWorldButton.png"
+    },{
+        "name": "OpenWorldButton",
+        "isShowing": true,
+        "xPosition": 0.84,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Button",
+        "shape": "rectangle",
+        "func": "openWorld",
+        "args": []
+    }, {
+        "name": "BagButtonImg",
+        "isShowing": true,
+        "xPosition": 0.06,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "BagButton.png"
+    },{
+        "name": "GlossaryButtonImg",
+        "isShowing": true,
+        "xPosition": 0.67,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "GlossaryButton.png"
+
+    },{
+        "name": "SkillButtonImg",
+        "isShowing": true,
+        "xPosition": 0.24,
+        "yPosition": 0.83,
+        "width": 0.13,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "Image",
+        "path": "SkillButton.png"
+    },{
+        "name": "Skill1Img",
+        "isShowing": true,
+        "xPosition": 0.235,
+        "yPosition": 0.75,
+        "width": 0.045,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "sword.png"
+    },{
+        "name": "Skill2Img",
+        "isShowing": true,
+        "xPosition": 0.28,
+        "yPosition": 0.75,
+        "width": 0.045,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "wand.png"
+    },{
+        "name": "Skill3Img",
+        "isShowing": true,
+        "xPosition": 0.325,
+        "yPosition": 0.75,
+        "width": 0.045,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "Image",
+        "path": "sword.png"
+    },{
+        "name": "InactiveCharacter2manabar",
+        "isShowing": true,
+        "xPosition": 0.8,
+        "yPosition": 0.72,
+        "width": 0.05,
+        "height": 0.03,
+        "tags": [],
+        "entityType": "Drawing",
+        "color": "blue",
+        "isBorder": false,
+        "shape": "rectangle"
+    },{
+        "name": "ExitButton",
+        "isShowing": true,
+        "xPosition": 0.9,
+        "yPosition": 0.05,
+        "width": 0.05,
+        "height": 0.05,
+        "tags": [],
+        "entityType": "Button",
+        "shape": "ellipse",
+        "func": "exit",
+        "args": []
+    },{
+        "name": "ExitButtonDrawing",
+        "isShowing": true,
+        "xPosition": 0.8875,
+        "yPosition": 0.0375,
+        "width": 0.075,
+        "height": 0.075,
+        "tags": [],
+        "entityType": "Drawing",
+        "color": "blue",
+        "isBorder": false,
+        "shape": "ellipse"
+    },{
+        "name": "ExitButtonImg",
+        "isShowing": true,
+        "xPosition": 0.9,
+        "yPosition": 0.05,
+        "width": 0.05,
+        "height": 0.05,
+        "tags": [],
+        "entityType": "Image",
+        "path": "settingsIcon.png"
+    }
+]
