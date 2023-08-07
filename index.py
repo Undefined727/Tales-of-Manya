@@ -45,8 +45,6 @@ def refreshScreen():
     # Fill the background
     global visualEntities
     for entity in visualEntities:
-         print(entity.name)
-         print(type(entity))
          if entity.isShowing:
             if (type(entity) == ImageEntity):
                 screen.blit(entity.img, (entity.xPosition, entity.yPosition))
@@ -62,7 +60,6 @@ def refreshScreen():
                     else:
                         pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
             elif (type(entity) == TextEntity):
-                print(entity.name)
                 screen.blit(entity.textLabel, entity.textRect)
     pygame.display.flip()
 
