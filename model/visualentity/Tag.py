@@ -6,3 +6,4 @@ class Tag(Enum):
     SKILL = 1
     INACTIVE_CHARACTER1 = 2
     INACTIVE_CHARACTER2 = 3
+    LOADING = 4

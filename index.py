@@ -9,6 +9,7 @@ from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
 from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
+from openWorld import run
 import json
 
 
@@ -44,6 +45,8 @@ def refreshScreen():
     # Fill the background
     global visualEntities
     for entity in visualEntities:
+         print(entity.name)
+         print(type(entity))
          if entity.isShowing:
             if (type(entity) == ImageEntity):
                 screen.blit(entity.img, (entity.xPosition, entity.yPosition))
@@ -59,6 +62,7 @@ def refreshScreen():
                     else:
                         pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
             elif (type(entity) == TextEntity):
+                print(entity.name)
                 screen.blit(entity.textLabel, entity.textRect)
     pygame.display.flip()
 
@@ -265,10 +269,7 @@ def combatScreen():
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = buttonExit
-                        elif (entity.func == "openWorld"): buttonFunc = openWorld
-
-
-
+                        elif (entity.func == "openWorld"): buttonFunc = openWorldScreen
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
@@ -304,7 +305,7 @@ def combatScreen():
     if (nextScreen == "Inventory"):
         inventoryScreen()
     elif (nextScreen == "Open World"):
-        openWorld()
+        openWorldScreen()
     elif (nextScreen == "Quit"):
         pygame.quit()
     else:
@@ -646,8 +647,31 @@ def inventoryScreen():
         print("Screen Not Found")
         combatScreen()
 
-def openWorld():
-    print("owo")
+def openWorldScreen():
+    global visualEntities
+    visualEntities = []
+    screen.fill((0, 0, 0))
+    file = open("screens/loadingScreen.json", 'r')
+    data = json.load(file)
+    for item in data:
+        if item["entityType"] == "Image":
+             entity = ImageEntity.createFrom(item)
+        elif item["entityType"] == "Drawing":
+            entity = DrawingEntity.createFrom(item)
+        elif item["entityType"] == "Text":
+            entity = TextEntity.createFrom(item)
+        elif item["entityType"] == "Button":
+            entity = ButtonEntity.createFrom(item)
+        elif item["entityType"] == "TransparentButton":
+            entity = TransparentButtonEntity.createFrom(item)
+            
+        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
+        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+        if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+        else: visualEntities.append(entity)
+    
+    refreshScreen()
+    run(screen, screenX, screenY)
     pygame.quit()
 
 
