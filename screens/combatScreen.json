@@ -60,15 +60,12 @@
         "entityType": "Image",
         "path": "catgirl_head.png"
     },{
-        "name": "InactiveCharacter1HPBorder",
-        "isShowing": true,
+        "name": "InactiveCharacter1HPBar",
         "xPosition": 0.128,
         "yPosition": 0.53,
         "width": 0.09,
         "height": 0.07,
-        "tags": [],
-        "entityType": "Image",
-        "path": "HPBar.png"
+        "entityType": "coords"
     },{
         "name": "InactiveCharacter1ManaBorder",
         "isShowing": true,

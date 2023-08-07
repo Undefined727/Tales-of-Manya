@@ -12,6 +12,11 @@ class TextEntity(VisualEntity):
 
     def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], text = "", font = "mono", fontSize = 32, fontColor = "black", highlightColor = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
+        self.text = text
+        self.font = font
+        self.fontSize = fontSize
+        self.fontColor = fontColor
+        self.highlightColor = highlightColor
         self.updateText(text, font, fontSize, fontColor, highlightColor)
 
     def updateText(self, text, font, fontSize, fontColor, highlightColor):
@@ -26,6 +31,8 @@ class TextEntity(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
+        self.fontSize = int(width/6)
+        self.updateText(self.text, self.font, self.fontSize, self.fontColor, self.highlightColor)
     
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition

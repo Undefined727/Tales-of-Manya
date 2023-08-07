@@ -5,6 +5,7 @@ from model.visualentity.DrawingEntity import DrawingEntity
 from model.visualentity.TextEntity import TextEntity
 from model.visualentity.ButtonEntity import ButtonEntity
 from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
+from model.visualentity.CharacterEntities import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
@@ -17,8 +18,8 @@ import time
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
 info = pygame.display.Info()
-#screenX,screenY = info.current_w,info.current_h
-screenX, screenY = 960, 600
+screenX,screenY = info.current_w,info.current_h
+#screenX, screenY = 960, 600
 pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
@@ -63,6 +64,8 @@ def refreshScreen():
                         pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
             elif (type(entity) == TextEntity):
                 screen.blit(entity.textLabel, entity.textRect)
+                print(entity.fontSize)
+                print(entity.text)
     pygame.display.flip()
 
 # activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
@@ -91,6 +94,7 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
 def combatScreen():
     global visualEntities
+    global party
     enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
     activeCharacter = 1
     skillSelected = 0
@@ -98,6 +102,7 @@ def combatScreen():
     enemySelectionShowing = False
     leaveScreen = False
     nextScreen = None
+    inactiveCharacter1Visuals = CharacterEntities(party[0])
 
     visualEntities = []
     file = open("screens/combatScreen.json", 'r')
@@ -113,11 +118,23 @@ def combatScreen():
             entity = ButtonEntity.createFrom(item)
         elif item["entityType"] == "TransparentButton":
             entity = TransparentButtonEntity.createFrom(item)
-            
-        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
-        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
-        if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
-        else: visualEntities.append(entity)
+        elif item["entityType"] == "coords":
+            inactiveCharacter1Visuals.HPBar.xPosition = item["xPosition"]*screenX
+            inactiveCharacter1Visuals.HPBar.yPosition = item["yPosition"]*screenY
+            inactiveCharacter1Visuals.HPBar.width = item["width"]*screenX
+            inactiveCharacter1Visuals.HPBar.height = item["height"]*screenY
+            inactiveCharacter1Visuals.HPBar.updatePlacement()
+
+        if (item["entityType"] == "coords"): 
+            visualEntities.extend(inactiveCharacter1Visuals.HPBar.getItems())
+        else:   
+            entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
+            entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+            if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+            else: visualEntities.append(entity)
+    
+
+
 
     
 
