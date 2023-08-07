@@ -1,0 +1,4 @@
+*.log
+temp/
+target/
+pyvenv.cfg
