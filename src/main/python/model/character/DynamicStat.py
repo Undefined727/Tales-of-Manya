@@ -1,4 +1,4 @@
-import util.IllegalArgumentException as IllegalArgumentException
+import src.main.python.util.IllegalArgumentException as IllegalArgumentException
 
 class DynamicStat:
     current_value = 0

@@ -1,9 +1,9 @@
-from model.character.CharacterLoadout import CharacterLoadout
-from model.character.DynamicStat import DynamicStat
-from model.effect.EffectsList import EffectsList
-from model.effect.EffectType import EffectType
-from model.skill.Skill import Skill
-from model.item.Item import Item
+from src.main.python.model.character.CharacterLoadout import CharacterLoadout
+from src.main.python.model.character.DynamicStat import DynamicStat
+from src.main.python.model.effect.EffectsList import EffectsList
+from src.main.python.model.effect.EffectType import EffectType
+from src.main.python.model.skill.Skill import Skill
+from src.main.python.model.item.Item import Item
 
 
 class Character:

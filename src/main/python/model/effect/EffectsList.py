@@ -1,6 +1,6 @@
-from model.effect.Effect import Effect
-from model.effect.EffectType import EffectType
-import util.IllegalArgumentException as IllegalArgumentException
+from src.main.python.model.effect.Effect import Effect
+from src.main.python.model.effect.EffectType import EffectType
+import src.main.python.util.IllegalArgumentException as IllegalArgumentException
 
 class EffectsList:
     effects: []

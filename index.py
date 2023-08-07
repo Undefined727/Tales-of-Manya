@@ -1,14 +1,14 @@
 import pygame, numpy, math, os, random, json
-from model.visualentity.Tag import Tag
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.DrawingEntity import DrawingEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ButtonEntity import ButtonEntity
-from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
-from model.skill.Skill import Skill
-from model.character.Character import Character
-from model.item.Item import Item
-from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
+from src.main.python.model.visualentity.Tag import Tag
+from src.main.python.model.visualentity.ImageEntity import ImageEntity
+from src.main.python.model.visualentity.DrawingEntity import DrawingEntity
+from src.main.python.model.visualentity.TextEntity import TextEntity
+from src.main.python.model.visualentity.ButtonEntity import ButtonEntity
+from src.main.python.model.visualentity.TransparentButtonEntity import TransparentButtonEntity
+from src.main.python.model.skill.Skill import Skill
+from src.main.python.model.character.Character import Character
+from src.main.python.model.item.Item import Item
+from src.main.python.model.visualentity.CombatEnemyEntity import CombatEnemyEntity
 import json
 
 
@@ -18,7 +18,7 @@ info = pygame.display.Info()
 screenX,screenY = info.current_w,info.current_h
 #screenX, screenY = 960, 600
 pygame.display.set_caption('Catgirl Dungeon')
-pygame.display.set_icon(pygame.image.load('sprites/catgirl_head.png'))
+pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 
 visualEntities = []

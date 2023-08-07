@@ -1,8 +1,8 @@
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.DrawingEntity import DrawingEntity
-from model.visualentity.Tag import Tag
-from model.character.Character import Character
+from src.main.python.model.visualentity.ImageEntity import ImageEntity
+from src.main.python.model.visualentity.TextEntity import TextEntity
+from src.main.python.model.visualentity.DrawingEntity import DrawingEntity
+from src.main.python.model.visualentity.Tag import Tag
+from src.main.python.model.character.Character import Character
 
 class CombatEnemyEntity:
     xPosition = 0

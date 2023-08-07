@@ -17,7 +17,7 @@ class Skill:
     def __init__(self, id):
         skilldata_engine = create_engine('sqlite:///skilldata.db', echo = False)
         skilldata_connection = skilldata_engine.connect()
-        s = "SELECT * FROM skilldata WHERE id='" + str(id) + "'"
+        s = f"SELECT * FROM skilldata WHERE id='{id}'"
         result = skilldata_connection.execute(s)
         result = str(result.fetchone())
         result = result[1:]

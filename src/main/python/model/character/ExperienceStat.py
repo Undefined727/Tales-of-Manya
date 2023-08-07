@@ -1,6 +1,6 @@
-from model.character.DynamicStat import DynamicStat
-from util.IllegalArgumentException import IllegalArgumentException
-from util.InvalidOperationException import InvalidOperationException
+from src.main.python.model.character.DynamicStat import DynamicStat
+from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from src.main.python.util.InvalidOperationException import InvalidOperationException
 
 class ExperienceManager:
     level:int

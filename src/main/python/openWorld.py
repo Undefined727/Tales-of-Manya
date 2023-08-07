@@ -1,4 +1,4 @@
-from model.openworld.Tile import Tile
+from src.main.python.model.openworld.Tile import Tile
 import numpy
 import math
 from PIL import Image
