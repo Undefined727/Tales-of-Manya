@@ -11,6 +11,7 @@ from model.item.Item import Item
 from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from openWorld import run
 import json
+import time
 
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -25,6 +26,7 @@ screen = pygame.display.set_mode([screenX, screenY])
 visualEntities = []
 buttons = []
 inventory = []
+
 party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
 party.append(Character("lmao", "catgirl.png", 20))
 party[0].skills[0] = Skill(1)
