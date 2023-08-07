@@ -17,8 +17,8 @@ import time
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
 info = pygame.display.Info()
-screenX,screenY = info.current_w,info.current_h
-#screenX, screenY = 960, 600
+#screenX,screenY = info.current_w,info.current_h
+screenX, screenY = 960, 600
 pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
@@ -671,8 +671,7 @@ def openWorldScreen():
     
     refreshScreen()
     run(screen, screenX, screenY)
-    pygame.quit()
-
+    combatScreen()
 
 
 

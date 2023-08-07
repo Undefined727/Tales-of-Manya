@@ -1,13 +1,48 @@
 from model.openworld.Tile import Tile
+from model.visualentity.ImageEntity import ImageEntity
+from model.visualentity.DrawingEntity import DrawingEntity
+from model.visualentity.TextEntity import TextEntity
+from model.visualentity.ButtonEntity import ButtonEntity
+from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
 import numpy
 import math
 from PIL import Image
+import json
 import pygame
 import time
 
+visualEntities = []
+buttons = []
+quit = False
 
+def refreshMenu(screen):
+    global visualEntities
+    for entity in visualEntities:
+         if entity.isShowing:
+            if (type(entity) == ImageEntity):
+                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+            elif (type(entity) == DrawingEntity):
+                if entity.shape == "rectangle":
+                    if entity.isBorder:
+                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
+                    else:
+                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
+                if entity.shape == "ellipse":
+                    if entity.isBorder:
+                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
+                    else:
+                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
+            elif (type(entity) == TextEntity):
+                screen.blit(entity.textLabel, entity.textRect)
+
+def exitButton():
+    global quit
+    quit = True
 
 def run(screen, screenX, screenY):
+    global quit
+    global visualEntities
+    quit = False
     FPS = 60
     prev_time = time.time()
     img = Image.open("maps/samplemap.png")
@@ -28,11 +63,45 @@ def run(screen, screenX, screenY):
             elif ((npArray[y, x] == (44, 189, 1, 255)).all()): tiles.append(Tile("sprites/tiles/grass2.png", 2))
             elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("sprites/tiles/grass1.png", 1))
             else: tiles.append(Tile("sprites/nekoarc.png", 4))
-
-
-
     tileSize = 48
     character = Tile("sprites/catgirl_head.png", 1)
+
+
+    
+    file = open("screens/openWorldScreen.json", 'r')
+    data = json.load(file)
+    for item in data:
+        if item["entityType"] == "Image":
+             entity = ImageEntity.createFrom(item)
+        elif item["entityType"] == "Drawing":
+            entity = DrawingEntity.createFrom(item)
+        elif item["entityType"] == "Text":
+            entity = TextEntity.createFrom(item)
+        elif item["entityType"] == "Button":
+            entity = ButtonEntity.createFrom(item)
+        elif item["entityType"] == "TransparentButton":
+            entity = TransparentButtonEntity.createFrom(item)
+            
+        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
+        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+        if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+        else: visualEntities.append(entity)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     cameraX = width/2
@@ -40,60 +109,59 @@ def run(screen, screenX, screenY):
     characterX = cameraX
     characterY = cameraY
     speed = 0.1
+    characterSize = 0.85*tileSize
 
-
-    rect = pygame.Rect(0, 0, tileSize, tileSize)
-    floorRect = pygame.Rect(0, 0, tileSize, tileSize)
-    ceilRect = pygame.Rect(0, 0, tileSize, tileSize)
+    rect = pygame.Rect(0, 0, characterSize, characterSize)
+    compareRect = pygame.Rect(0, 0, tileSize, tileSize)
 
     def convertToScreen(xValue, yValue):
-        xValue = (cameraX-xValue)*tileSize + screenX/2
-        yValue = (cameraY-yValue)*tileSize + screenX/2
+        xValue = (xValue-cameraX)*tileSize + screenX/2
+        yValue = (yValue-cameraY)*tileSize + screenY/2
         return (xValue, yValue)
 
     while True:
+        mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if (event.type == pygame.MOUSEBUTTONDOWN):
+                for entity in buttons:
+                    if entity.mouseInRegion(mouse):
+                        if (entity.func == "exit"): buttonFunc = exitButton
+                        if (len(entity.args) == 0): buttonFunc()
+                        else: buttonFunc(entity.args)
+                        break
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            rect.x, rect.y = convertToScreen(characterX-speed, characterY)
-            floorRect.x, floorRect.y = convertToScreen(math.floor(characterX-speed), math.floor(characterY))
-            ceilRect.x, ceilRect.y = convertToScreen(math.floor(characterX-speed), math.ceil(characterY))
-            if (not (rect.colliderect(floorRect) and (not character.canPass(tiles[math.floor(characterX-speed) + math.floor(characterY)*width])))):
-                if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.floor(characterX-speed) + math.ceil(characterY)*width])))):
+            rect.x, rect.y = convertToScreen(characterX-speed-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2)
+            compareRect.x, compareRect.y = convertToScreen(math.floor(characterX-speed), math.floor(characterY))
+            if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX-speed) + math.floor(characterY)*width])))):
                     characterX -= speed
                     cameraX = characterX
-                    character.height = tiles[math.floor(characterX+0.5) + math.floor(characterY+0.5)*width].height
+                    character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
         if keys[pygame.K_RIGHT]:
-            if (not ((math.floor(characterX+1+speed) + math.ceil(characterY)*width) >= len(tiles))):
-                rect.x, rect.y = convertToScreen(characterX+1+speed, characterY)
-                floorRect.x, floorRect.y = convertToScreen(math.floor(characterX+1+speed), math.floor(characterY))
-                ceilRect.x, ceilRect.y = convertToScreen(math.floor(characterX+1+speed), math.ceil(characterY))
-                if (not (rect.colliderect(floorRect) and (not character.canPass(tiles[math.floor(characterX+1+speed) + math.floor(characterY)*width])))):
-                    if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.floor(characterX+1+speed) + math.ceil(characterY)*width])))):
+            if (not ((math.floor(characterX+speed) + math.floor(characterY)*width) >= len(tiles))):
+                rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2+speed, characterY-(characterSize/tileSize)/2)
+                compareRect.x, compareRect.y = convertToScreen(math.floor(characterX+speed), math.floor(characterY))
+                if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX+speed) + math.floor(characterY)*width])))):
                         characterX += speed
                         cameraX = characterX
-                        character.height = tiles[math.floor(characterX+0.5) + math.floor(characterY+0.5)*width].height
+                        character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
         if keys[pygame.K_UP]:
-            rect.x, rect.y = convertToScreen(characterX, characterY-speed)
-            floorRect.x, floorRect.y = convertToScreen(math.floor(characterX), math.floor(characterY-speed))
-            ceilRect.x, ceilRect.y = convertToScreen(math.ceil(characterX), math.floor(characterY-speed))
-            if (not (rect.colliderect(floorRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY-speed)*width])))):
-                if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.ceil(characterX) + math.floor(characterY-speed)*width])))):
-                    characterY -= speed
-                    cameraY = characterY
-                    character.height = tiles[math.floor(characterX+0.5) + math.floor(characterY+0.5)*width].height
+            rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2-speed)
+            compareRect.x, compareRect.y = convertToScreen(math.floor(characterX), math.floor(characterY-speed))
+            if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY-speed)*width])))):
+                characterY -= speed
+                cameraY = characterY
+                character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
         if keys[pygame.K_DOWN]:
-            if (not ((math.floor(characterX) + math.floor(characterY+1+speed)*width) >= len(tiles))):
-                rect.x, rect.y = convertToScreen(characterX, characterY+1+speed)
-                floorRect.x, floorRect.y = convertToScreen(math.floor(characterX), math.floor(characterY+1+speed))
-                ceilRect.x, ceilRect.y = convertToScreen(math.ceil(characterX), math.floor(characterY+1+speed))
-                if (not (rect.colliderect(floorRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY+1+speed)*width])))):
-                    if  (not (rect.colliderect(ceilRect) and (not character.canPass(tiles[math.ceil(characterX) + math.floor(characterY+1+speed)*width])))):
+            if (not ((math.floor(characterX) + math.floor(characterY+speed)*width) >= len(tiles))):
+                rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2+speed)
+                compareRect.x, compareRect.y = convertToScreen(math.floor(characterX), math.floor(characterY+speed))
+                if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY+speed)*width])))):
                         characterY += speed
                         cameraY = characterY
-                        character.height = tiles[math.floor(characterX+0.5) + math.floor(characterY+0.5)*width].height
+                        character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
 
 
         if (characterX < 0): characterX = 0
@@ -108,11 +176,13 @@ def run(screen, screenX, screenY):
         for x in range(0, width):
             for y in range(0, height):
                 screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
-        screen.blit(character.img, ((screenX/2-(cameraX-characterX)*tileSize), (screenY/2-(cameraY-characterY)*tileSize)))
+        screen.blit(character.img, convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2))
         current_time = time.time()
         dt = current_time - prev_time
         prev_time = current_time
         sleep_time = 1. / FPS - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
+        refreshMenu(screen)
         pygame.display.flip()
+        if (quit): break
