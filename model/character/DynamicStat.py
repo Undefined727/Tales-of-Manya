@@ -20,6 +20,8 @@ class DynamicStat:
     def setCurrentValue(self, new_value):
         if (new_value > self.max_value):
             self.current_value = self.max_value
+        elif (new_value < 0):
+            self.current_value = 0
         else:
             self.current_value = new_value
 

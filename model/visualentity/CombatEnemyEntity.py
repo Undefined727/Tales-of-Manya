@@ -37,7 +37,7 @@ class CombatEnemyEntity:
        self.enemyHPBarBorder = ImageEntity(enemy.name + "HPBorder", True, 0, 0, 0, 0, [Tag.ENEMY], "HPBar.png")
        self.enemyHPBarRed = DrawingEntity(enemy.name + "HPRed", True, 0, 0, 0, 0, [Tag.ENEMY], "red", False, "rectangle")
        self.enemyHPBarGreen = DrawingEntity(enemy.name + "HPGreen", True, 0, 0, 0, 0, [Tag.ENEMY], "green", False, "rectangle")
-       self.enemyHPBarText = TextEntity(enemy.name + "HPText", True, 0, 0, 0, 0, [Tag.ENEMY], str(int(enemy.HP)) + "/" + str(int(enemy.maxHP)), "mono", int(self.width/10), "black", None)
+       self.enemyHPBarText = TextEntity(enemy.name + "HPText", True, 0, 0, 0, 0, [Tag.ENEMY], str(int(enemy.getCurrentHP())) + "/" + str(int(enemy.getMaxHP())), "mono", int(self.width/10), "black", None)
        self.resize()
        self.reposition()
        self.update()
@@ -57,5 +57,5 @@ class CombatEnemyEntity:
         self.enemyHPBarText.reposition(self.xPosition + self.positions["enemyHPBarText"][0]*self.width, self.yPosition + self.positions["enemyHPBarText"][1]*self.height)
 
     def update(self):
-        self.enemyHPBarGreen.resize(self.enemyHPBarGreen.width * (self.enemy.maxHP/self.enemy.HP), self.enemyHPBarGreen.height)
-        self.enemyHPBarText.updateText(str(int(self.enemy.HP)) + "/" + str(int(self.enemy.maxHP)), "mono", int(self.width/10), "black", None)
+        self.enemyHPBarGreen.resize(self.enemyHPBarGreen.width * (self.enemy.getMaxHP()/self.enemy.getCurrentHP()), self.enemyHPBarGreen.height)
+        self.enemyHPBarText.updateText(str(int(self.enemy.getCurrentHP())) + "/" + str(int(self.enemy.getMaxHP())), "mono", int(self.width/10), "black", None)

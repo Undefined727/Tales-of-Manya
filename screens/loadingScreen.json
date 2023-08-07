@@ -1,0 +1,16 @@
+[{
+    "name": "LoadingText",
+    "isShowing": true,
+    "xPosition": 0.5,
+    "yPosition": 0.5,
+    "width": 0.1,
+    "height": 0.1,
+    "tags": [4],
+    "entityType": "Text",
+    "text": "Loading...",
+    "font": "mono",
+    "fontSize": 30,
+    "fontColor": "black",
+    "highlightColor": "green"
+}
+]

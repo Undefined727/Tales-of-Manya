@@ -2,8 +2,8 @@ from model.character.CharacterLoadout import CharacterLoadout
 from model.character.DynamicStat import DynamicStat
 from model.effect.EffectsList import EffectsList
 from model.effect.EffectType import EffectType
-import model.skill.Skill as Skill
-import model.item.Item as Item
+from model.skill.Skill import Skill
+from model.item.Item import Item
 
 
 class Character:
@@ -29,15 +29,31 @@ class Character:
     loadout_bonuses = {}
     buff_bonuses = {}
 
-    def __init__(self, name = "Placeholder Name", level = 1):
+
+    ### Temporary Stuff Until New Class ###
+    img = "nekoarc.png"
+    inactiveImg = "nekoarc.png"
+    overworldImg = "nekoarc.png"
+    hasActed = False
+
+
+    def __init__(self, name = "Placeholder Name", img = "nekoarc.png", level = 1):
         self.name       = name
         self.level      = level
+        self.img = img
+        self.inactiveImg = img
+        self.overworldImg = img
 
         self.health     = DynamicStat(level * 100)
         self.mana       = DynamicStat(1000 + level * 10)
         self.loadout    = CharacterLoadout()
 
         self.skills     = [Skill(1), Skill(1), Skill(1)]
+        self.hasActed = False
+
+    
+
+    ### Getters ###
 
     def getBonuses(self, bonus_type):
         # This helps other functions to fetch the flat and percentage bonuses of
@@ -46,6 +62,22 @@ class Character:
         from_buffs = self.buff_bonuses.get(bonus_type)
         from_loadout = self.loadout_bonuses.get(bonus_type)
         return from_loadout + from_buffs
+    
+    def getCurrentHP(self):
+        return self.health.getCurrentValue()
+    
+    def getMaxHP(self):
+        return self.health.getMaxValue()
+    
+    def getHealth(self):
+        return self.health
+    
+
+    ### Setters ###
+
+    def setCurrentHP(self, value):
+        self.health.setCurrentValue(value)
+
 
     def update(self):
         # This is what should be used to update a character's stats at the end
