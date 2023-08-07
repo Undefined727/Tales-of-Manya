@@ -3,9 +3,13 @@ import numpy
 import math
 from PIL import Image
 import pygame
+import time
+
 
 
 def run(screen, screenX, screenY):
+    FPS = 60
+    prev_time = time.time()
     img = Image.open("maps/samplemap.png")
     npArray = numpy.array(img)
     height, width, dim = npArray.shape
@@ -35,7 +39,7 @@ def run(screen, screenX, screenY):
     cameraY = height/2
     characterX = cameraX
     characterY = cameraY
-    speed = 0.02
+    speed = 0.1
 
 
     rect = pygame.Rect(0, 0, tileSize, tileSize)
@@ -105,4 +109,10 @@ def run(screen, screenX, screenY):
             for y in range(0, height):
                 screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
         screen.blit(character.img, ((screenX/2-(cameraX-characterX)*tileSize), (screenY/2-(cameraY-characterY)*tileSize)))
+        current_time = time.time()
+        dt = current_time - prev_time
+        prev_time = current_time
+        sleep_time = 1. / FPS - dt
+        if sleep_time > 0:
+            time.sleep(sleep_time)
         pygame.display.flip()
