@@ -2,3 +2,5 @@
 temp/
 target/
 pyvenv.cfg
+*.pyc
+Lib/

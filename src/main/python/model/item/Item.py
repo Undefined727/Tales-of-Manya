@@ -1,21 +1,22 @@
 from sqlalchemy.engine.row import LegacyRow
 from src.main.python.model.item.ItemSlot import ItemSlot
+from src.main.python.model.item.ItemTag import ItemTag
 from src.main.python.model.effect.EffectType import EffectType
 
 class Item:
-    id = -1
+    id : int
     name : str
-    slot : ItemSlot
-    item_type:ItemType
-    item_tags:list[ItemTag]
-    description = "owo"
+    slots : list[ ItemSlot ]
+    item_tags : list[ ItemTag ]
+    item_bonuses : dict[ EffectType, int ]
+    description : str
     #Statuses below when implemented
 
-    # In the future pulls from database, name, img, magic, DEF, ATK, HP, flatMagic, flatDEF, flatATK, flatHP
-    def __init__(self, name = "Placeholder Name", slot = ItemSlot.WEAPON, , description = ""):
+    def __init__(self, name = "Placeholder Name", slot = ItemSlot.WEAPON, item_tags = list(), description = ""):
        self.name = name
        self.slot = slot
-       
+       self.item_tags = item_tags
+       self.description = description
 
     @staticmethod
     def createFrom(tuple : LegacyRow):

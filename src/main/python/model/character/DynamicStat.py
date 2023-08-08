@@ -1,8 +1,8 @@
 import src.main.python.util.IllegalArgumentException as IllegalArgumentException
 
 class DynamicStat:
-    current_value = 0
-    max_value = 0
+    current_value:float = 0
+    max_value:float = 0
 
     def __init__(self, max_value):
         self.max_value = max_value

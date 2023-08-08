@@ -11,7 +11,6 @@ from src.main.python.model.item.Item import Item
 from src.main.python.model.visualentity.CombatEnemyEntity import CombatEnemyEntity
 import json
 
-
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
 info = pygame.display.Info()
@@ -34,12 +33,8 @@ inventory.append(Item(9))
 inventory.append(Item(9))
 inventory.append(Item(7))
 
-
 party[0].helmet = Item(2)
 
-
-
-   
 def refreshScreen():
     # Fill the background
     global visualEntities
