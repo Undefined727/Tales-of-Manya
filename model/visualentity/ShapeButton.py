@@ -1,6 +1,6 @@
 from model.visualentity.VisualEntity import VisualEntity
 
-class ButtonEntity(VisualEntity):
+class ShapeButton(VisualEntity):
     func = None
     args = None
     shape = None
@@ -31,6 +31,6 @@ class ButtonEntity(VisualEntity):
 
     @staticmethod
     def createFrom(json_object):
-        newObject = ButtonEntity()
+        newObject = ShapeButton()
         newObject.__dict__.update(json_object)
         return newObject

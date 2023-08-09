@@ -1,6 +1,6 @@
 from model.visualentity.VisualEntity import VisualEntity
 
-class DrawingEntity(VisualEntity):
+class ShapeEntity(VisualEntity):
     color = None
     isBorder = None
     shape = None
@@ -26,6 +26,6 @@ class DrawingEntity(VisualEntity):
 
     @staticmethod
     def createFrom(json_object):
-        newObject = DrawingEntity()
+        newObject = ShapeEntity()
         newObject.__dict__.update(json_object)
         return newObject

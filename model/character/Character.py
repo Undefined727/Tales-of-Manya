@@ -32,7 +32,7 @@ class Character:
 
     ### Temporary Stuff Until New Class ###
     img = "nekoarc.png"
-    inactiveImg = "nekoarc.png"
+    headImg = "nekoarc.png"
     overworldImg = "nekoarc.png"
     hasActed = False
 

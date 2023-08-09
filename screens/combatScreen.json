@@ -67,25 +67,29 @@
         "checkmarkHeight": 0.04,
         "entityType": "CharacterEntityCoords"
     },{
-        "name": "ChangeCharacterRightImg",
+        "name": "ChangeCharacterRight",
         "isShowing": true,
         "xPosition": 0.7,
         "yPosition": 0.615,
         "width": 0.05,
         "height": 0.04,
         "tags": [],
-        "entityType": "Image",
-        "path": "change_active_right.png"
+        "entityType": "ImageButton",
+        "path": "change_active_right.png",
+        "func": "changeCharacter",
+        "args": ["Right"]
     },{
-        "name": "ChangeCharacterLeftImg",
+        "name": "ChangeCharacterLeft",
         "isShowing": true,
         "xPosition": 0.3,
         "yPosition": 0.615,
         "width": 0.05,
         "height": 0.04,
         "tags": [],
-        "entityType": "Image",
-        "path": "change_active_left.png"
+        "entityType": "ImageButton",
+        "path": "change_active_left.png",
+        "func": "changeCharacter",
+        "args": ["Left"]
     },{
         "name": "OpenWorldButtonImg",
         "isShowing": true,

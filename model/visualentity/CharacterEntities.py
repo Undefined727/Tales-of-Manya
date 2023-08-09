@@ -28,6 +28,27 @@ class CharacterEntities:
         self.img.scale(screenX, screenY)
         self.headImg.scale(screenX, screenY)
         self.checkmark.scale(screenX, screenY)
+    
+    def changeCharacter(self, character):
+        if (character == None):
+            self.HPBar.isShowing == False
+            self.ManaBar.isShowing == False
+            self.img.isShowing == False
+            self.headImg.isShowing == False
+            self.checkmark.isShowing == False
+            return
+
+        self.character = character
+        self.HPBar.changeStat(character.health, "health")
+        self.ManaBar.changeStat(character.mana, "mana")
+        self.img.updateImg(character.img)
+        self.headImg.updateImg(character.headImg)
+        self.checkmark.isShowing = not character.hasActed
+    
+    def updateCharacter(self):
+        self.HPBar.updateItems()
+        self.ManaBar.updateItems()
+        self.checkmark.isShowing = not self.character.hasActed
 
     @staticmethod
     def createFrom(json_object, character):

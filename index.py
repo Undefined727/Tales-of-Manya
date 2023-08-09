@@ -1,10 +1,10 @@
 import pygame, numpy, math, os, random, json, copy
 from model.visualentity.Tag import Tag
 from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.DrawingEntity import DrawingEntity
+from model.visualentity.ShapeEntity import ShapeEntity
 from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ButtonEntity import ButtonEntity
-from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
+from model.visualentity.ShapeButton import ShapeButton
+from model.visualentity.ImageButton import ImageButton
 from model.visualentity.DynamicStatEntity import DynamicStatEntity
 from model.visualentity.CharacterEntities import CharacterEntities
 from model.skill.Skill import Skill
@@ -24,11 +24,13 @@ pygame.display.set_icon(pygame.image.load('sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 
 visualEntities = []
+partyVisuals = []
 buttons = []
 inventory = []
 
 party = [Character("Catgirl", "catgirl.png", "catgirl_head.png", 10), Character("Catgirl", "catgirl.png", "catgirl_head.png", 10)]
 party.append(Character("lmao", "catgirl.png", "catgirl_head.png", 20))
+
 party[0].skills[0] = Skill(1)
 party[0].skills[1] = Skill(2)
 party[0].skills[2] = Skill(3)
@@ -37,9 +39,8 @@ inventory.append(Item(9))
 inventory.append(Item(9))
 inventory.append(Item(7))
 
-
 party[0].helmet = Item(2)
-partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
+
 
 def displayEntity(entity):
     if (type(entity) == DynamicStatEntity):
@@ -48,7 +49,7 @@ def displayEntity(entity):
             displayEntity(item)
     if (type(entity) == ImageEntity):
         screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-    elif (type(entity) == DrawingEntity):
+    elif (type(entity) == ShapeEntity):
         if entity.shape == "rectangle":
             if entity.isBorder:
                 pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
@@ -73,6 +74,10 @@ def refreshScreen():
         for item in ls:
             if item.isShowing:
                 displayEntity(item)
+    for entity in buttons:
+        if entity.isShowing:
+            if (type(entity) == ImageButton): screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+            #else: displayEntity(entity.shape)
 
     pygame.display.flip()
 
@@ -114,6 +119,7 @@ def combatScreen():
     nextScreen = None
 
     visualEntities = []
+    partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
     file = open("screens/combatScreen.json", 'r')
     data = json.load(file)
     for item in data:
@@ -121,13 +127,13 @@ def combatScreen():
         if item["entityType"] == "Image":
             entity = ImageEntity.createFrom(item)
         elif item["entityType"] == "Drawing":
-            entity = DrawingEntity.createFrom(item)
+            entity = ShapeEntity.createFrom(item)
         elif item["entityType"] == "Text":
             entity = TextEntity.createFrom(item)
         elif item["entityType"] == "Button":
-            entity = ButtonEntity.createFrom(item)
-        elif item["entityType"] == "TransparentButton":
-            entity = TransparentButtonEntity.createFrom(item)
+            entity = ShapeButton.createFrom(item)
+        elif item["entityType"] == "ImageButton":
+            entity = ImageButton.createFrom(item)
         elif item["entityType"] == "CharacterEntityCoords":
             if (item["name"] == "ActiveCharacter"): index = 1
             elif (item["name"] == "InactiveCharacter1"): index = 0
@@ -137,8 +143,7 @@ def combatScreen():
 
         if not (entity is None):
             entity.scale(screenX, screenY)
-            
-            if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+            if (item["entityType"] == "ImageButton" or item["entityType"] == "Button"): buttons.append(entity)
             elif(item["entityType"] == "CharacterEntityCoords"): partyVisuals[index] = entity
             else: visualEntities.append(entity)
     
@@ -161,10 +166,14 @@ def combatScreen():
         nextScreen = "Open World"
         leaveScreen = True
 
-    def changeCharacterFunction(*args):
+    def changeCharacter(*args):
         nonlocal activeCharacter
-        if (args[0] == "Left"): activeCharacter = ((activeCharacter)%len(party))+1
+        if (args[0] == "Right"): activeCharacter = ((activeCharacter)%len(party))+1
         else: activeCharacter = ((activeCharacter-2)%len(party))+1
+
+        partyVisuals[0].changeCharacter(party[(activeCharacter-2) % len(party)])
+        partyVisuals[1].changeCharacter(party[(activeCharacter-1) % len(party)])
+        partyVisuals[2].changeCharacter(party[(activeCharacter) % len(party)])
         updateCharacters()
 
     def skillButtonFunction():
@@ -221,40 +230,26 @@ def combatScreen():
             enemySelectionShowing = False
 
     def updateCharacters():
-        global visualEntities
+        global partyVisuals
         global party
         global screenX
         global screenY
         nonlocal activeCharacter
 
+        partyVisuals[0].updateCharacter()
+        partyVisuals[1].updateCharacter()
+        partyVisuals[2].updateCharacter()
+
+        if (len(party)<3) : partyVisuals[2].changeCharacter(None)
+        if (len(party)<2) : partyVisuals[0].changeCharacter(None)
+
         for item in visualEntities:
-            if (item.name == "Player"): item.updateImg(str(party[activeCharacter-1].img))
-            if (item.name == "PlayerHPText"): item.updateText(str(int(party[activeCharacter-1].getCurrentHP())) + "/" + str(int(party[activeCharacter-1].maxHP)), "mono", int(playerHPBarX/40), "black", None)
-            if (item.name == "PlayerHPGreen"): item.width = screenX*0.5*party[activeCharacter-1].getCurrentHP()/party[activeCharacter-1].maxHP
-            if (item.name == "PlayerManaText"): item.updateText(str(int(party[activeCharacter-1].mana)) + "/" + str(int(party[activeCharacter-1].maxMana)), "mono", int(playerManaBarX/40), "black", None)
-            if (item.name == "PlayerManaBlue"): item.width = screenX*0.5*party[activeCharacter-1].mana/party[activeCharacter-1].maxMana
-            if (item.name == "InactiveCharacter1Img"): item.updateImg(str(party[(activeCharacter-2)%len(party)].headImg))
-            if (item.name == "InactiveCharacter1HPText"): item.updateText(str(int(party[(activeCharacter-2)%len(party)].getCurrentHP())) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxHP)), "mono", int(playerHPBarX/40), "black", None)
-            if (item.name == "InactiveCharacter1HPGreen"): item.width = screenX*0.5*party[activeCharacter-2].getCurrentHP()/party[activeCharacter-2].maxHP
-            if (item.name == "InactiveCharacter1ManaText"): item.updateText(str(int(party[(activeCharacter-2)%len(party)].mana)) + "/" + str(int(party[(activeCharacter-2)%len(party)].maxMana)), "mono", int(playerManaBarX/40), "black", None)
-            if (item.name == "InactiveCharacter1ManaBlue"): item.width = screenX*0.5*party[(activeCharacter-2)%len(party)].mana/party[(activeCharacter-2)%len(party)].maxMana
-            if (item.name == "PlayerCheckmark"): item.isShowing = party[(activeCharacter - 1) % len(party)].hasActed
-            if (item.name == "InactiveCharacter1Checkmark" ): item.isShowing = party[(activeCharacter-2) % len(party)].hasActed
-            if (item.name == "InactiveCharacter2Checkmark"): item.isShowing = party[(activeCharacter) % len(party)].hasActed
-            if (item.name == "InactiveCharacter2Img"): item.updateImg(str(party[(activeCharacter)%len(party)].headImg))
-            if (item.name == "InactiveCharacter2HPText"): item.updateText(str(int(party[(activeCharacter)%len(party)].getCurrentHP())) + "/" + str(int(party[(activeCharacter)%len(party)].maxHP)), "mono", int(playerHPBarX/40), "black", None)
-            if (item.name == "InactiveCharacter2HPGreen"): item.width = screenX*0.5*party[(activeCharacter)%len(party)].getCurrentHP()/party[(activeCharacter)%len(party)].maxHP
-            if (item.name == "InactiveCharacter2ManaText"): item.updateText(str(int(party[(activeCharacter)%len(party)].mana)) + "/" + str(int(party[(activeCharacter)%len(party)].maxMana)), "mono", int(playerManaBarX/40), "black", None)
-            if (item.name == "InactiveCharacter2ManaBlue"): item.width = screenX*0.5*party[(activeCharacter)%len(party)].mana/party[(activeCharacter)%len(party)].maxMana
             if (item.name == "Skill1"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[0].img)
             if (item.name == "Skill2"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[1].img)
             if (item.name == "Skill3"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[2].img)
             if (item.name == "Skill1Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[0].name, "mono", int(screenX*0.5/15), "black", "yellow")
             if (item.name == "Skill2Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[1].name, "mono", int(screenX*0.5/15), "black", "yellow")
             if (item.name == "Skill3Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[2].name, "mono", int(screenX*0.5/15), "black", "yellow")
-            
-            if ((Tag.INACTIVE_CHARACTER2 in item.tags) and (len(party)<3)) : item.isShowing = False
-            if ((Tag.INACTIVE_CHARACTER1 in item.tags) and (len(party) < 2)): item.isShowing = False
 
 
     def updateEnemies():
@@ -284,6 +279,10 @@ def combatScreen():
     updateEnemies()
     updateCharacters()
 
+
+
+
+
     buttonFunc = updateCharacters
     while True:
         mouse = pygame.mouse.get_pos()
@@ -295,7 +294,9 @@ def combatScreen():
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = buttonExit
                         elif (entity.func == "openWorld"): buttonFunc = openWorldScreen
+                        elif (entity.func == "changeCharacter"): buttonFunc = changeCharacter
                         if (len(entity.args) == 0): buttonFunc()
+                        elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
 
@@ -321,9 +322,6 @@ def combatScreen():
             updateCharacters()
             for entity in visualEntities:
                 if("Skill Point" in entity.tags): entity.isBorder = False
-    
-
-
 
         refreshScreen()
         if (leaveScreen): break
@@ -674,7 +672,9 @@ def inventoryScreen():
 
 def openWorldScreen():
     global visualEntities
+    global partyVisuals
     visualEntities = []
+    partyVisuals = []
     screen.fill((0, 0, 0))
     file = open("screens/loadingScreen.json", 'r')
     data = json.load(file)
@@ -682,17 +682,17 @@ def openWorldScreen():
         if item["entityType"] == "Image":
              entity = ImageEntity.createFrom(item)
         elif item["entityType"] == "Drawing":
-            entity = DrawingEntity.createFrom(item)
+            entity = ShapeEntity.createFrom(item)
         elif item["entityType"] == "Text":
             entity = TextEntity.createFrom(item)
         elif item["entityType"] == "Button":
-            entity = ButtonEntity.createFrom(item)
-        elif item["entityType"] == "TransparentButton":
-            entity = TransparentButtonEntity.createFrom(item)
+            entity = ShapeButton.createFrom(item)
+        elif item["entityType"] == "ImageButton":
+            entity = ImageButton.createFrom(item)
             
         entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
         entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
-        if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+        if (item["entityType"] == "ImageButton" or item["entityType"] == "Button"): buttons.append(entity)
         else: visualEntities.append(entity)
     
     refreshScreen()

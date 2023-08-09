@@ -1,6 +1,6 @@
 from model.visualentity.ImageEntity import ImageEntity
 from model.visualentity.TextEntity import TextEntity
-from model.visualentity.DrawingEntity import DrawingEntity
+from model.visualentity.ShapeEntity import ShapeEntity
 from model.visualentity.Tag import Tag
 from model.character.Character import Character
 
@@ -12,8 +12,8 @@ class CombatEnemyEntity:
 
     enemyImg = ImageEntity
     enemyHPBarBorder = ImageEntity
-    enemyHPBarGreen = DrawingEntity
-    enemyHPBarRed = DrawingEntity
+    enemyHPBarGreen = ShapeEntity
+    enemyHPBarRed = ShapeEntity
     enemyHPBarText = TextEntity
 
     positions = {
@@ -35,8 +35,8 @@ class CombatEnemyEntity:
        self.height = height
        self.enemyImg = ImageEntity(enemy.name + "Img", True, 0, 0, 0, 0, [Tag.ENEMY], enemy.img)
        self.enemyHPBarBorder = ImageEntity(enemy.name + "HPBorder", True, 0, 0, 0, 0, [Tag.ENEMY], "HPBar.png")
-       self.enemyHPBarRed = DrawingEntity(enemy.name + "HPRed", True, 0, 0, 0, 0, [Tag.ENEMY], "red", False, "rectangle")
-       self.enemyHPBarGreen = DrawingEntity(enemy.name + "HPGreen", True, 0, 0, 0, 0, [Tag.ENEMY], "green", False, "rectangle")
+       self.enemyHPBarRed = ShapeEntity(enemy.name + "HPRed", True, 0, 0, 0, 0, [Tag.ENEMY], "red", False, "rectangle")
+       self.enemyHPBarGreen = ShapeEntity(enemy.name + "HPGreen", True, 0, 0, 0, 0, [Tag.ENEMY], "green", False, "rectangle")
        self.enemyHPBarText = TextEntity(enemy.name + "HPText", True, 0, 0, 0, 0, [Tag.ENEMY], str(int(enemy.getCurrentHP())) + "/" + str(int(enemy.getMaxHP())), "mono", int(self.width/10), "black", None)
        self.resize()
        self.reposition()

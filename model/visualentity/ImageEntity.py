@@ -11,6 +11,7 @@ class ImageEntity(VisualEntity):
 
     def updateImg(self, path):
         self.img = pygame.image.load("sprites/" + path)
+        self.img = pygame.transform.scale(self.img, (self.width, self.height))
 
     def resize(self, width, height):
         self.width = width
@@ -30,7 +31,5 @@ class ImageEntity(VisualEntity):
     def createFrom(json_object):
         newObject = ImageEntity()
         newObject.__dict__.update(json_object)
-        newObject.updateImg(newObject.path)
-        newObject.reposition(newObject.xPosition, newObject.yPosition)
-        newObject.resize(newObject.width, newObject.height)
+        newObject.img = pygame.image.load("sprites/" + newObject.path)
         return newObject

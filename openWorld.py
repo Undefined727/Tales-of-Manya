@@ -1,9 +1,9 @@
 from model.openworld.Tile import Tile
 from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.DrawingEntity import DrawingEntity
+from model.visualentity.ShapeEntity import ShapeEntity
 from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ButtonEntity import ButtonEntity
-from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
+from model.visualentity.ShapeButton import ShapeButton
+from model.visualentity.ImageButton import ImageButton
 import numpy
 import math
 from PIL import Image
@@ -21,7 +21,7 @@ def refreshMenu(screen):
          if entity.isShowing:
             if (type(entity) == ImageEntity):
                 screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            elif (type(entity) == DrawingEntity):
+            elif (type(entity) == ShapeEntity):
                 if entity.shape == "rectangle":
                     if entity.isBorder:
                         pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
@@ -74,16 +74,15 @@ def run(screen, screenX, screenY):
         if item["entityType"] == "Image":
              entity = ImageEntity.createFrom(item)
         elif item["entityType"] == "Drawing":
-            entity = DrawingEntity.createFrom(item)
+            entity = ShapeEntity.createFrom(item)
         elif item["entityType"] == "Text":
             entity = TextEntity.createFrom(item)
         elif item["entityType"] == "Button":
-            entity = ButtonEntity.createFrom(item)
-        elif item["entityType"] == "TransparentButton":
-            entity = TransparentButtonEntity.createFrom(item)
-            
-        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
-        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+            entity = ShapeButton.createFrom(item)
+        elif item["entityType"] == "ImageButton":
+            entity = ImageButton.createFrom(item)
+
+        entity.scale(screenX, screenY)
         if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
         else: visualEntities.append(entity)
 
