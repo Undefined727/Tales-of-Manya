@@ -11,6 +11,7 @@ class DynamicStatEntity:
     fullRect:DrawingEntity
     dynamicStat:DynamicStat
     statType:str
+    isShowing:bool
     RECT_WIDTH_MULTIPLIER = 0.5
     RECT_HEIGHT_MULTIPLIER = 0.3
     xPosition:0
@@ -25,6 +26,7 @@ class DynamicStatEntity:
         self.height = 0
         self.xPosition = 0
         self.yPosition = 0
+        self.isShowing = True
 
         self.border = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png")
         self.emptyRect = DrawingEntity("emptyRect", True, 0, 0, 0, 0, [], "red", False, "rectangle")
@@ -35,9 +37,15 @@ class DynamicStatEntity:
             self.border.updateImg("ManaBar.png")
             self.fullRect.color = "blue"
         
+    def reposition(self, xPosition, yPosition):
+        self.xPosition = xPosition
+        self.yPosition = yPosition
 
+    def resize(self, width, height):
+        self.width = width
+        self.height = height
 
-    def updatePlacement(self):
+    def updateItems(self):
         shiftX = (self.width - self.width*self.RECT_WIDTH_MULTIPLIER)/2
         shiftY = (self.height - self.height*self.RECT_HEIGHT_MULTIPLIER)/2
         self.border.reposition(self.xPosition, self.yPosition)
@@ -48,6 +56,14 @@ class DynamicStatEntity:
         self.fullRect.resize(self.width*self.RECT_WIDTH_MULTIPLIER, self.height*self.RECT_HEIGHT_MULTIPLIER)
         self.text.reposition(self.xPosition + self.width/2, self.yPosition + self.height/2)
         self.text.resize(self.width*self.RECT_WIDTH_MULTIPLIER, self.height*self.RECT_HEIGHT_MULTIPLIER)
+
+    def scale(self, screenX, screenY):
+        self.updateItems()
+        self.border.scale(screenX, screenY)
+        self.emptyRect.scale(screenX, screenY)
+        self.fullRect.scale(screenX, screenY)
+        self.text.scale(screenX, screenY)
+
     
     def getItems(self):
         return [self.border, self.emptyRect, self.fullRect, self.text]

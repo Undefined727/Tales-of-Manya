@@ -37,12 +37,12 @@ class Character:
     hasActed = False
 
 
-    def __init__(self, name = "Placeholder Name", img = "nekoarc.png", level = 1):
+    def __init__(self, name = "Placeholder Name", img = "nekoarc.png", headImg = "nekoarc.png", level = 1):
         self.name       = name
         self.level      = level
         self.img = img
-        self.inactiveImg = img
-        self.overworldImg = img
+        self.headImg = headImg
+        self.overworldImg = headImg
 
         self.health     = DynamicStat(level * 100)
         self.mana       = DynamicStat(1000 + level * 10)

@@ -8,32 +8,49 @@ class CharacterEntities:
     ManaBar:DynamicStatEntity
     img:ImageEntity
     headImg:ImageEntity
+    checkmark:ImageEntity
     character:Character
 
     def __init__(self, character):
         self.character = character
-
-
         self.HPBar = DynamicStatEntity(character.health, "health")
         self.ManaBar = DynamicStatEntity(character.mana, "mana")
-        self.img = ImageEntity()
-        self.headImg = ImageEntity()
+        self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
+        self.headImg = ImageEntity(character.name + "headImg", True, 0, 0, 0, 0, [], character.headImg)
+        self.checkmark = ImageEntity(character.name + "checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
 
+    def getItems(self):
+        return [self.img, self.headImg, self.HPBar, self.ManaBar, self.checkmark]
 
-    def updateHPBarPlacement(self, xPosition, yPosition, width, height):
-        self.HPBar.reposition(xPosition, yPosition)
-        self.HPBar.resize(width, height)
-    
-    def updateManaBarPlacement(self, xPosition, yPosition, width, height):
-        self.ManaBar.reposition(xPosition, yPosition)
-        self.ManaBar.resize(width, height)
-    
-    def updateImgPlacement(self, xPosition, yPosition, width, height):
-        self.img.reposition(xPosition, yPosition)
-        self.img.resize(width, height)
-    
-    def updateHeadImgPlacement(self, xPosition, yPosition, width, height):
-        self.headImg.reposition(xPosition, yPosition)
-        self.headImg.resize(width, height)
+    def scale(self, screenX, screenY):
+        self.HPBar.scale(screenX, screenY)
+        self.ManaBar.scale(screenX, screenY)
+        self.img.scale(screenX, screenY)
+        self.headImg.scale(screenX, screenY)
+        self.checkmark.scale(screenX, screenY)
 
-        
+    @staticmethod
+    def createFrom(json_object, character):
+        newObject = CharacterEntities(character)
+        if ("HPXPosition" in json_object):
+            newObject.HPBar.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
+            newObject.HPBar.resize(json_object["HPWidth"], json_object["HPHeight"])
+        else: newObject.HPBar.isShowing = False
+        if ("ManaXPosition" in json_object):
+            newObject.ManaBar.reposition(json_object["ManaXPosition"], json_object["ManaYPosition"])
+            newObject.ManaBar.resize(json_object["ManaWidth"], json_object["ManaHeight"])
+        else: newObject.ManaBar.isShowing = False
+        if ("imgXPosition" in json_object):
+            newObject.img.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.img.resize(json_object["imgWidth"], json_object["imgHeight"])
+        else: newObject.img.isShowing = False
+        if ("headImgXPosition" in json_object):
+            newObject.headImg.reposition(json_object["headImgXPosition"], json_object["headImgYPosition"])
+            newObject.headImg.resize(json_object["headImgWidth"], json_object["headImgHeight"])
+        else: newObject.headImg.isShowing = False
+        if ("checkmarkXPosition" in json_object):
+            newObject.checkmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
+            newObject.checkmark.resize(json_object["checkmarkWidth"], json_object["checkmarkHeight"])
+        else: newObject.checkmark.isShowing = False
+        return newObject
+    

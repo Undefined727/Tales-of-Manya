@@ -25,6 +25,10 @@ class ButtonEntity(VisualEntity):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
+    def scale(self, screenX, screenY):
+        self.reposition(self.xPosition*screenX, self.yPosition*screenY)
+        self.resize(self.width*screenX, self.height*screenY)
+
     @staticmethod
     def createFrom(json_object):
         newObject = ButtonEntity()

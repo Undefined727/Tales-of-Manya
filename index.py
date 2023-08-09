@@ -1,18 +1,17 @@
-import pygame, numpy, math, os, random, json
+import pygame, numpy, math, os, random, json, copy
 from model.visualentity.Tag import Tag
 from model.visualentity.ImageEntity import ImageEntity
 from model.visualentity.DrawingEntity import DrawingEntity
 from model.visualentity.TextEntity import TextEntity
 from model.visualentity.ButtonEntity import ButtonEntity
 from model.visualentity.TransparentButtonEntity import TransparentButtonEntity
+from model.visualentity.DynamicStatEntity import DynamicStatEntity
 from model.visualentity.CharacterEntities import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
 from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from openWorld import run
-import json
-import time
 
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -28,8 +27,8 @@ visualEntities = []
 buttons = []
 inventory = []
 
-party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
-party.append(Character("lmao", "catgirl.png", 20))
+party = [Character("Catgirl", "catgirl.png", "catgirl_head.png", 10), Character("Catgirl", "catgirl.png", "catgirl_head.png", 10)]
+party.append(Character("lmao", "catgirl.png", "catgirl_head.png", 20))
 party[0].skills[0] = Skill(1)
 party[0].skills[1] = Skill(2)
 party[0].skills[2] = Skill(3)
@@ -40,32 +39,41 @@ inventory.append(Item(7))
 
 
 party[0].helmet = Item(2)
+partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
 
+def displayEntity(entity):
+    if (type(entity) == DynamicStatEntity):
+        ls = entity.getItems()
+        for item in ls:
+            displayEntity(item)
+    if (type(entity) == ImageEntity):
+        screen.blit(entity.img, (entity.xPosition, entity.yPosition))
+    elif (type(entity) == DrawingEntity):
+        if entity.shape == "rectangle":
+            if entity.isBorder:
+                pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
+            else:
+                pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
+        if entity.shape == "ellipse":
+            if entity.isBorder:
+                pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
+            else:
+                pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
+    elif (type(entity) == TextEntity):
+        screen.blit(entity.textLabel, entity.textRect)
 
-
-   
 def refreshScreen():
     # Fill the background
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
-            if (type(entity) == ImageEntity):
-                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            elif (type(entity) == DrawingEntity):
-                if entity.shape == "rectangle":
-                    if entity.isBorder:
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
-                    else:
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
-                if entity.shape == "ellipse":
-                    if entity.isBorder:
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
-                    else:
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
-            elif (type(entity) == TextEntity):
-                screen.blit(entity.textLabel, entity.textRect)
-                print(entity.fontSize)
-                print(entity.text)
+            displayEntity(entity)
+    for entity in partyVisuals:
+        ls = entity.getItems()
+        for item in ls:
+            if item.isShowing:
+                displayEntity(item)
+
     pygame.display.flip()
 
 # activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
@@ -91,10 +99,12 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
     party[activeCharacter].hasActed = True
 
-
 def combatScreen():
     global visualEntities
     global party
+    global partyVisuals
+    global screenX
+    global screenY
     enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
     activeCharacter = 1
     skillSelected = 0
@@ -102,14 +112,14 @@ def combatScreen():
     enemySelectionShowing = False
     leaveScreen = False
     nextScreen = None
-    inactiveCharacter1Visuals = CharacterEntities(party[0])
 
     visualEntities = []
     file = open("screens/combatScreen.json", 'r')
     data = json.load(file)
     for item in data:
+        entity = None
         if item["entityType"] == "Image":
-             entity = ImageEntity.createFrom(item)
+            entity = ImageEntity.createFrom(item)
         elif item["entityType"] == "Drawing":
             entity = DrawingEntity.createFrom(item)
         elif item["entityType"] == "Text":
@@ -118,22 +128,20 @@ def combatScreen():
             entity = ButtonEntity.createFrom(item)
         elif item["entityType"] == "TransparentButton":
             entity = TransparentButtonEntity.createFrom(item)
-        elif item["entityType"] == "coords":
-            inactiveCharacter1Visuals.HPBar.xPosition = item["xPosition"]*screenX
-            inactiveCharacter1Visuals.HPBar.yPosition = item["yPosition"]*screenY
-            inactiveCharacter1Visuals.HPBar.width = item["width"]*screenX
-            inactiveCharacter1Visuals.HPBar.height = item["height"]*screenY
-            inactiveCharacter1Visuals.HPBar.updatePlacement()
+        elif item["entityType"] == "CharacterEntityCoords":
+            if (item["name"] == "ActiveCharacter"): index = 1
+            elif (item["name"] == "InactiveCharacter1"): index = 0
+            else: index = 2
+            entity = CharacterEntities.createFrom(item, party[index])
 
-        if (item["entityType"] == "coords"): 
-            visualEntities.extend(inactiveCharacter1Visuals.HPBar.getItems())
-        else:   
-            entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
-            entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
+
+        if not (entity is None):
+            entity.scale(screenX, screenY)
+            
             if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+            elif(item["entityType"] == "CharacterEntityCoords"): partyVisuals[index] = entity
             else: visualEntities.append(entity)
     
-
 
 
     
@@ -251,7 +259,7 @@ def combatScreen():
 
     def updateEnemies():
         nonlocal enemies
-        enemySpacing = screenX/(1+len(enemies)*2)
+        enemySpacing = 1/(1+len(enemies)*2)
         
         for entity in visualEntities[:]:
             if (Tag.ENEMY in entity.tags):
@@ -263,7 +271,8 @@ def combatScreen():
         count = 0
         for enemy in enemies:
             currEnemyX = enemySpacing*(2*count+1)
-            displayedEnemy = CombatEnemyEntity(currEnemyX, screenY/10, enemySpacing, screenY/3, enemy)
+            displayedEnemy = CombatEnemyEntity(currEnemyX, 1/10, enemySpacing, 1/3, enemy)
+            displayedEnemy.scale(screenX, screenY)
             visualEntities.append(displayedEnemy.enemyImg)
             visualEntities.append(displayedEnemy.enemyHPBarBorder)
             visualEntities.append(displayedEnemy.enemyHPBarRed)

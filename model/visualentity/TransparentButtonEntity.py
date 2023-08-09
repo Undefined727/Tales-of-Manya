@@ -12,7 +12,7 @@ class TransparentButtonEntity(VisualEntity):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.func = func
         self.args = args
-        self.img = Image.open("../sprites/" + path)
+        self.img = Image.open("sprites/" + path)
         
 
     def mouseInRegion(self, mouse):
@@ -32,6 +32,10 @@ class TransparentButtonEntity(VisualEntity):
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition
         self.yPosition = yPosition
+
+    def scale(self, screenX, screenY):
+        self.reposition(self.xPosition*screenX, self.yPosition*screenY)
+        self.resize(self.width*screenX, self.height*screenY)
 
     @staticmethod
     def createFrom(json_object):

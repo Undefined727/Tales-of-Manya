@@ -56,6 +56,13 @@ class CombatEnemyEntity:
         self.enemyHPBarRed.reposition(self.xPosition + self.positions["enemyHPBarGreen"][0]*self.width - self.positions["enemyHPBarGreen"][2]*self.width/2, self.yPosition + self.positions["enemyHPBarGreen"][1]*self.height - self.positions["enemyHPBarGreen"][3]*self.height/2)
         self.enemyHPBarText.reposition(self.xPosition + self.positions["enemyHPBarText"][0]*self.width, self.yPosition + self.positions["enemyHPBarText"][1]*self.height)
 
+    def scale(self, screenX, screenY):
+        self.enemyImg.scale(screenX, screenY)
+        self.enemyHPBarBorder.scale(screenX, screenY)
+        self.enemyHPBarGreen.scale(screenX, screenY)
+        self.enemyHPBarRed.scale(screenX, screenY)
+        self.enemyHPBarText.scale(screenX, screenY)
+
     def update(self):
         self.enemyHPBarGreen.resize(self.enemyHPBarGreen.width * (self.enemy.getMaxHP()/self.enemy.getCurrentHP()), self.enemyHPBarGreen.height)
         self.enemyHPBarText.updateText(str(int(self.enemy.getCurrentHP())) + "/" + str(int(self.enemy.getMaxHP())), "mono", int(self.width/10), "black", None)

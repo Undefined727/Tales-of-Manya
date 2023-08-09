@@ -38,6 +38,10 @@ class TextEntity(VisualEntity):
         self.xPosition = xPosition
         self.yPosition = yPosition
         self.updateText(self.text, self.font, self.fontSize, self.fontColor, self.highlightColor)
+    
+    def scale(self, screenX, screenY):
+        self.reposition(self.xPosition*screenX, self.yPosition*screenY)
+        self.resize(self.width*screenX, self.height*screenY)
 
     @staticmethod
     def createFrom(json_object):
