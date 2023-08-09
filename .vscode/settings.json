@@ -1,0 +1,19 @@
+{
+    "workbench.colorTheme": "Default Dark Modern",
+    "files.autoSave": "onWindowChange",
+    "editor.renderWhitespace": "trailing",
+    "editor.cursorStyle": "block-outline",
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "boot-java.rewrite.reconcile": true,
+    "git.autofetch": true,
+    "explorer.confirmDragAndDrop": false,
+    "git.confirmSync": false,
+    "workbench.iconTheme": "vs-nomo-dark",
+    "workbench.tree.indent": 15,
+    "workbench.view.alwaysShowHeaderActions": true,
+    "githubPullRequests.pullBranch": "never",
+    "window.zoomLevel": 1,
+    "terminal.integrated.copyOnSelection": true,
+    "terminal.integrated.cursorStyle": "underline",
+    "terminal.integrated.defaultProfile.windows": "Git Bash"
+}
