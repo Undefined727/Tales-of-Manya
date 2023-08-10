@@ -95,7 +95,7 @@ def combatScreen():
     nextScreen = None
 
     visualEntities = []
-    file = open("screens/combatScreen.json", 'r')
+    file = open("./src/main/python/screens/combatScreen.json", 'r')
     data = json.load(file)
     for item in data:
         if item["entityType"] == "Image":

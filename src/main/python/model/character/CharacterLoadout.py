@@ -9,7 +9,7 @@ class CharacterLoadout:
         ItemSlot.HEAD : None,
         ItemSlot.CHEST : None,
         ItemSlot.LEGS : None,
-        ItemSlot.FEET : None,
+        ItemSlot.WAIST : None,
         ItemSlot.WEAPON : None,
         ItemSlot.ACCESSORY1 : None,
         ItemSlot.ACCESSORY2 : None

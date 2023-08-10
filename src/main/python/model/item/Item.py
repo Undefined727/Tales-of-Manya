@@ -22,7 +22,7 @@ class Item:
 
     def getSlot(self):
         return self.slot
-    
+
     def toDatabaseItem(self):
         return {
             'id' : self.id,

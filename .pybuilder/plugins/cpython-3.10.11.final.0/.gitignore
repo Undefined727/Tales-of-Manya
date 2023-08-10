@@ -4,4 +4,5 @@ target/
 pyvenv.cfg
 *.pyc
 Lib/
+*.exe
 __pycache__/
