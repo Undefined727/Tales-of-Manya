@@ -1,16 +1,4 @@
 [{
-    "name": "ExitButton",
-    "isShowing": true,
-    "xPosition": 0.9,
-    "yPosition": 0.05,
-    "width": 0.05,
-    "height": 0.05,
-    "tags": [],
-    "entityType": "Button",
-    "shape": "ellipse",
-    "func": "exit",
-    "args": []
-},{
     "name": "ExitButtonDrawing",
     "isShowing": true,
     "xPosition": 0.8875,
@@ -23,14 +11,16 @@
     "isBorder": false,
     "shape": "ellipse"
 },{
-    "name": "ExitButtonImg",
+    "name": "CombatButton",
     "isShowing": true,
     "xPosition": 0.9,
     "yPosition": 0.05,
     "width": 0.05,
     "height": 0.05,
     "tags": [],
-    "entityType": "Image",
-    "path": "settingsIcon.png"
+    "entityType": "ImageButton",
+    "path": "settingsIcon.png",
+    "func": "combat",
+    "args": []
 }
 ]

@@ -23,6 +23,7 @@ class ImageButton(VisualEntity):
         x = int(mouse[0]-self.xPosition)
         y = int(mouse[1]-self.yPosition)
         print("x: " + str(x) + " y: " + str(y))
+        print(numpy.shape(self.npArray))
         if (x >= 0 and x < int(self.width) and y >= 0 and y < int(self.height)): 
             transparency = self.npArray[y, x, 3]
             print(transparency)
@@ -42,7 +43,7 @@ class ImageButton(VisualEntity):
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.updateImg(self.path)
         self.img = pygame.transform.scale(self.img, (self.width, self.height))
-        PILimg = Image.open("sprites/" + self.path)
+        PILimg = Image.open("sprites/" + self.path).convert('RGBA')
         PILimg = PILimg.resize((int(self.width), int(self.height)))
         self.npArray = numpy.asarray(PILimg)
 

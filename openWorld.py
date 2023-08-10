@@ -4,6 +4,7 @@ from model.visualentity.ShapeEntity import ShapeEntity
 from model.visualentity.TextEntity import TextEntity
 from model.visualentity.ShapeButton import ShapeButton
 from model.visualentity.ImageButton import ImageButton
+from displayHandler import displayEntity
 import numpy
 import math
 from PIL import Image
@@ -14,35 +15,34 @@ import time
 visualEntities = []
 buttons = []
 quit = False
+nextScreen = "Quit"
 
 def refreshMenu(screen):
     global visualEntities
+    global buttons
     for entity in visualEntities:
          if entity.isShowing:
-            if (type(entity) == ImageEntity):
-                screen.blit(entity.img, (entity.xPosition, entity.yPosition))
-            elif (type(entity) == ShapeEntity):
-                if entity.shape == "rectangle":
-                    if entity.isBorder:
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
-                    else:
-                        pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
-                if entity.shape == "ellipse":
-                    if entity.isBorder:
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
-                    else:
-                        pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
-            elif (type(entity) == TextEntity):
-                screen.blit(entity.textLabel, entity.textRect)
+            displayEntity(entity, screen)
+    for entity in buttons:
+         if entity.isShowing:
+            displayEntity(entity, screen)
+    pygame.display.flip()
 
 def exitButton():
     global quit
     quit = True
 
-def run(screen, screenX, screenY):
+def combatButton():
+    global quit
+    global nextScreen
+    quit = True
+    nextScreen = "Combat"
+
+def loadOpenWorld(screen, screenX, screenY):
     global quit
     global visualEntities
-    quit = False
+    global nextScreen
+    global buttons
     FPS = 60
     prev_time = time.time()
     img = Image.open("maps/samplemap.png")
@@ -83,24 +83,8 @@ def run(screen, screenX, screenY):
             entity = ImageButton.createFrom(item)
 
         entity.scale(screenX, screenY)
-        if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
+        if (item["entityType"] == "ShapeButton" or item["entityType"] == "ImageButton"): buttons.append(entity)
         else: visualEntities.append(entity)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     cameraX = width/2
@@ -127,6 +111,7 @@ def run(screen, screenX, screenY):
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
+                        if (entity.func == "combat"): buttonFunc = combatButton
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
@@ -183,5 +168,7 @@ def run(screen, screenX, screenY):
         if sleep_time > 0:
             time.sleep(sleep_time)
         refreshMenu(screen)
-        pygame.display.flip()
-        if (quit): break
+        if (quit):
+            quit = False 
+            break
+    return nextScreen
