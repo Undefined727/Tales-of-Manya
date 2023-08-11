@@ -75,6 +75,7 @@ def loadOpenWorld(screen, screenX, screenY):
     speedX = 0
     speedY = 0
     FRICTION_GRASS = 0.005
+    movementSpeed = 0.1
     accX = 0
     accY = 0
     currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
@@ -112,46 +113,78 @@ def loadOpenWorld(screen, screenX, screenY):
                         else: buttonFunc(entity.args)
                         break
         keys = pygame.key.get_pressed()
+        if (keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]):
+            movementSpeed = 0.1
+        else:
+            movementSpeed = 0.05
         if keys[pygame.K_LEFT]:
-            speedX = -0.1
+            speedX = -movementSpeed
         if keys[pygame.K_RIGHT]:
-            speedX = 0.1
+            speedX = movementSpeed
         if keys[pygame.K_UP]:
-            speedY = 0.1
+            speedY = movementSpeed
         if keys[pygame.K_DOWN]:
-            speedY = -0.1
+            speedY = -movementSpeed
 
         accX = 0
         accY = 0
-        if (speedX < -0.03): accX = FRICTION_GRASS
-        elif (speedX > 0.03): accX = -FRICTION_GRASS
+        if (speedX < -FRICTION_GRASS): accX += FRICTION_GRASS
+        elif (speedX > FRICTION_GRASS): accX += -FRICTION_GRASS
         else: speedX = 0
-        if (speedY < -0.03): accY = FRICTION_GRASS
-        elif (speedY > 0.03): accY = -FRICTION_GRASS
+        if (speedY < -FRICTION_GRASS): accY += FRICTION_GRASS
+        elif (speedY > FRICTION_GRASS): accY += -FRICTION_GRASS
         else: speedY = 0
 
         speedX += accX
         speedY += accY
+        
 
         delay = 1
         movedX = characterX + 0.5*accX*delay*delay + speedX*delay
         movedY = characterY - (0.5*accY*delay*delay + speedY*delay)
         radius = characterSize/(2*tileSize)
 
+        
+        justCorrected = False
         if (collision(movedX, characterY, math.floor(movedX)-0.001, characterY) or collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001) or collision(movedX, characterY, math.floor(movedX)-0.001, math.ceil(characterY))):
             if (speedX < 0): speedX = 0
+            if (not collision(movedX, characterY, math.floor(movedX)-0.001, characterY) and speedY == 0):
+                justCorrected = True
+                if collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001):
+                    characterY += 0.05
+                else:
+                    characterY -= 0.05
         if (collision(movedX, characterY, math.ceil(movedX), characterY) or collision(movedX, characterY, math.ceil(movedX), math.floor(characterY)-0.001) or collision(movedX, characterY, math.ceil(movedX), math.ceil(characterY))):
             if (speedX > 0): speedX = 0
+            if (not collision(movedX, characterY, math.ceil(movedX), characterY) and speedY == 0):
+                justCorrected = True
+                if collision(movedX, characterY, math.ceil(movedX), math.floor(characterY)-0.001):
+                    characterY += 0.05
+                else:
+                    characterY -= 0.05
         if (collision(characterX, movedY, characterX, math.floor(movedY)-0.001) or collision(characterX, movedY, math.floor(characterX)-0.001, math.floor(movedY)-0.001) or collision(characterX, movedY, math.ceil(characterX), math.floor(movedY)-0.001)):
             if (speedY > 0): speedY = 0
+            if (not collision(characterX, movedY, characterX, math.floor(movedY)-0.001) and speedX == 0):
+                justCorrected = True
+                if collision(characterX, movedY, math.floor(characterX)-0.001, math.floor(movedY)-0.001):
+                    characterX += 0.05
+                else:
+                    characterX -= 0.05
         if (collision(characterX, movedY, characterX, math.ceil(movedY)) or collision(characterX, movedY, math.floor(characterX)-0.001, math.ceil(movedY)) or collision(characterX, movedY, math.ceil(characterX), math.ceil(movedY))):
             if (speedY < 0): speedY = 0
-
+            if (not collision(characterX, movedY, characterX, math.ceil(movedY)) and speedX == 0):
+                justCorrected = True
+                if collision(characterX, movedY, math.floor(characterX)-0.001, math.ceil(movedY)):
+                    characterX += 0.05
+                else:
+                    characterX -= 0.05
         
+
         characterY -= speedY
-        cameraY = characterY
         characterX += speedX
-        cameraX = characterX
+        if (not justCorrected):
+            cameraY = characterY
+            cameraX = characterX
         currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
 
 
@@ -162,14 +195,16 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
 
-        if (characterX < 0): characterX = 0
-        elif (characterX > width-1): characterX = width-1
+        if (characterX < 0): characterX = spawnX
+        elif (characterX > width-1): characterX = spawnX
+        if (characterY < 0): characterY = spawnY
+        elif (characterY > height-1): characterY = spawnY
+
         if (cameraX < (screenX/tileSize)/2): cameraX = (screenX/tileSize)/2
         elif (cameraX > width-(screenX/tileSize)/2): cameraX = width-(screenX/tileSize)/2
-        if (characterY < 0): characterY = 0
-        elif (characterY > height-1): characterY = height-1
         if (cameraY > height-(screenY/tileSize)/2): cameraY = height-(screenY/tileSize)/2
         elif (cameraY < (screenY/tileSize)/2): cameraY = (screenY/tileSize)/2
+        
         screen.fill((0, 0, 0))
         for x in range(0, width):
             for y in range(0, height):
