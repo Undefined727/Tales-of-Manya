@@ -1,5 +1,6 @@
 from PIL import Image
 from model.visualentity.VisualEntity import VisualEntity
+from model.visualentity.ImageEntity import ImageEntity
 import numpy, pygame
 
 class ImageButton(VisualEntity):
@@ -15,18 +16,15 @@ class ImageButton(VisualEntity):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.func = func
         self.args = args
-        self.img = pygame.image.load("sprites/" + path)
+        self.img = ImageEntity("Button_Image", isShowing, xPosition, yPosition, width, height, tags, path)
         self.isActive = isActive
            
 
     def mouseInRegion(self, mouse):
         x = int(mouse[0]-self.xPosition)
         y = int(mouse[1]-self.yPosition)
-        print("x: " + str(x) + " y: " + str(y))
-        print(numpy.shape(self.npArray))
         if (x >= 0 and x < int(self.width) and y >= 0 and y < int(self.height)): 
             transparency = self.npArray[y, x, 3]
-            print(transparency)
             if (transparency != 0): return True
         return False
     
@@ -41,18 +39,17 @@ class ImageButton(VisualEntity):
     def scale(self, screenX, screenY):
         self.resize(self.width*screenX, self.height*screenY)
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
-        self.updateImg(self.path)
-        self.img = pygame.transform.scale(self.img, (self.width, self.height))
+        self.img.scale(screenX, screenY)
         PILimg = Image.open("sprites/" + self.path).convert('RGBA')
         PILimg = PILimg.resize((int(self.width), int(self.height)))
         self.npArray = numpy.asarray(PILimg)
 
-    def updateImg(self, path):
-        self.img = pygame.image.load("sprites/" + path)
+    def buttonVisual(self):
+        return self.img
 
     @staticmethod
     def createFrom(json_object):
         newObject = ImageButton()
         newObject.__dict__.update(json_object)
-        newObject.updateImg(newObject.path)
+        newObject.img = ImageEntity("Button_Image", newObject.isShowing, newObject.xPosition, newObject.yPosition, newObject.width, newObject.height, newObject.tags, newObject.path)
         return newObject

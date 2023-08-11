@@ -11,7 +11,7 @@ def displayEntity(entity, screen):
         ls = entity.getItems()
         for item in ls:
             displayEntity(item, screen)
-    if (type(entity) == ImageEntity or type(entity) == ImageButton):
+    if (type(entity) == ImageEntity):
         screen.blit(entity.img, (entity.xPosition, entity.yPosition))
     elif (type(entity) == ShapeEntity):
         if entity.shape == "rectangle":

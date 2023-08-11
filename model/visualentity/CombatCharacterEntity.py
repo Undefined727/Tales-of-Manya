@@ -31,11 +31,11 @@ class CharacterEntities:
     
     def changeCharacter(self, character):
         if (character == None):
-            self.HPBar.isShowing == False
-            self.ManaBar.isShowing == False
-            self.img.isShowing == False
-            self.headImg.isShowing == False
-            self.checkmark.isShowing == False
+            self.HPBar.isShowing = False
+            self.ManaBar.isShowing = False
+            self.img.isShowing = False
+            self.headImg.isShowing = False
+            self.checkmark.isShowing = False
             return
 
         self.character = character

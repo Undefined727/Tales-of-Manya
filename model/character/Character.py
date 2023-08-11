@@ -10,9 +10,9 @@ class Character:
     ### Base Stats ###
     name:str
     level:int
-    attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((int(self.level / 10)) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((int(self.level / 10)) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((int(self.level / 10)) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
 
     ### Dynamic Stats ###
     health:DynamicStat
@@ -59,9 +59,10 @@ class Character:
         # This helps other functions to fetch the flat and percentage bonuses of
         # their respective stat and add them up into a single value
 
-        from_buffs = self.buff_bonuses.get(bonus_type)
-        from_loadout = self.loadout_bonuses.get(bonus_type)
-        return from_loadout + from_buffs
+        return 10
+        #from_buffs = self.buff_bonuses.get(bonus_type)
+        #from_loadout = self.loadout_bonuses.get(bonus_type)
+        #return from_loadout + from_buffs
     
     def getCurrentHP(self):
         return self.health.getCurrentValue()
@@ -71,6 +72,8 @@ class Character:
     
     def getHealth(self):
         return self.health
+    
+    
     
 
     ### Setters ###

@@ -6,6 +6,8 @@ from model.visualentity.ImageButton import ImageButton
 from displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
+from inventory import loadInventory
+from JSONParser import loadJson
 import json, pygame, os
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -26,10 +28,6 @@ def refreshScreen():
     for entity in visualEntities:
          if entity.isShowing:
             displayEntity(entity, screen)
-    for entity in buttons:
-        if entity.isShowing:
-            if (type(entity) == ImageButton): displayEntity(entity, screen)
-            #else: displayEntity(entity.shape)
     pygame.display.flip()
 
 
@@ -39,26 +37,7 @@ def run():
     leaveScreen = False
     nextScreen = None
 
-    file = open("screens/menuScreen.json", 'r')
-    data = json.load(file)
-    for item in data:
-        entity = None
-        if item["entityType"] == "Image":
-            entity = ImageEntity.createFrom(item)
-        elif item["entityType"] == "Drawing":
-            entity = ShapeEntity.createFrom(item)
-        elif item["entityType"] == "Text":
-            entity = TextEntity.createFrom(item)
-        elif item["entityType"] == "ShapeButton":
-            entity = ShapeButton.createFrom(item)
-        elif item["entityType"] == "ImageButton":
-            entity = ImageButton.createFrom(item)
-
-
-        if not (entity is None):
-            entity.scale(screenX, screenY)
-            if (item["entityType"] == "ImageButton" or item["entityType"] == "ShapeButton"): buttons.append(entity)
-            else: visualEntities.append(entity)
+    loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
 
     def exit():
         pygame.quit()
@@ -77,7 +56,6 @@ def run():
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
-                    print(entity.name)
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exit
                         elif (entity.func == "openWorld"): buttonFunc = openWorldButton
@@ -88,90 +66,22 @@ def run():
 
         refreshScreen()
         if (leaveScreen): break
-    if (nextScreen == "Combat"):
-        loadCombat()
-    if (nextScreen == "Open World"):
-        openWorld()
-    elif (nextScreen == "Quit"):
-        pygame.quit()
-    else:
-        print("Screen Not Found")
-        run()
+    switchScreens(nextScreen)
 
-def combatScreen(screen, screenX, screenY):
+
+def switchScreens(newScreen):
     global visualEntities
     global buttons
     visualEntities = []
     buttons = []
     screen.fill((0, 0, 0))
-    file = open("screens/loadingScreen.json", 'r')
-    data = json.load(file)
-    for item in data:
-        if item["entityType"] == "Image":
-            entity = ImageEntity.createFrom(item)
-        elif item["entityType"] == "Drawing":
-            entity = ShapeEntity.createFrom(item)
-        elif item["entityType"] == "Text":
-            entity = TextEntity.createFrom(item)
-        elif item["entityType"] == "Button":
-            entity = ShapeButton.createFrom(item)
-        elif item["entityType"] == "ImageButton":
-            entity = ImageButton.createFrom(item)
-            
-        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
-        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
-        if (item["entityType"] == "ImageButton" or item["entityType"] == "Button"): buttons.append(entity)
-        else: visualEntities.append(entity)
-    
+    loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
-    nextScreen = loadCombat(screen, screenX, screenY)
-    if (nextScreen == "Open World"):
-        openWorld()
-    #elif (nextScreen == "Inventory"):
-    #    inventoryScreen(screen, screenX, screenY)
-    elif (nextScreen == "Quit"):
-        pygame.quit()
-    else:
-        print("Screen Not Found")
-        loadOpenWorld()
 
-def openWorld():
-    global visualEntities
-    global buttons
-    visualEntities = []
-    buttons = []
-    screen.fill((0, 0, 0))
-    file = open("screens/loadingScreen.json", 'r')
-    data = json.load(file)
-    for item in data:
-        if item["entityType"] == "Image":
-            entity = ImageEntity.createFrom(item)
-        elif item["entityType"] == "Drawing":
-            entity = ShapeEntity.createFrom(item)
-        elif item["entityType"] == "Text":
-            entity = TextEntity.createFrom(item)
-        elif item["entityType"] == "Button":
-            entity = ShapeButton.createFrom(item)
-        elif item["entityType"] == "ImageButton":
-            entity = ImageButton.createFrom(item)
-            
-        entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
-        entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
-        if (item["entityType"] == "ImageButton" or item["entityType"] == "Button"): buttons.append(entity)
-        else: visualEntities.append(entity)
-    
-    refreshScreen()
-    nextScreen = loadOpenWorld(screen, screenX, screenY)
-    if (nextScreen == "Combat"):
-        combatScreen(screen, screenX, screenY)
-    #elif (nextScreen == "Inventory"):
-    #    inventoryScreen(screen, screenX, screenY)
-    elif (nextScreen == "Quit"):
-        pygame.quit()
-    else:
-        print("Screen Not Found")
-        loadOpenWorld()
-
+    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen, screenX, screenY)
+    elif (newScreen == "Combat"): newScreen = loadCombat(screen, screenX, screenY)
+    elif (newScreen == "Inventory"): newScreen = loadInventory(screen, screenX, screenY)
+    switchScreens(newScreen)
 
 
 run()

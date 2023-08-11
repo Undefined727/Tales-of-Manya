@@ -91,16 +91,6 @@
         "func": "changeCharacter",
         "args": ["Left"]
     },{
-        "name": "OpenWorldButtonImg",
-        "isShowing": true,
-        "xPosition": 0.84,
-        "yPosition": 0.83,
-        "width": 0.13,
-        "height": 0.13,
-        "tags": [],
-        "entityType": "Image",
-        "path": "OpenWorldButton.png"
-    },{
         "name": "OpenWorldButton",
         "isShowing": true,
         "xPosition": 0.84,
@@ -108,20 +98,22 @@
         "width": 0.13,
         "height": 0.13,
         "tags": [],
-        "entityType": "Button",
-        "shape": "rectangle",
+        "entityType": "ImageButton",
+        "path": "OpenWorldButton.png",
         "func": "openWorld",
         "args": []
-    }, {
-        "name": "BagButtonImg",
+    },{
+        "name": "BagButton",
         "isShowing": true,
         "xPosition": 0.06,
         "yPosition": 0.83,
         "width": 0.13,
         "height": 0.13,
         "tags": [],
-        "entityType": "Image",
-        "path": "BagButton.png"
+        "entityType": "ImageButton",
+        "path": "BagButton.png",
+        "func": "inventory",
+        "args": []
     },{
         "name": "GlossaryButtonImg",
         "isShowing": true,
@@ -174,29 +166,19 @@
         "entityType": "Image",
         "path": "sword.png"
     },{
-        "name": "ExitButton",
-        "isShowing": true,
-        "xPosition": 0.9,
-        "yPosition": 0.05,
-        "width": 0.05,
-        "height": 0.05,
-        "tags": [],
-        "entityType": "Button",
-        "shape": "ellipse",
-        "func": "exit",
-        "args": []
-    },{
-        "name": "ExitButtonDrawing",
+        "name": "ExitShapeButton",
         "isShowing": true,
         "xPosition": 0.8875,
         "yPosition": 0.0375,
         "width": 0.075,
         "height": 0.075,
         "tags": [],
-        "entityType": "Drawing",
+        "entityType": "ShapeButton",
         "color": "blue",
         "isBorder": false,
-        "shape": "ellipse"
+        "shape": "ellipse",
+        "func": "exit",
+        "args": []
     },{
         "name": "ExitButtonImg",
         "isShowing": true,

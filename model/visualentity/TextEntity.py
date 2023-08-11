@@ -19,7 +19,12 @@ class TextEntity(VisualEntity):
         self.highlightColor = highlightColor
         self.updateText(text, font, fontSize, fontColor, highlightColor)
 
-    def updateText(self, text, font, fontSize, fontColor, highlightColor):
+    def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):
+        if (font == None): font = self.font
+        if (fontSize == None): fontSize = self.fontSize
+        if (fontColor == None): fontColor = self.fontColor
+        if (highlightColor == None): highlightColor = self.highlightColor
+
         textFont = pygame.font.SysFont(font, fontSize)
         if (highlightColor != None):
             self.textLabel = textFont.render(text, True, fontColor, highlightColor)
@@ -27,6 +32,7 @@ class TextEntity(VisualEntity):
             self.textLabel = textFont.render(text, False, fontColor)
         self.textRect = self.textLabel.get_rect()
         self.textRect.center = (self.xPosition, self.yPosition)
+
 
     def resize(self, width, height):
         self.width = width

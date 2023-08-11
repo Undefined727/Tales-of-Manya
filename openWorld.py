@@ -5,12 +5,9 @@ from model.visualentity.TextEntity import TextEntity
 from model.visualentity.ShapeButton import ShapeButton
 from model.visualentity.ImageButton import ImageButton
 from displayHandler import displayEntity
-import numpy
-import math
+from JSONParser import loadJson
+import numpy, math, pygame, time
 from PIL import Image
-import json
-import pygame
-import time
 
 visualEntities = []
 buttons = []
@@ -19,11 +16,7 @@ nextScreen = "Quit"
 
 def refreshMenu(screen):
     global visualEntities
-    global buttons
     for entity in visualEntities:
-         if entity.isShowing:
-            displayEntity(entity, screen)
-    for entity in buttons:
          if entity.isShowing:
             displayEntity(entity, screen)
     pygame.display.flip()
@@ -64,43 +57,46 @@ def loadOpenWorld(screen, screenX, screenY):
             elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("sprites/tiles/grass1.png", 1))
             else: tiles.append(Tile("sprites/nekoarc.png", 4))
     tileSize = 48
-    character = Tile("sprites/catgirl_head.png", 1)
-
-
     
-    file = open("screens/openWorldScreen.json", 'r')
-    data = json.load(file)
-    for item in data:
-        if item["entityType"] == "Image":
-             entity = ImageEntity.createFrom(item)
-        elif item["entityType"] == "Drawing":
-            entity = ShapeEntity.createFrom(item)
-        elif item["entityType"] == "Text":
-            entity = TextEntity.createFrom(item)
-        elif item["entityType"] == "Button":
-            entity = ShapeButton.createFrom(item)
-        elif item["entityType"] == "ImageButton":
-            entity = ImageButton.createFrom(item)
-
-        entity.scale(screenX, screenY)
-        if (item["entityType"] == "ShapeButton" or item["entityType"] == "ImageButton"): buttons.append(entity)
-        else: visualEntities.append(entity)
 
 
-    cameraX = width/2
-    cameraY = height/2
-    characterX = cameraX
-    characterY = cameraY
-    speed = 0.1
+    loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
+
+    spawnX = width/2
+    spawnY = height/2
     characterSize = 0.85*tileSize
-
-    rect = pygame.Rect(0, 0, characterSize, characterSize)
-    compareRect = pygame.Rect(0, 0, tileSize, tileSize)
+    radius = characterSize/(2*tileSize)
+    character = pygame.image.load("sprites/catgirl_head.png")
+    character = pygame.transform.scale(character, (characterSize, characterSize))
+    characterX = spawnX
+    characterY = spawnY
+    cameraX = characterX
+    cameraY = characterY
+    speedX = 0
+    speedY = 0
+    FRICTION_GRASS = 0.005
+    accX = 0
+    accY = 0
+    currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+    
 
     def convertToScreen(xValue, yValue):
         xValue = (xValue-cameraX)*tileSize + screenX/2
         yValue = (yValue-cameraY)*tileSize + screenY/2
         return (xValue, yValue)
+
+    def isInCircle(circleX, circleY, radius, x, y):
+        return ((x-circleX)*(x-circleX) + (y-circleY)*(y-circleY)) < (radius*radius)
+    
+    movedX = 0
+    movedY = 0
+    
+    def collision(playerX, playerY, x, y):
+        nonlocal radius
+        nonlocal tiles
+        tile = tiles[math.floor(x) + math.floor(y)*width]
+        return (isInCircle(playerX, playerY, radius, x, y) and (((currentHeight-tile.height > 1) or (currentHeight-tile.height < -1) or tile.isSolid())))
+
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -117,35 +113,53 @@ def loadOpenWorld(screen, screenX, screenY):
                         break
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            rect.x, rect.y = convertToScreen(characterX-speed-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2)
-            compareRect.x, compareRect.y = convertToScreen(math.floor(characterX-speed), math.floor(characterY))
-            if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX-speed) + math.floor(characterY)*width])))):
-                    characterX -= speed
-                    cameraX = characterX
-                    character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+            speedX = -0.1
         if keys[pygame.K_RIGHT]:
-            if (not ((math.floor(characterX+speed) + math.floor(characterY)*width) >= len(tiles))):
-                rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2+speed, characterY-(characterSize/tileSize)/2)
-                compareRect.x, compareRect.y = convertToScreen(math.floor(characterX+speed), math.floor(characterY))
-                if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX+speed) + math.floor(characterY)*width])))):
-                        characterX += speed
-                        cameraX = characterX
-                        character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+            speedX = 0.1
         if keys[pygame.K_UP]:
-            rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2-speed)
-            compareRect.x, compareRect.y = convertToScreen(math.floor(characterX), math.floor(characterY-speed))
-            if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY-speed)*width])))):
-                characterY -= speed
-                cameraY = characterY
-                character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+            speedY = 0.1
         if keys[pygame.K_DOWN]:
-            if (not ((math.floor(characterX) + math.floor(characterY+speed)*width) >= len(tiles))):
-                rect.x, rect.y = convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2+speed)
-                compareRect.x, compareRect.y = convertToScreen(math.floor(characterX), math.floor(characterY+speed))
-                if (not (rect.colliderect(compareRect) and (not character.canPass(tiles[math.floor(characterX) + math.floor(characterY+speed)*width])))):
-                        characterY += speed
-                        cameraY = characterY
-                        character.height = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+            speedY = -0.1
+
+        accX = 0
+        accY = 0
+        if (speedX < -0.03): accX = FRICTION_GRASS
+        elif (speedX > 0.03): accX = -FRICTION_GRASS
+        else: speedX = 0
+        if (speedY < -0.03): accY = FRICTION_GRASS
+        elif (speedY > 0.03): accY = -FRICTION_GRASS
+        else: speedY = 0
+
+        speedX += accX
+        speedY += accY
+
+        delay = 1
+        movedX = characterX + 0.5*accX*delay*delay + speedX*delay
+        movedY = characterY - (0.5*accY*delay*delay + speedY*delay)
+        radius = characterSize/(2*tileSize)
+
+        if (collision(movedX, characterY, math.floor(movedX)-0.001, characterY) or collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001) or collision(movedX, characterY, math.floor(movedX)-0.001, math.ceil(characterY))):
+            if (speedX < 0): speedX = 0
+        if (collision(movedX, characterY, math.ceil(movedX), characterY) or collision(movedX, characterY, math.ceil(movedX), math.floor(characterY)-0.001) or collision(movedX, characterY, math.ceil(movedX), math.ceil(characterY))):
+            if (speedX > 0): speedX = 0
+        if (collision(characterX, movedY, characterX, math.floor(movedY)-0.001) or collision(characterX, movedY, math.floor(characterX)-0.001, math.floor(movedY)-0.001) or collision(characterX, movedY, math.ceil(characterX), math.floor(movedY)-0.001)):
+            if (speedY > 0): speedY = 0
+        if (collision(characterX, movedY, characterX, math.ceil(movedY)) or collision(characterX, movedY, math.floor(characterX)-0.001, math.ceil(movedY)) or collision(characterX, movedY, math.ceil(characterX), math.ceil(movedY))):
+            if (speedY < 0): speedY = 0
+
+        
+        characterY -= speedY
+        cameraY = characterY
+        characterX += speedX
+        cameraX = characterX
+        currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+
+
+        if (tiles[math.floor(characterX) + math.floor(characterY)*width].solid):
+            characterX = spawnX
+            characterY = spawnY
+        
+
 
 
         if (characterX < 0): characterX = 0
@@ -160,7 +174,7 @@ def loadOpenWorld(screen, screenX, screenY):
         for x in range(0, width):
             for y in range(0, height):
                 screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
-        screen.blit(character.img, convertToScreen(characterX-(characterSize/tileSize)/2, characterY-(characterSize/tileSize)/2))
+        screen.blit(character, convertToScreen(characterX-radius, characterY-radius))
         current_time = time.time()
         dt = current_time - prev_time
         prev_time = current_time

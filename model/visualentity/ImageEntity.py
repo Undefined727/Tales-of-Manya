@@ -5,7 +5,7 @@ class ImageEntity(VisualEntity):
     img = pygame.image.load("sprites/" + "nekoarc.png")
     path = "nekoarc.png"
 
-    def __init__(self, name = "Default_Image", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [],path = "nekoarc.png"):
+    def __init__(self, name = "Default_Image", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], path = "nekoarc.png"):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.img = pygame.image.load("sprites/" + path)
 
