@@ -213,7 +213,7 @@ def loadOpenWorld(screen, screenX, screenY):
         current_time = time.time()
         dt = current_time - prev_time
         prev_time = current_time
-        sleep_time = 1. / FPS - dt
+        sleep_time = (1. / FPS) - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
         refreshMenu(screen)
