@@ -9,7 +9,7 @@ class openWorldEntity:
     speedY = 0
     
     currentHeight = 0
-    shape = Circle(0, 0, 0)
+    shape = Circle(0, 0)
     imgPath = "nekoarc.png"
     img = pygame.image.load("sprites/nekoarc.png")
     rotImg = img
@@ -19,8 +19,8 @@ class openWorldEntity:
         self.shape = shape
         self.imgPath = imgPath
         img = pygame.image.load(imgPath)
-        imgSize = abs(shape.corner1-shape.corner4)
-        self.img = pygame.transform.scale(img, tuple(imgSize))
+        imgSize = shape.getImageSize()
+        self.img = pygame.transform.scale(img, imgSize)
         self.rotImg = self.img
         self.currentRotation = 0
     
@@ -31,7 +31,5 @@ class openWorldEntity:
         self.rotImg = pygame.transform.rotate(self.img, self.currentRotation)
     
     def getSprite(self):
-        imgRect = self.rotImg.get_rect()
-        imgRect.center = tuple(self.shape.center)
-        return (self.rotImg, imgRect)
+        return self.rotImg
 

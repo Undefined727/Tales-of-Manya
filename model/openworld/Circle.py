@@ -1,15 +1,26 @@
+import model.openworld.Rectangle as Rectangle
+import numpy as np
+
 class Circle:
-    centerX = 0
-    centerY = 0
+    center = np.array((0, 0))
     radius = 5
 
-    def __init__(self, centerX, centerY, radius):
-        self.centerX = centerX
-        self.centerY = centerY
+    def __init__(self, center, radius):
+        self.center = np.array(center)
         self.radius = radius
     
     def rotate(angle, pivot):
         pass
 
     def getCenter(self):
-        return (self.centerX, self.centerY)
+        return self.center
+    
+    def pointIn(self, point):
+        point = np.array(point)
+        return (np.linalg.norm(point-self.center) <= self.radius)
+    
+    def getImagePosition(self):
+        return tuple(self.center - np.array((self.radius, self.radius)))
+    
+    def getImageSize(self):
+        return (2*self.radius, 2*self.radius)

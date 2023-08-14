@@ -1,4 +1,5 @@
 from model.openworld.Rectangle import Rectangle
+from model.openworld.Circle import Circle
 from model.openworld.openWorldEntity import openWorldEntity
 import pygame, numpy, time
 
@@ -12,23 +13,38 @@ screen = pygame.display.set_mode([screenX, screenY])
 FPS = 60
 prev_time = time.time()
 
-entity = openWorldEntity("sprites/change_active_right.png", Rectangle([(100, 100), (100, 300), (200, 100), (200, 300)]))
-img = pygame.image.load("sprites/catgirl_head.png")
-img = pygame.transform.scale(img, (50, 50))
-entity.rotate(292, entity.shape.center)
+swordEntity = openWorldEntity("sprites/sample_sword.png", Rectangle([(275, 175),  (325, 175),  (275, 275), (325, 275)]))
+sword2Entity = openWorldEntity("sprites/sample_sword.png", Rectangle([(275, 175),  (325, 175),  (275, 275), (325, 275)]))
+sword3Entity = openWorldEntity("sprites/sample_sword.png", Rectangle([(275, 175),  (325, 175),  (275, 275), (325, 275)]))
+sword4Entity = openWorldEntity("sprites/sample_sword.png", Rectangle([(275, 175),  (325, 175),  (275, 275), (325, 275)]))
+playerEntity = openWorldEntity("sprites/catgirl_head.png", Circle((300, 300), 25))
+enemyEntity = openWorldEntity("sprites/frog.png", Circle((425, 300), 25))
+
+sword2Entity.rotate(90, playerEntity.shape.getCenter())
+sword3Entity.rotate(180, playerEntity.shape.getCenter())
+sword4Entity.rotate(270, playerEntity.shape.getCenter())
 while(True):
     for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
 
-    entity.rotate(1, (300, 300))
-    screen.blit(img, (275, 275))
-    screen.blit(img, (500, 275))
-    screen.blit(*entity.getSprite())
+    swordEntity.rotate(2, playerEntity.shape.getCenter())
+    sword2Entity.rotate(2, playerEntity.shape.getCenter())
+    sword3Entity.rotate(2, playerEntity.shape.getCenter())
+    sword4Entity.rotate(2, playerEntity.shape.getCenter())
+
+    screen.blit(swordEntity.getSprite(), swordEntity.shape.getImagePosition())
+    screen.blit(sword2Entity.getSprite(), sword2Entity.shape.getImagePosition())
+    screen.blit(sword3Entity.getSprite(), sword3Entity.shape.getImagePosition())
+    screen.blit(sword4Entity.getSprite(), sword4Entity.shape.getImagePosition())
+    screen.blit(playerEntity.getSprite(), playerEntity.shape.getImagePosition())
+    screen.blit(enemyEntity.getSprite(), enemyEntity.shape.getImagePosition())
 
     pygame.display.flip()
-    if (entity.shape.pointIn((500, 275))): screen.fill((0, 255, 0))
-    elif (entity.shape.pointIn((500, 325))): screen.fill((0, 255, 0))
+    if (swordEntity.shape.collidesWith(enemyEntity.shape)): screen.fill((255, 0, 0))
+    elif (sword2Entity.shape.collidesWith(enemyEntity.shape)): screen.fill((0, 255, 0))
+    elif (sword3Entity.shape.collidesWith(enemyEntity.shape)): screen.fill((0, 0, 255))
+    elif (sword4Entity.shape.collidesWith(enemyEntity.shape)): screen.fill((255, 255, 0))
     else: screen.fill((0, 0, 0))
 
     current_time = time.time()
