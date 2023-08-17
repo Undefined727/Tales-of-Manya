@@ -89,9 +89,6 @@ def loadOpenWorld(screen, screenX, screenY):
     def isInCircle(circleX, circleY, radius, x, y):
         return ((x-circleX)*(x-circleX) + (y-circleY)*(y-circleY)) < (radius*radius)
     
-    movedX = 0
-    movedY = 0
-    
     def collision(playerX, playerY, x, y):
         nonlocal radius
         nonlocal tiles
@@ -99,6 +96,20 @@ def loadOpenWorld(screen, screenX, screenY):
         return (isInCircle(playerX, playerY, radius, x, y) and (((currentHeight-tile.height > 1) or (currentHeight-tile.height < -1) or tile.isSolid())))
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -112,6 +123,10 @@ def loadOpenWorld(screen, screenX, screenY):
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
+
+
+
+        ### Inputs ###
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]):
             movementSpeed = 0.1
@@ -126,6 +141,8 @@ def loadOpenWorld(screen, screenX, screenY):
         if keys[pygame.K_DOWN]:
             speedY = -movementSpeed
 
+
+        ### Physics ###
         accX = 0
         accY = 0
         if (speedX < -FRICTION_GRASS): accX += FRICTION_GRASS
@@ -138,13 +155,13 @@ def loadOpenWorld(screen, screenX, screenY):
         speedX += accX
         speedY += accY
         
-
         delay = 1
         movedX = characterX + 0.5*accX*delay*delay + speedX*delay
         movedY = characterY - (0.5*accY*delay*delay + speedY*delay)
         radius = characterSize/(2*tileSize)
 
-        
+
+        ### Player Collision with Tiles ##
         justCorrected = False
         if (collision(movedX, characterY, math.floor(movedX)-0.001, characterY) or collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001) or collision(movedX, characterY, math.floor(movedX)-0.001, math.ceil(characterY))):
             if (speedX < 0): speedX = 0
@@ -180,6 +197,8 @@ def loadOpenWorld(screen, screenX, screenY):
                     characterX -= 0.05
         
 
+
+        ## Update Player and Camera Position ##
         characterY -= speedY
         characterX += speedX
         if (not justCorrected):
@@ -188,35 +207,42 @@ def loadOpenWorld(screen, screenX, screenY):
         currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
 
 
+        ## If the character is stuck respawn them ##
         if (tiles[math.floor(characterX) + math.floor(characterY)*width].solid):
             characterX = spawnX
             characterY = spawnY
-        
-
-
-
         if (characterX < 0): characterX = spawnX
         elif (characterX > width-1): characterX = spawnX
         if (characterY < 0): characterY = spawnY
         elif (characterY > height-1): characterY = spawnY
 
+
+        ## If the character goes out of bounds bound it ##
         if (cameraX < (screenX/tileSize)/2): cameraX = (screenX/tileSize)/2
         elif (cameraX > width-(screenX/tileSize)/2): cameraX = width-(screenX/tileSize)/2
         if (cameraY > height-(screenY/tileSize)/2): cameraY = height-(screenY/tileSize)/2
         elif (cameraY < (screenY/tileSize)/2): cameraY = (screenY/tileSize)/2
-        
+
+
+        ## Display ##
         screen.fill((0, 0, 0))
         for x in range(0, width):
             for y in range(0, height):
                 screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
         screen.blit(character, convertToScreen(characterX-radius, characterY-radius))
+        refreshMenu(screen)
+
+
+        ## Frame Limiter ##
         current_time = time.time()
         dt = current_time - prev_time
         prev_time = current_time
         sleep_time = (1. / FPS) - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
-        refreshMenu(screen)
+        
+
+        ## Quit ##
         if (quit):
             quit = False 
             break

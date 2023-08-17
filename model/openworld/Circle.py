@@ -1,4 +1,3 @@
-import model.openworld.Rectangle as Rectangle
 import numpy as np
 
 class Circle:
@@ -8,9 +7,6 @@ class Circle:
     def __init__(self, center, radius):
         self.center = np.array(center)
         self.radius = radius
-    
-    def rotate(angle, pivot):
-        pass
 
     def getCenter(self):
         return self.center
