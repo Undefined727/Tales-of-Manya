@@ -11,7 +11,7 @@ class ImageEntity(VisualEntity):
         self.updateImg(path)
 
     def updateImg(self, path):
-        self.img = pygame.image.load("sprites/" + path)
+        self.img = pygame.image.load("src/main/python/sprites/" + path)
 
     def resize(self, width, height):
         self.width = width

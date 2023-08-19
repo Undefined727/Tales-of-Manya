@@ -24,14 +24,14 @@ class Skill:
         else:
             raise IllegalArgumentException("This skill already has that tag")
 
-    def removeTag(self, tag : SkillTag):
-        self.tags.remove(tag)
-
     def addEffect(self, effect : Effect):
         if (effect not in self.effects):
             self.effects.append(effect)
         else:
             raise IllegalArgumentException("This skill already has that effect")
+
+    def removeTag(self, tag : SkillTag):
+        self.tags.remove(tag)
 
     def removeEffect(self, effect : Effect):
         self.effects.remove(effect)

@@ -522,7 +522,7 @@ def inventoryScreen():
     visualEntities.append(VisualEntity.VisualEntity("ExitButton", 2, True, exitButtonX, exitButtonY, buttonSizeX, buttonSizeY, ["Menu"], exitButtonFunction, None, "rectangle"))
 
     visualEntities.append(attachedItemVisual)
-    
+
 
     while True:
         mouse = pygame.mouse.get_pos()
@@ -627,7 +627,7 @@ def inventoryScreen():
                     attachedItemVisual.isShowing = False
                     updateInventory()
                     updateCharacter()
-    
+
         if (not attachedItem == None):
             attachedItemVisual.xPosition = mouse[0] - attachedItemVisual.width/2
             attachedItemVisual.yPosition = mouse[1] - attachedItemVisual.length/2
@@ -645,7 +645,7 @@ def openWorldScreen():
     global visualEntities
     visualEntities = []
     screen.fill((0, 0, 0))
-    file = open("screens/loadingScreen.json", 'r')
+    file = open("src/main/python/screens/loadingScreen.json", 'r')
     data = json.load(file)
     for item in data:
         if item["entityType"] == "Image":
@@ -658,12 +658,12 @@ def openWorldScreen():
             entity = ButtonEntity.createFrom(item)
         elif item["entityType"] == "TransparentButton":
             entity = TransparentButtonEntity.createFrom(item)
-            
+
         entity.resize(entity.width*screen.get_width(), entity.height*screen.get_height())
         entity.reposition(entity.xPosition * screen.get_width(),entity.yPosition * screen.get_height())
         if (item["entityType"] == "TransparentButton" or item["entityType"] == "Button"): buttons.append(entity)
         else: visualEntities.append(entity)
-    
+
     refreshScreen()
     run(screen, screenX, screenY)
     pygame.quit()
