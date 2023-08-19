@@ -11,6 +11,13 @@ class Circle:
     def getCenter(self):
         return self.center
     
+    def setCenter(self, newCenter):
+        self.center = np.array(newCenter)
+
+    def move(self, diff):
+        diff = np.array(diff)
+        self.center = self.center + diff
+    
     def pointIn(self, point):
         point = np.array(point)
         return (np.linalg.norm(point-self.center) <= self.radius)

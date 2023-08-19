@@ -8,7 +8,7 @@ class Tile:
 
     def __init__(self, img, height, solid = False):
         self.height = height
-        self.img = pygame.image.load(img)
+        self.img = pygame.image.load(f"sprites/tiles/{img}")
         self.img = pygame.transform.scale(self.img, (self.tileSize, self.tileSize))
         self.solid = solid
     

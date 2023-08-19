@@ -4,11 +4,13 @@ import model.openworld.ShapeMath as ShapeMath
 from model.character.Character import Character
 import pygame
 
-class openWorldEntity:
+class OpenWorldEntity:
     accX = 0
     accY = 0
     speedX = 0
     speedY = 0
+
+    TILE_SIZE = 48
     
     name = "default_name"
     currentHeight = 0
@@ -33,10 +35,16 @@ class openWorldEntity:
         self.data = data 
         self.trigger = trigger
         self.name = imgPath
+        self.currentHeight = 0
+        self.speedX = 0
+        self.speedY = 0
+        self.accX = 0
+        self.accY = 0
 
 
         img = pygame.image.load("sprites/" + imgPath)
         imgSize = shape.getImageSize()
+        imgSize = (self.TILE_SIZE * imgSize[0], self.TILE_SIZE * imgSize[1])
         self.img = pygame.transform.scale(img, imgSize)
         self.rotImg = self.img
         self.currentRotation = 0
@@ -55,4 +63,9 @@ class openWorldEntity:
     
     def getCenter(self):
         return self.shape.getCenter()
+    
+    def setCenter(self, newCenter):
+        self.shape.setCenter(newCenter)
 
+    def move(self, diff):
+        self.shape.move(diff)

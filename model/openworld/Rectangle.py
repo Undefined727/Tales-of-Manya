@@ -68,3 +68,20 @@ class Rectangle:
     
     def getImageSize(self):
         return tuple(abs(self.corner1-self.corner4))
+    
+    def setCenter(self, newCenter):
+        newCenter = np.array(newCenter)
+        diff = newCenter - self.center
+        self.corner1 = self.corner1 + diff
+        self.corner2 = self.corner2 + diff
+        self.corner3 = self.corner3 + diff
+        self.corner4 = self.corner4 + diff
+        self.center = self.center + diff
+
+    def move(self, diff):
+        diff = np.array(diff)
+        self.corner1 = self.corner1 + diff
+        self.corner2 = self.corner2 + diff
+        self.corner3 = self.corner3 + diff
+        self.corner4 = self.corner4 + diff
+        self.center = self.center + diff
