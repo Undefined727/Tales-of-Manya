@@ -1,4 +1,7 @@
 import unittest
+import os
+import sys
+sys.path.append(os.path.abspath("."))
 from src.main.python.model.skill.Skill import Skill
 
 class Test_Skill(unittest.TestCase):
