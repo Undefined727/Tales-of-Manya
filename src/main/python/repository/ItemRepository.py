@@ -32,3 +32,4 @@ class ItemRepository:
         for item in self.new_items:
             final_list.append(item.toDatabaseItem())
         engine = DatabaseFetcher(self.database_path)
+        # TODO finish

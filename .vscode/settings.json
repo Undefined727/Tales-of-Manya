@@ -15,5 +15,8 @@
     "window.zoomLevel": 1,
     "terminal.integrated.copyOnSelection": true,
     "terminal.integrated.cursorStyle": "underline",
-    "terminal.integrated.defaultProfile.windows": "Git Bash"
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "master"
+    ]
 }

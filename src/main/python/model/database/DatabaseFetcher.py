@@ -6,7 +6,7 @@ class DatabaseFetcher:
     database:Engine
     connection:Connection
 
-    def __init__(self, path):
+    def __init__(self, path : str):
         self.database = create_engine(f"sqlite:///{path}", echo = False)
         self.connection = self.database.connect()
 
@@ -22,9 +22,9 @@ class DatabaseFetcher:
         self.connection.close()
         self.database.dispose()
 
-repo = DatabaseFetcher("../itemdata.db")
-query = "SELECT * FROM itemdata"
-result = repo.retrieve(query)
-print(result)
-print(type(result))
-repo.close()
+# repo = DatabaseFetcher("../itemdata.db")
+# query = "SELECT * FROM items"
+# result = repo.retrieve(query)
+# print(result)
+# print(type(result))
+# repo.close()
