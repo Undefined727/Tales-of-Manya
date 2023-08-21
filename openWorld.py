@@ -7,10 +7,12 @@ from model.visualentity.ImageButton import ImageButton
 from model.openworld.OpenWorldEntity import OpenWorldEntity
 from model.openworld.Rectangle import Rectangle
 from model.openworld.Circle import Circle
+from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from displayHandler import displayEntity
 from JSONParser import loadJson
-import numpy, math, pygame, time
+import numpy as np
+import math, pygame, time
 from PIL import Image
 
 visualEntities = []
@@ -43,7 +45,7 @@ def loadOpenWorld(screen, screenX, screenY):
     FPS = 60
     prev_time = time.time()
     img = Image.open("maps/samplemap.png")
-    npArray = numpy.array(img)
+    npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
 
@@ -73,45 +75,47 @@ def loadOpenWorld(screen, screenX, screenY):
     spawnY = height/2
     characterSize = CHAR_SIZE_MULTIPLIER*TILE_SIZE
     radius = characterSize/(2*TILE_SIZE)
-    characterX = spawnX
-    characterY = spawnY
-    cameraX = characterX
-    cameraY = characterY
-    character = OpenWorldEntity("catgirl_head.png", Circle((characterX, characterY), radius), "player", None, None)
+    character = OpenWorldEntity("catgirl_head.png", Circle((spawnX, spawnY), radius), "player", None, "enemy")
+    cameraX = character.getCenter()[0]
+    cameraY = character.getCenter()[1]
+
     sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
-    sword.setCenter((characterX, characterY-3*radius))
+    # Sets height to -1 to indicate no corner correction
+    sword.currentHeight = -1
+    sword.setCenter((character.getCenter()[0], character.getCenter()[1]-3*radius))
     swordSwinging = 0
+
+    testEnemyStats = Character("Wizard", "wizard.png", 5)
+    testEnemy = OpenWorldEntity("frog_head.png", Circle((character.getCenter()[0]+5, character.getCenter()[1]+1), radius), "enemy", testEnemyStats, "attack")
 
     currentEntities = []
     currentEntities.append(character)
+    currentEntities.append(testEnemy)
 
     
     movementSpeed = 0.1
-    character.currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
+    character.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
     
 
     def convertToScreen(xValue, yValue):
         xValue = (xValue-cameraX)*TILE_SIZE + screenX/2
         yValue = (yValue-cameraY)*TILE_SIZE + screenY/2
         return (xValue, yValue)
-
-    def isInCircle(circleX, circleY, radius, x, y):
-        return ((x-circleX)*(x-circleX) + (y-circleY)*(y-circleY)) < (radius*radius)
     
-    def collision(playerX, playerY, x, y):
-        nonlocal radius
+    # Compares entity and shape
+    def collisionTile(entity, tile, movedVector):
         nonlocal tiles
-        tile = tiles[math.floor(x) + math.floor(y)*width]
-        return (isInCircle(playerX, playerY, radius, x, y) and (((character.currentHeight-tile.height > 1) or (character.currentHeight-tile.height < -1) or tile.isSolid())))
-
-
-
-
-
-
-
-
-
+        moved = entity.newMoved(movedVector)
+        minX = tile.getImagePosition()[0]
+        minY = tile.getImagePosition()[1]
+        movedCenter = moved.getCenter()
+        entityHeight = tiles[math.floor(movedCenter[0]) + math.floor(movedCenter[1])*width].height
+        
+        tileData = tiles[round(minX) + round(minY)*width]
+        if ((abs(entityHeight - tileData.height) > 1) or tileData.isSolid()):
+            if (ShapeMath.collides(moved, tile)):
+                return True
+        return False
 
 
 
@@ -146,9 +150,10 @@ def loadOpenWorld(screen, screenX, screenY):
         if keys[pygame.K_RIGHT]:
             character.speedX = movementSpeed
         if keys[pygame.K_UP]:
-            character.speedY = movementSpeed
-        if keys[pygame.K_DOWN]:
             character.speedY = -movementSpeed
+        if keys[pygame.K_DOWN]:
+            character.speedY = movementSpeed
+        
 
         if keys[pygame.K_SPACE]:
             if (swordSwinging <= 0):
@@ -175,80 +180,82 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
         ### Physics ###
-        character.accX = 0
-        character.accY = 0
-        if (character.speedX < -FRICTION_GRASS): character.accX += FRICTION_GRASS
-        elif (character.speedX > FRICTION_GRASS): character.accX += -FRICTION_GRASS
-        else: character.speedX = 0
-        if (character.speedY < -FRICTION_GRASS): character.accY += FRICTION_GRASS
-        elif (character.speedY > FRICTION_GRASS): character.accY += -FRICTION_GRASS
-        else: character.speedY = 0
+        for entity in currentEntities:
+            ## Friction ##
+            if (abs(entity.speedX) < FRICTION_GRASS):
+                entity.speedX = 0
+            else:
+                entity.speedX = entity.speedX - math.copysign(FRICTION_GRASS, entity.speedX)
+            if (abs(entity.speedY) < FRICTION_GRASS):
+                entity.speedY = 0
+            else:
+                entity.speedY = entity.speedY - math.copysign(FRICTION_GRASS, entity.speedY)
 
-        character.speedX += character.accX
-        character.speedY += character.accY
         
-        delay = 1
-        movedX = characterX + 0.5*character.accX*delay*delay + character.speedX*delay
-        movedY = characterY - (0.5*character.accY*delay*delay + character.speedY*delay)
-        radius = characterSize/(2*TILE_SIZE)
+            movedXVector = np.array([entity.speedX, 0])
+            movedYVector = np.array([0, entity.speedY])
+            
+            #### Entity Collision with Tiles ####
+            if (not entity.currentHeight == -1):
+
+                ## Generate Tiles entity may collide with ##
+                minX = entity.getImagePosition()[0]
+                minY = entity.getImagePosition()[1]
+                maxX = (entity.getImagePosition() + entity.getImageSize())[0]
+                maxY = (entity.getImagePosition() + entity.getImageSize())[1]
+
+                scannedWidth = int(math.ceil(maxX)-math.floor(minX)+2)
+                scannedHeight = int(math.ceil(maxY)-math.floor(minY)+2)
+
+                scannedTiles = []
+                for y in range(0, scannedHeight):
+                    for x in range(0, scannedWidth):
+                        corner1 = np.array([(math.floor(minX)-1 + x), (math.floor(minY)-1 + y)])
+                        corner2 = np.array([(math.floor(minX) + x), (math.floor(minY)-1 + y)])
+                        corner3 = np.array([(math.floor(minX)-1 + x), (math.floor(minY) + y)])
+                        corner4 = np.array([(math.floor(minX) + x), (math.floor(minY) + y)])
+                        scannedTiles.append(Rectangle([corner1, corner2, corner3, corner4]))
 
 
-        ### Player Collision with Tiles ##
-        justCorrected = False
-        if (collision(movedX, characterY, math.floor(movedX)-0.001, characterY) or collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001) or collision(movedX, characterY, math.floor(movedX)-0.001, math.ceil(characterY))):
-            if (character.speedX < 0): character.speedX = 0
-            if (not collision(movedX, characterY, math.floor(movedX)-0.001, characterY) and character.speedY == 0):
-                justCorrected = True
-                if collision(movedX, characterY, math.floor(movedX)-0.001, math.floor(characterY)-0.001):
-                    characterY += 0.05
-                else:
-                    characterY -= 0.05
-        if (collision(movedX, characterY, math.ceil(movedX), characterY) or collision(movedX, characterY, math.ceil(movedX), math.floor(characterY)-0.001) or collision(movedX, characterY, math.ceil(movedX), math.ceil(characterY))):
-            if (character.speedX > 0): character.speedX = 0
-            if (not collision(movedX, characterY, math.ceil(movedX), characterY) and character.speedY == 0):
-                justCorrected = True
-                if collision(movedX, characterY, math.ceil(movedX), math.floor(characterY)-0.001):
-                    characterY += 0.05
-                else:
-                    characterY -= 0.05
-        if (collision(characterX, movedY, characterX, math.floor(movedY)-0.001) or collision(characterX, movedY, math.floor(characterX)-0.001, math.floor(movedY)-0.001) or collision(characterX, movedY, math.ceil(characterX), math.floor(movedY)-0.001)):
-            if (character.speedY > 0): character.speedY = 0
-            if (not collision(characterX, movedY, characterX, math.floor(movedY)-0.001) and character.speedX == 0):
-                justCorrected = True
-                if collision(characterX, movedY, math.floor(characterX)-0.001, math.floor(movedY)-0.001):
-                    characterX += 0.05
-                else:
-                    characterX -= 0.05
-        if (collision(characterX, movedY, characterX, math.ceil(movedY)) or collision(characterX, movedY, math.floor(characterX)-0.001, math.ceil(movedY)) or collision(characterX, movedY, math.ceil(characterX), math.ceil(movedY))):
-            if (character.speedY < 0): character.speedY = 0
-            if (not collision(characterX, movedY, characterX, math.ceil(movedY)) and character.speedX == 0):
-                justCorrected = True
-                if collision(characterX, movedY, math.floor(characterX)-0.001, math.ceil(movedY)):
-                    characterX += 0.05
-                else:
-                    characterX -= 0.05
+                ## Check Collision ##
+                for y in range(0, scannedHeight):
+                    for x in range(0, scannedWidth):
+                        tile = scannedTiles[x + y*scannedWidth]
+                        if (collisionTile(entity, tile, movedXVector)):
+                            movedXVector[0] = 0
+                        if (collisionTile(entity, tile, movedYVector)):
+                            movedYVector[1] = 0
+                        if (movedXVector[0] == 0 and movedYVector[1] == 0): 
+                            break
+                    else:
+                        continue
+                    break
+
+
+            movedVector = movedXVector + movedYVector
+
+            ## Move Thing ##
+            entity.shape.move(movedVector)
+            entity.currentHeight = tiles[math.floor(entity.getCenter()[0]) + math.floor(entity.getCenter()[1])*width].height
+            if (movedVector[0] == 0): entity.speedX = 0
+            if (movedVector[1] == 0): entity.speedY = 0
+
+
+
+        ## Update Camera Position ##
+        cameraY = character.getCenter()[1]
+        cameraX = character.getCenter()[0]
         
-
-
-        ## Update Player and Camera Position ##
-        characterY -= character.speedY
-        characterX += character.speedX
-        character.setCenter((characterX, characterY))
-        sword.move((character.speedX, -1*character.speedY))
-        if (not justCorrected):
-            cameraY = characterY
-            cameraX = characterX
-        character.currentHeight = tiles[math.floor(characterX) + math.floor(characterY)*width].height
 
 
         ## If the character is stuck respawn them ##
-        if (tiles[math.floor(characterX) + math.floor(characterY)*width].solid):
-            characterX = spawnX
-            characterY = spawnY
-        if (characterX < 0): characterX = spawnX
-        elif (characterX > width-1): characterX = spawnX
-        if (characterY < 0): characterY = spawnY
-        elif (characterY > height-1): characterY = spawnY
+        if (tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].solid):
+            character.getCenter()[0] = spawnX
+            character.getCenter()[1] = spawnY
+        if (character.getCenter()[0] < 0): character.getCenter()[0] = spawnX
+        elif (character.getCenter()[0] > width-1): character.getCenter()[0] = spawnX
+        if (character.getCenter()[1] < 0): character.getCenter()[1] = spawnY
+        elif (character.getCenter()[1] > height-1): character.getCenter()[1] = spawnY
 
 
         ## If the camera goes out of bounds bound it ##
@@ -257,6 +264,7 @@ def loadOpenWorld(screen, screenX, screenY):
         if (cameraY > height-(screenY/TILE_SIZE)/2): cameraY = height-(screenY/TILE_SIZE)/2
         elif (cameraY < (screenY/TILE_SIZE)/2): cameraY = (screenY/TILE_SIZE)/2
 
+
         ## Entity Collision Logic ##
         for entity in currentEntities:
          if (not entity.trigger == None):
@@ -264,8 +272,10 @@ def loadOpenWorld(screen, screenX, screenY):
                    if (trigger.entityType == entity.trigger):
                         if (ShapeMath.collides(trigger.shape, entity.shape)):
                              if (entity.entityType == "enemy"):
-                                  entity.data.health.setCurrentValue(entity.data.health.getCurrentValue()-10)
-                                  print(str(entity.data.health.getCurrentValue()) + "/" + str(entity.data.health.getMaxValue()))
+                                  combatButton()
+                             if (entity.entityType == "player"):
+                                  combatButton()
+
 
         ## Swing Sword ##
         if (swordSwinging > 0):
@@ -275,7 +285,7 @@ def loadOpenWorld(screen, screenX, screenY):
                 if (sword in currentEntities):
                     currentEntities.remove(sword)
                 sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
-                sword.setCenter((characterX, characterY-3*radius))
+                sword.setCenter((character.getCenter()[0], character.getCenter()[1]-3*radius))
 
 
         ## Display ##
@@ -285,8 +295,9 @@ def loadOpenWorld(screen, screenX, screenY):
                 screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
         for entity in currentEntities:
             screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
-        refreshMenu(screen)
 
+            
+        refreshMenu(screen)
 
         ## Frame Limiter ##
         current_time = time.time()

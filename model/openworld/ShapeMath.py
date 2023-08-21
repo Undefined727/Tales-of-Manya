@@ -46,12 +46,16 @@ def collides(shape1, shape2):
         else: print("bruh")
 
 def collidesCircleCircle(circle1, circle2):
-        distance = np.linalg.norm(circle1.getCenter()-circle2.getCenter())
-        return ((distance <= circle1.radius) or (distance <= circle2.radius))
+        vector = circle1.getCenter()-circle2.getCenter()
+        if (np.linalg.norm(vector) == 0): return True
+        vector = vector/np.linalg.norm(vector)
+        vector = vector*circle2.radius
+        return (circle1.pointIn(vector+circle2.getCenter()))
 
 def collidesRectRect(rect1, rect2):
         rect1Corners = rect1.getCorners()
         rect2Corners = rect2.getCorners()
+        if (rect1.getCenter().all() == rect2.getCenter().all()): return True
         for corner in rect2Corners:
                 if (rect1.pointIn(corner)): return True
         for corner in rect1Corners:

@@ -5,8 +5,6 @@ from model.character.Character import Character
 import pygame
 
 class OpenWorldEntity:
-    accX = 0
-    accY = 0
     speedX = 0
     speedY = 0
 
@@ -38,8 +36,6 @@ class OpenWorldEntity:
         self.currentHeight = 0
         self.speedX = 0
         self.speedY = 0
-        self.accX = 0
-        self.accY = 0
 
 
         img = pygame.image.load("sprites/" + imgPath)
@@ -61,6 +57,9 @@ class OpenWorldEntity:
     def getImagePosition(self):
         return self.shape.getImagePosition()
     
+    def getImageSize(self):
+        return self.shape.getImageSize()
+    
     def getCenter(self):
         return self.shape.getCenter()
     
@@ -69,3 +68,6 @@ class OpenWorldEntity:
 
     def move(self, diff):
         self.shape.move(diff)
+
+    def newMoved(self, diff):
+        return self.shape.newMoved(diff)

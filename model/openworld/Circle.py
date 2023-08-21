@@ -17,13 +17,17 @@ class Circle:
     def move(self, diff):
         diff = np.array(diff)
         self.center = self.center + diff
+
+    def newMoved(self, diff):
+        diff = np.array(diff)
+        return Circle(self.center + diff, self.radius)
     
     def pointIn(self, point):
         point = np.array(point)
         return (np.linalg.norm(point-self.center) <= self.radius)
     
     def getImagePosition(self):
-        return tuple(self.center - np.array((self.radius, self.radius)))
+        return self.center - np.array((self.radius, self.radius))
     
     def getImageSize(self):
-        return (2*self.radius, 2*self.radius)
+        return np.array([2*self.radius, 2*self.radius])

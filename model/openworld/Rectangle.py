@@ -64,10 +64,19 @@ class Rectangle:
         if (self.corner2[1] < yPos): yPos = self.corner2[1]
         if (self.corner3[1] < yPos): yPos = self.corner3[1]
         if (self.corner4[1] < yPos): yPos = self.corner4[1]
-        return (xPos, yPos)
+        return np.array([xPos, yPos])
     
     def getImageSize(self):
-        return tuple(abs(self.corner1-self.corner4))
+        topX, topY = self.getImagePosition()
+        bottomX = self.corner1[0]
+        if (self.corner2[0] > bottomX): bottomX = self.corner2[0]
+        if (self.corner3[0] > bottomX): bottomX = self.corner3[0]
+        if (self.corner4[0] > bottomX): bottomX = self.corner4[0]
+        bottomY = self.corner1[1]
+        if (self.corner2[1] > bottomY): bottomY = self.corner2[1]
+        if (self.corner3[1] > bottomY): bottomY = self.corner3[1]
+        if (self.corner4[1] > bottomY): bottomY = self.corner4[1]
+        return np.array([bottomX-topX, bottomY-topY])
     
     def setCenter(self, newCenter):
         newCenter = np.array(newCenter)
@@ -85,3 +94,7 @@ class Rectangle:
         self.corner3 = self.corner3 + diff
         self.corner4 = self.corner4 + diff
         self.center = self.center + diff
+
+    def newMoved(self, diff):
+        diff = np.array(diff)
+        return Rectangle([self.corner1 + diff, self.corner2 + diff, self.corner3 + diff, self.corner4 + diff])
