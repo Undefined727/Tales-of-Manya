@@ -12,6 +12,7 @@ class Skill:
     ## effects:list[Effect] ##
 
     def __init__(self, name:str = "placeholder name", manaCost:int = 0):
+        self.id = uuid.uuid5(uuid.NAMESPACE_DNS, 'basedstudios.dev')
         self.name = name
         self.manaCost = manaCost
         self.tags:list[SkillTag] = list()
