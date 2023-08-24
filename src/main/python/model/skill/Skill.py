@@ -8,15 +8,15 @@ class Skill:
     id:str
     name:str
     manaCost:int
-    tags:list[SkillTag]
-    effects:list[Effect]
+    ## tags:list[SkillTag] ##
+    ## effects:list[Effect] ##
 
-    def __init__(self, name:str = "placeholder name", manaCost:int = 0, tags:list[SkillTag] = list(), effects:list[Effect] = list()):
-        self.id = str(uuid.uuid5(uuid.NAMESPACE_DNS,"basedstudios.dev"))
+    def __init__(self, name:str = "placeholder name", manaCost:int = 0):
         self.name = name
         self.manaCost = manaCost
-        self.tags = tags
-        self.effects = effects
+        self.tags:list[SkillTag] = list()
+        self.effects:list[Effect] = list()
+
 
     def addTag(self, tag : SkillTag):
         if (tag not in self.tags):
