@@ -1,5 +1,5 @@
-from model.visualentity.VisualEntity import VisualEntity
-from model.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.VisualEntity import VisualEntity
+from view.visualentity.ShapeEntity import ShapeEntity
 
 class ShapeButton(VisualEntity):
     func = None

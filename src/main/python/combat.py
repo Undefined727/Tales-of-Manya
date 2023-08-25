@@ -1,18 +1,18 @@
 import pygame, math, random
-from model.visualentity.Tag import Tag
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ShapeButton import ShapeButton
-from model.visualentity.ImageButton import ImageButton
-from model.visualentity.DynamicStatEntity import DynamicStatEntity
-from model.visualentity.CombatCharacterEntity import CharacterEntities
+from view.visualentity.Tag import Tag
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeButton import ShapeButton
+from view.visualentity.ImageButton import ImageButton
+from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.CombatCharacterEntity import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
-from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
-from displayHandler import displayEntity
-from JSONParser import loadJson
+from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
+from view.displayHandler import displayEntity
+from view.JSONParser import loadJson
 
 
 visualEntities = []
@@ -24,8 +24,8 @@ nextScreen = "Quit"
 
 inventory = []
 
-party = [Character("Catgirl", "catgirl.png", "catgirl_head.png", 10), Character("Catgirl", "catgirl.png", "catgirl_head.png", 10)]
-party.append(Character("lmao", "catgirl.png", "catgirl_head.png", 20))
+party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
+party.append(Character("lmao", "catgirl.png", 20))
 
 party[0].skills[0] = Skill(1)
 party[0].skills[1] = Skill(2)

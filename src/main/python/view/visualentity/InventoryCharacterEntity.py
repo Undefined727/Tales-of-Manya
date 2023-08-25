@@ -1,7 +1,7 @@
 from model.character.Character import Character
-from model.visualentity.DynamicStatEntity import DynamicStatEntity
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.TextEntity import TextEntity
+from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.TextEntity import TextEntity
 
 class InventoryCharacterEntity:
 

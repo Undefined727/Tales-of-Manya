@@ -1,11 +1,11 @@
-from src.main.python.model.character.CharacterLoadout import CharacterLoadout
-from src.main.python.model.character.ExperienceStat import ExperienceManager
-from src.main.python.model.character.DynamicStat import DynamicStat
-from src.main.python.model.effect.EffectsList import EffectsList
-from src.main.python.model.character.Inventory import Inventory
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.model.skill.Skill import Skill
-from src.main.python.model.item.Item import Item
+from model.character.CharacterLoadout import CharacterLoadout
+from model.character.ExperienceStat import ExperienceManager
+from model.character.DynamicStat import DynamicStat
+from model.effect.EffectsList import EffectsList
+from model.character.Inventory import Inventory
+from model.effect.EffectType import EffectType
+from model.skill.Skill import Skill
+from model.item.Item import Item
 from uuid import uuid4
 
 
@@ -69,9 +69,10 @@ class Character:
         # bonuses of their respective stat and add them up into a single
         # value.
 
-        from_buffs = self.buff_bonuses.get(bonus_type)
-        from_loadout = self.loadout_bonuses.get(bonus_type)
-        return from_loadout + from_buffs
+        #from_buffs = self.buff_bonuses.get(bonus_type)
+        #from_loadout = self.loadout_bonuses.get(bonus_type)
+        #return from_loadout + from_buffs
+        return -1
 
     def getCurrentHP(self) -> int:
         return self.health.getCurrentValue()
@@ -118,7 +119,7 @@ class Character:
     def earnXP(self, amount : int):
         self.experience.earnXP(amount)
 
-    def setXPFormula(self, new_formula : function):
+    def setXPFormula(self, new_formula):
         self.experience.setFormula(new_formula)
 
     def update(self):

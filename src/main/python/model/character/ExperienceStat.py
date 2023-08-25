@@ -1,12 +1,11 @@
-from src.main.python.util.Messages import Error
-from src.main.python.model.character.DynamicStat import DynamicStat
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
-from src.main.python.util.InvalidOperationException import InvalidOperationException
+from util.Messages import Error
+from model.character.DynamicStat import DynamicStat
+from util.IllegalArgumentException import IllegalArgumentException
+from util.InvalidOperationException import InvalidOperationException
 
 class ExperienceManager:
     level:int
     max_level:int
-    formula:function
     experience:DynamicStat
 
     BASE_FORMULA = lambda level: level * 100
@@ -24,7 +23,7 @@ class ExperienceManager:
     def getXPToNextLevel(self) -> int:
         return self.experience.getMaxValue()
 
-    def getFormula(self) -> function:
+    def getFormula(self):
         return self.formula
 
     def getLevel(self) -> int:
@@ -36,7 +35,7 @@ class ExperienceManager:
     def setXP(self, new_value : int):
         self.experience.setCurrentValue(new_value)
 
-    def setFormula(self, new_formula : function):
+    def setFormula(self, new_formula):
         self.formula = new_formula
 
     def setLevel(self, new_value : int):

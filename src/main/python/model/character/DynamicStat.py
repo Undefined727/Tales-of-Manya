@@ -1,5 +1,5 @@
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
-from src.main.python.util.Messages import Error
+from util.IllegalArgumentException import IllegalArgumentException
+from util.Messages import Error
 
 class DynamicStat:
     current_value:float = 0

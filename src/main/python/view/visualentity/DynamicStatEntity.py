@@ -1,8 +1,8 @@
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.TextEntity import TextEntity
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.TextEntity import TextEntity
 from model.character.Character import DynamicStat
-from model.visualentity.Tag import Tag
+from view.visualentity.Tag import Tag
 import pygame
 
 class DynamicStatEntity:
@@ -36,7 +36,7 @@ class DynamicStatEntity:
         self.text = TextEntity("text", True, 0, 0, 0, 0, [], str(int(dynamicStat.getCurrentValue())) + "/" + str(int(dynamicStat.getMaxValue())), "mono", int(self.width/10), "black", None)
 
         if (statType == "mana"):
-            self.border.img = pygame.image.load("sprites/" + "ManaBar.png")
+            self.border.img = pygame.image.load("src/main/python/sprites/" + "ManaBar.png")
             self.fullRect.color = "blue"
         
     def reposition(self, xPosition, yPosition):

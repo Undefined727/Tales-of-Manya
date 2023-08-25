@@ -1,18 +1,18 @@
 import pygame, numpy, math, os, random, json, copy
-from model.visualentity.Tag import Tag
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ShapeButton import ShapeButton
-from model.visualentity.ImageButton import ImageButton
-from model.visualentity.DynamicStatEntity import DynamicStatEntity
-from model.visualentity.CombatCharacterEntity import CharacterEntities
+from view.visualentity.Tag import Tag
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeButton import ShapeButton
+from view.visualentity.ImageButton import ImageButton
+from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.CombatCharacterEntity import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
-from model.visualentity.CombatEnemyEntity import CombatEnemyEntity
-from displayHandler import displayEntity
-from JSONParser import loadJson
+from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
+from view.displayHandler import displayEntity
+from view.JSONParser import loadJson
 
 
 visualEntities = []
@@ -24,8 +24,8 @@ nextScreen = "Quit"
 
 inventory = []
 
-party = [Character("Catgirl", "catgirl.png", "catgirl_head.png", 10), Character("Catgirl", "catgirl.png", "catgirl_head.png", 10)]
-party.append(Character("lmao", "catgirl.png", "catgirl_head.png", 20))
+party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
+party.append(Character("lmao", "catgirl.png",  20))
 
 party[0].skills[0] = Skill(1)
 party[0].skills[1] = Skill(2)
@@ -76,44 +76,6 @@ def loadInventory(screen, screenX, screenY):
     loadJson("inventoryScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
 
     activeCharacter = 1
-    '''
-    exitButtonX = screenX/16
-    exitButtonY = 5*screenY/6
-    buttonSizeX = 4*screenX/16
-    buttonSizeY = screenY/8
-    catgirlX = 29*screenX/48
-    catgirlY = 3*screenY/12
-    catgirlSizeX = screenX/3
-    catgirlSizeY = 2*screenY/3
-    nameX = 29*screenX/48
-    nameY = 6*screenY/48
-    levelX = 36*screenX/48
-    itemSizeX = screenX/12
-    itemSizeY = screenX/12
-    helmetX = 21*screenX/24
-    helmetY = 4*screenY/24
-    chestplateX = 21*screenX/24
-    chestplateY = 8*screenY/24
-    leggingsX = 21*screenX/24
-    leggingsY = 12*screenY/24
-    bootsX = 21*screenX/24
-    bootsY = 16*screenY/24
-    accessory1X = 16*screenX/24
-    accessory1Y = 19*screenY/24
-    accessory2X = 37*screenX/48
-    accessory2Y = 19*screenY/24
-    weaponX = 29*screenX/48
-    weaponY = 10*screenY/24
-    statFontSize = screenX/100
-    nameFontSize = screenX/40
-
-    changeCharacterRX = 22*screenX/24
-    changeCharacterRY = 4*screenY/48
-    changeCharacterLX = 20*screenX/24
-    changeCharacterLY = 4*screenY/48
-    changeCharacterSizeX = screenX/24
-    changeCharacterSizeY = 3*screenY/48
-    '''
 
 
     def itemClickFunction(*args):

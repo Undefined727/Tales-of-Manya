@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
-from src.main.python.model.skill.SkillTag import SkillTag
-from src.main.python.model.effect.Effect import Effect
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from model.skill.SkillTag import SkillTag
+from model.effect.Effect import Effect
+from util.IllegalArgumentException import IllegalArgumentException
 import uuid
 
 class Skill:

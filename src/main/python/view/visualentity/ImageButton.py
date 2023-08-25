@@ -1,6 +1,6 @@
 from PIL import Image
-from model.visualentity.VisualEntity import VisualEntity
-from model.visualentity.ImageEntity import ImageEntity
+from view.visualentity.VisualEntity import VisualEntity
+from view.visualentity.ImageEntity import ImageEntity
 import numpy, pygame
 
 class ImageButton(VisualEntity):
@@ -40,7 +40,7 @@ class ImageButton(VisualEntity):
         self.resize(self.width*screenX, self.height*screenY)
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.img.scale(screenX, screenY)
-        PILimg = Image.open("sprites/" + self.path).convert('RGBA')
+        PILimg = Image.open("src/main/python/sprites/" + self.path).convert('RGBA')
         PILimg = PILimg.resize((int(self.width), int(self.height)))
         self.npArray = numpy.asarray(PILimg)
 

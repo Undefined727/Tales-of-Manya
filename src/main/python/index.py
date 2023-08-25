@@ -1,13 +1,11 @@
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ShapeButton import ShapeButton
-from model.visualentity.ImageButton import ImageButton
-from displayHandler import displayEntity
+import os, sys
+sys.path.append(os.path.abspath("."))
+
+from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
 from inventory import loadInventory
-from JSONParser import loadJson
+from view.JSONParser import loadJson
 import json, pygame, os
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -16,7 +14,7 @@ info = pygame.display.Info()
 screenX,screenY = info.current_w,info.current_h
 #screenX, screenY = 960, 600
 pygame.display.set_caption('Catgirl Dungeon')
-pygame.display.set_icon(pygame.image.load('sprites/catgirl_head.png'))
+pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 
 visualEntities = []

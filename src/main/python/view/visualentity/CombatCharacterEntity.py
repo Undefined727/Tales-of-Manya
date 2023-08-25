@@ -1,13 +1,13 @@
 from model.character.Character import Character
-from model.visualentity.DynamicStatEntity import DynamicStatEntity
-from model.visualentity.ImageEntity import ImageEntity
+from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.ImageEntity import ImageEntity
 
 class CharacterEntities:
 
     HPBar:DynamicStatEntity
     ManaBar:DynamicStatEntity
     img:ImageEntity
-    headImg:ImageEntity
+    inactiveImg:ImageEntity
     checkmark:ImageEntity
     character:Character
 
@@ -16,17 +16,17 @@ class CharacterEntities:
         self.HPBar = DynamicStatEntity(character.health, "health")
         self.ManaBar = DynamicStatEntity(character.mana, "mana")
         self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
-        self.headImg = ImageEntity(character.name + "headImg", True, 0, 0, 0, 0, [], character.headImg)
+        self.inactiveImg = ImageEntity(character.name + "inactiveImg", True, 0, 0, 0, 0, [], character.inactiveImg)
         self.checkmark = ImageEntity(character.name + "checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
 
     def getItems(self):
-        return [self.img, self.headImg, self.HPBar, self.ManaBar, self.checkmark]
+        return [self.img, self.inactiveImg, self.HPBar, self.ManaBar, self.checkmark]
 
     def scale(self, screenX, screenY):
         self.HPBar.scale(screenX, screenY)
         self.ManaBar.scale(screenX, screenY)
         self.img.scale(screenX, screenY)
-        self.headImg.scale(screenX, screenY)
+        self.inactiveImg.scale(screenX, screenY)
         self.checkmark.scale(screenX, screenY)
     
     def changeCharacter(self, character):
@@ -34,7 +34,7 @@ class CharacterEntities:
             self.HPBar.isShowing = False
             self.ManaBar.isShowing = False
             self.img.isShowing = False
-            self.headImg.isShowing = False
+            self.inactiveImg.isShowing = False
             self.checkmark.isShowing = False
             return
 
@@ -42,7 +42,7 @@ class CharacterEntities:
         self.HPBar.changeStat(character.health, "health")
         self.ManaBar.changeStat(character.mana, "mana")
         self.img.updateImg(character.img)
-        self.headImg.updateImg(character.headImg)
+        self.inactiveImg.updateImg(character.inactiveImg)
         self.checkmark.isShowing = not character.hasActed
     
     def updateCharacter(self):
@@ -66,9 +66,9 @@ class CharacterEntities:
             newObject.img.resize(json_object["imgWidth"], json_object["imgHeight"])
         else: newObject.img.isShowing = False
         if ("headImgXPosition" in json_object):
-            newObject.headImg.reposition(json_object["headImgXPosition"], json_object["headImgYPosition"])
-            newObject.headImg.resize(json_object["headImgWidth"], json_object["headImgHeight"])
-        else: newObject.headImg.isShowing = False
+            newObject.inactiveImg.reposition(json_object["headImgXPosition"], json_object["headImgYPosition"])
+            newObject.inactiveImg.resize(json_object["headImgWidth"], json_object["headImgHeight"])
+        else: newObject.inactiveImg.isShowing = False
         if ("checkmarkXPosition" in json_object):
             newObject.checkmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
             newObject.checkmark.resize(json_object["checkmarkWidth"], json_object["checkmarkHeight"])

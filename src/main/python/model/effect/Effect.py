@@ -1,6 +1,6 @@
-from src.main.python.model.effect.EffectTag import EffectTag
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from model.effect.EffectTag import EffectTag
+from model.effect.EffectType import EffectType
+from util.IllegalArgumentException import IllegalArgumentException
 
 class Effect:
     id: str

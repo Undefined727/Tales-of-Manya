@@ -1,7 +1,7 @@
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.Tag import Tag
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.Tag import Tag
 from model.character.Character import Character
 
 class CombatEnemyEntity:

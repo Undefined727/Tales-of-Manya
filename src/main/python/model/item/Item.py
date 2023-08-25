@@ -1,7 +1,7 @@
 from sqlalchemy.engine.row import Row
-from src.main.python.model.item.ItemSlot import ItemSlot
-from src.main.python.model.item.ItemTag import ItemTag
-from src.main.python.model.effect.EffectType import EffectType
+from model.item.ItemSlot import ItemSlot
+from model.item.ItemTag import ItemTag
+from model.effect.EffectType import EffectType
 import uuid
 
 class Item:

@@ -1,4 +1,4 @@
-from model.visualentity.VisualEntity import VisualEntity
+from view.visualentity.VisualEntity import VisualEntity
 
 class ShapeEntity(VisualEntity):
     color = None

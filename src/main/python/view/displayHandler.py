@@ -1,9 +1,9 @@
-from model.visualentity.ImageEntity import ImageEntity
-from model.visualentity.ShapeEntity import ShapeEntity
-from model.visualentity.TextEntity import TextEntity
-from model.visualentity.ShapeButton import ShapeButton
-from model.visualentity.ImageButton import ImageButton
-from model.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeButton import ShapeButton
+from view.visualentity.ImageButton import ImageButton
+from view.visualentity.DynamicStatEntity import DynamicStatEntity
 import pygame
 
 def displayEntity(entity, screen):

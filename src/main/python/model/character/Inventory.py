@@ -1,6 +1,6 @@
-from src.main.python.util.Messages import Error
-from src.main.python.model.item.Item import Item
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from util.Messages import Error
+from model.item.Item import Item
+from util.IllegalArgumentException import IllegalArgumentException
 
 class Inventory:
     space : int
