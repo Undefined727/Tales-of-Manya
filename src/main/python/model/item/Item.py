@@ -7,18 +7,18 @@ import uuid
 class Item:
     id : str
     name : str
-    slot : ItemSlot
+    slots : list[ ItemSlot ]
     item_tags : list[ ItemTag ]
     item_bonuses : dict[ EffectType, int ]
     description : str
     #Statuses below when implemented
 
-    def __init__(self, name = "Placeholder Name", slot = ItemSlot.WEAPON, item_tags = list(), description = ""):
+    def __init__(self, name:str = "Placeholder Name", slots:list[ItemSlot] = [ItemSlot.WEAPON], description:str = "", item_tags:list[ItemTag] = list()):
         self.id = str(uuid.uuid5(uuid.NAMESPACE_DNS,"basedstudios.dev"))
         self.name = name
-        self.slot = slot
-        self.item_tags = item_tags
+        self.slots = slots
         self.description = description
+        self.item_tags = item_tags
 
     def getSlot(self):
         return self.slot

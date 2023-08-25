@@ -3,10 +3,11 @@ from src.main.python.model.effect.EffectType import EffectType
 from src.main.python.util.IllegalArgumentException import IllegalArgumentException
 
 class Effect:
+    id: str
     name: str
     effect_type: EffectType
     value: int
-    duration_current: int
+    duration: int
     tags: []
 
     def __init__(self, name = "Placeholder Name", eff_type = EffectType.NONE, value = 0, duration = -1, tags = []):

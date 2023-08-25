@@ -1,6 +1,12 @@
+import os
+import sys
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine.base import Connection, Engine
 from sqlalchemy.engine.row import Row
+sys.path.append(os.path.abspath("."))
+from src.main.python.model.item.Item import Item
+from src.main.python.model.database.item.DatabaseModels import DBItem
+
 
 class DatabaseFetcher:
     database:Engine
@@ -22,9 +28,14 @@ class DatabaseFetcher:
         self.connection.close()
         self.database.dispose()
 
-# repo = DatabaseFetcher("../itemdata.db")
-# query = "SELECT * FROM items"
-# result = repo.retrieve(query)
-# print(result)
-# print(type(result))
-# repo.close()
+repo = DatabaseFetcher("src/main/python/catgirl-dungeon.db")
+query = "SELECT * FROM Item"
+result = repo.retrieveAll(query)
+for item in result:
+    print(item)
+print(type(result[0]))
+test = Item()
+print(test.id)
+dbitem = DBItem.fromItem(test)
+print(dbitem)
+repo.close()

@@ -9,7 +9,7 @@ class ItemRepository:
     new_items : list[ Item ]
     database_path : str
 
-    DEFAULT_PATH = "../itemdata.db"
+    DEFAULT_PATH = "../catgirl-dungeon.db"
     DEFAULT_QUERY = "SELECT * FROM items"
 
     def __init__(self, query = DEFAULT_QUERY, path = DEFAULT_PATH):
