@@ -147,23 +147,23 @@ def loadOpenWorld(screen, screenX, screenY):
             movementSpeed = 0.05
 
         if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
-            character.speedX = -movementSpeed
-            character.speedY = -movementSpeed
+            character.speedX = -0.707*movementSpeed
+            character.speedY = -0.707*movementSpeed
             lastInput = "UpLeft"
         elif (keys[pygame.K_LEFT] and keys[pygame.K_DOWN]):
-            character.speedX = -movementSpeed
-            character.speedY = movementSpeed
+            character.speedX = -0.707*movementSpeed
+            character.speedY = 0.707*movementSpeed
             lastInput = "DownLeft"
         elif (keys[pygame.K_LEFT]):
             character.speedX = -movementSpeed
             lastInput = "Left"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_UP]):
-            character.speedX = movementSpeed
-            character.speedY = -movementSpeed
+            character.speedX = 0.707*movementSpeed
+            character.speedY = -0.707*movementSpeed
             lastInput = "UpRight"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_DOWN]):
-            character.speedX = movementSpeed
-            character.speedY = movementSpeed
+            character.speedX = 0.707*movementSpeed
+            character.speedY = 0.707*movementSpeed
             lastInput = "DownRight"
         elif (keys[pygame.K_RIGHT]):
             character.speedX = movementSpeed
@@ -303,7 +303,7 @@ def loadOpenWorld(screen, screenX, screenY):
                 if (sword in currentEntities):
                     currentEntities.remove(sword)
 
-        ## Move Enemy ##
+        ## Move Enemies ##
         if (changeEnemyDirection <= 0):
             enemyMoveDirection = random.randint(1, 9)
             changeEnemyDirection += random.randint(90, 180)
