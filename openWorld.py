@@ -12,7 +12,7 @@ import model.openworld.ShapeMath as ShapeMath
 from displayHandler import displayEntity
 from JSONParser import loadJson
 import numpy as np
-import math, pygame, time
+import math, pygame, time, random
 from PIL import Image
 
 visualEntities = []
@@ -82,7 +82,6 @@ def loadOpenWorld(screen, screenX, screenY):
     sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
     # Sets height to -1 to indicate no corner correction
     sword.currentHeight = -1
-    sword.setCenter((character.getCenter()[0], character.getCenter()[1]-3*radius))
     swordSwinging = 0
 
     testEnemyStats = Character("Wizard", "wizard.png", 5)
@@ -121,7 +120,8 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
 
-
+    lastInput = "Right"
+    changeEnemyDirection = 0
     ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()
@@ -145,37 +145,49 @@ def loadOpenWorld(screen, screenX, screenY):
             movementSpeed = 0.1
         else:
             movementSpeed = 0.05
-        if keys[pygame.K_LEFT]:
+
+        if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
             character.speedX = -movementSpeed
-        if keys[pygame.K_RIGHT]:
-            character.speedX = movementSpeed
-        if keys[pygame.K_UP]:
             character.speedY = -movementSpeed
-        if keys[pygame.K_DOWN]:
+            lastInput = "UpLeft"
+        elif (keys[pygame.K_LEFT] and keys[pygame.K_DOWN]):
+            character.speedX = -movementSpeed
             character.speedY = movementSpeed
+            lastInput = "DownLeft"
+        elif (keys[pygame.K_LEFT]):
+            character.speedX = -movementSpeed
+            lastInput = "Left"
+        elif (keys[pygame.K_RIGHT] and keys[pygame.K_UP]):
+            character.speedX = movementSpeed
+            character.speedY = -movementSpeed
+            lastInput = "UpRight"
+        elif (keys[pygame.K_RIGHT] and keys[pygame.K_DOWN]):
+            character.speedX = movementSpeed
+            character.speedY = movementSpeed
+            lastInput = "DownRight"
+        elif (keys[pygame.K_RIGHT]):
+            character.speedX = movementSpeed
+            lastInput = "Right"
+        elif (keys[pygame.K_UP]):
+            character.speedY = -movementSpeed
+            lastInput = "Up"
+        elif (keys[pygame.K_DOWN]):
+            character.speedY = movementSpeed
+            lastInput = "Down"
+
         
 
         if keys[pygame.K_SPACE]:
             if (swordSwinging <= 0):
                 swordSwinging = 30
-                if keys[pygame.K_RIGHT]:
-                    if keys[pygame.K_UP]:
-                        sword.rotate(15, character.getCenter())
-                    elif keys[pygame.K_DOWN]:
-                        sword.rotate(105, character.getCenter())
-                    else:
-                        sword.rotate(55, character.getCenter())
-                elif keys[pygame.K_LEFT]:
-                    if keys[pygame.K_UP]:
-                        sword.rotate(285, character.getCenter())
-                    elif keys[pygame.K_DOWN]:
-                        sword.rotate(195, character.getCenter())
-                    else: sword.rotate(235, character.getCenter())
-                elif keys[pygame.K_UP]: 
-                    sword.rotate(330, character.getCenter())
-                elif keys[pygame.K_DOWN]: 
-                    sword.rotate(150, character.getCenter())
-                else: sword.rotate(55, character.getCenter())
+                if (lastInput == "UpLeft"): sword.rotate(285, character.getCenter())
+                elif (lastInput == "DownLeft"): sword.rotate(195, character.getCenter())
+                elif (lastInput == "Left"): sword.rotate(235, character.getCenter())
+                elif (lastInput == "UpRight"): sword.rotate(15, character.getCenter())
+                elif (lastInput == "DownRight"): sword.rotate(105, character.getCenter())
+                elif (lastInput == "Right"): sword.rotate(55, character.getCenter())
+                elif (lastInput == "Up"): sword.rotate(330, character.getCenter())
+                elif (lastInput == "Down"): sword.rotate(150, character.getCenter())
                 currentEntities.append(sword)
 
 
@@ -277,15 +289,56 @@ def loadOpenWorld(screen, screenX, screenY):
                                   combatButton()
 
 
+        ## Update Sword Position ##
+        charCenter = character.getCenter()
+        swordCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-3*radius), charCenter, -sword.currentRotation)
+        sword.setCenter(swordCenter)
+
         ## Swing Sword ##
         if (swordSwinging > 0):
             swordSwinging -=1
-            sword.rotate(2, character.getCenter())
+            sword.rotate(2, charCenter)
             if (swordSwinging == 0):
+                sword.rotate((sword.currentRotation-360), charCenter)
                 if (sword in currentEntities):
                     currentEntities.remove(sword)
-                sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
-                sword.setCenter((character.getCenter()[0], character.getCenter()[1]-3*radius))
+
+        ## Move Enemy ##
+        if (changeEnemyDirection <= 0):
+            enemyMoveDirection = random.randint(1, 9)
+            changeEnemyDirection += random.randint(90, 180)
+        else: changeEnemyDirection -= 1
+        for entity in currentEntities:
+                if entity.entityType == "enemy":
+                    enemyMovementSpeed = 0.03
+                    if (enemyMoveDirection == 1):
+                        entity.speedX = 0
+                        entity.speedY = enemyMovementSpeed
+                    elif (enemyMoveDirection == 2):
+                        entity.speedX = 0.707*enemyMovementSpeed
+                        entity.speedY = 0.707*enemyMovementSpeed
+                    elif (enemyMoveDirection == 3):
+                        entity.speedX = -0.707*enemyMovementSpeed
+                        entity.speedY = 0.707*enemyMovementSpeed
+                    elif (enemyMoveDirection == 4):
+                        entity.speedX = enemyMovementSpeed
+                        entity.speedY = 0
+                    elif (enemyMoveDirection == 5):
+                        entity.speedX = -enemyMovementSpeed
+                        entity.speedY = 0
+                    elif (enemyMoveDirection == 6):
+                        entity.speedX = 0
+                        entity.speedY = 0
+                    elif (enemyMoveDirection == 7):
+                        entity.speedX = 0.707*enemyMovementSpeed
+                        entity.speedY = -0.707*enemyMovementSpeed
+                    elif (enemyMoveDirection == 8):
+                        entity.speedX = 0
+                        entity.speedY = -enemyMovementSpeed
+                    elif (enemyMoveDirection == 9):
+                        entity.speedX = -0.707*enemyMovementSpeed
+                        entity.speedY = -0.707*enemyMovementSpeed
+        
 
 
         ## Display ##
