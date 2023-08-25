@@ -1,14 +1,15 @@
+from src.main.python.util.Messages import Error
 from src.main.python.model.effect.Effect import Effect
 from src.main.python.model.effect.EffectType import EffectType
 import src.main.python.util.IllegalArgumentException as IllegalArgumentException
 
 class EffectsList:
-    effects: []
+    effects : list[ Effect ]
 
-    def __init__(self, effects = []):
+    def __init__(self, effects : list[ Effect ] = list()):
         self.effects = effects
 
-    def iterator(self):
+    def iterate(self):
         for effect in self.effects:
             yield effect
 
@@ -26,17 +27,15 @@ class EffectsList:
         # Remove all expired effects
 
         for effect in self.effects:
-            if (effect.isExpired()):
-                self.effects.remove(effect)
+            if effect.isExpired(): self.effects.remove(effect)
 
     def add(self, new_effect:Effect):
-        if (new_effect.isExpired()):
-            raise IllegalArgumentException("Cannot add an expired effect")
+        if new_effect.isExpired(): raise IllegalArgumentException(Error.EXPIRED_EFFECT)
         for element in self.effects:
             if element.equals(new_effect):
-                if (new_effect.getDuration() > element.getDuration()):
-                    element.setDuration(new_effect.getDuration())
-                    return
+                extra_duration = abs(new_effect.getDuration() - element.getDuration())
+                element.setDuration(new_effect.getDuration() + extra_duration)
+                return
         self.effects.append(new_effect)
 
     def has(self, element:Effect):

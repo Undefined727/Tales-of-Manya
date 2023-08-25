@@ -5,3 +5,4 @@ class ItemTag(Enum):
     UNIQUE          = 1
     QUEST           = 2
     INDESTRUCTIBLE  = 3
+    STACKABLE       = 4

@@ -1,4 +1,5 @@
-import src.main.python.util.IllegalArgumentException as IllegalArgumentException
+from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from src.main.python.util.Messages import Error
 
 class DynamicStat:
     current_value:float = 0
@@ -32,10 +33,9 @@ class DynamicStat:
         # Sets the 'current_value' field to a percentage of the 'max_value'.
         # The parameter must be a number between 0 and 1.
 
-        if (new_percentage <= 0 or new_percentage > 1):
-            raise IllegalArgumentException("The number passed is not within the legal range.")
-        else:
-            self.current_value = self.max_value * new_percentage
+        if (new_percentage < 0 or new_percentage > 1):
+            raise IllegalArgumentException(Error.ILLEGAL_RANGE)
+        self.current_value = self.max_value * new_percentage
 
     def replenish(self, amount):
         # Increments the 'current_value' by the value passed, observing the maximum.
@@ -64,7 +64,7 @@ class DynamicStat:
         # Raises an exception when the value is negative.
 
         if (value < 0):
-            raise IllegalArgumentException("Cannot increase by a negative amount.")
+            raise IllegalArgumentException(Error.CANNOT_BE_NEGATIVE)
         self.current_value += value
         if (self.current_value > self.max_value):
             self.current_value = self.max_value
@@ -74,5 +74,5 @@ class DynamicStat:
         # Raises an exception when the value is negative.
 
         if (value < 0):
-            raise IllegalArgumentException("Cannot decrease by a negative amount.")
+            raise IllegalArgumentException(Error.CANNOT_BE_NEGATIVE)
         self.current_value -= value

@@ -13,6 +13,7 @@ from src.main.python.model.skill import Skill
 from src.main.python.model.item import ItemSlot
 from src.main.python.model.effect import Effect
 
+# TODO Everything here is hopelessly broken
 class Base(DeclarativeBase):
     pass
 

@@ -20,13 +20,11 @@ class Item:
         self.description = description
         self.item_tags = item_tags
 
-    def getSlot(self):
-        return self.slot
+    def getSlots(self) -> list[ItemSlot]:
+        return self.slots
 
-    def toDatabaseItem(self):
-        return {
-            'id' : self.id,
-            'name': self.name,
-            'item_slot' : self.slot.name,
-            'description': self.description
-        }
+    def isStackable(self) -> bool:
+        return ItemTag.STACKABLE in self.item_tags
+
+    def getBonuses(self) -> dict[ EffectType, int]:
+        return self.item_bonuses

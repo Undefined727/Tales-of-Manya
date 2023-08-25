@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath("."))
 from src.main.python.model.item.Item import Item
 from src.main.python.model.database.item.DatabaseModels import DBItem
 
-
+# TODO Working fine, but incomplete
 class DatabaseFetcher:
     database:Engine
     connection:Connection
@@ -34,8 +34,8 @@ result = repo.retrieveAll(query)
 for item in result:
     print(item)
 print(type(result[0]))
-test = Item()
-print(test.id)
-dbitem = DBItem.fromItem(test)
-print(dbitem)
+#test = Item()
+#print(test.id)
+#dbitem = DBItem.fromItem(test)
+#print(dbitem)
 repo.close()
