@@ -1,0 +1,27 @@
+[{
+    "name": "CombatShapeButton",
+    "isShowing": true,
+    "xPosition": 0.8875,
+    "yPosition": 0.0375,
+    "width": 0.075,
+    "height": 0.075,
+    "tags": [],
+    "entityType": "ShapeButton",
+    "color": "blue",
+    "isBorder": false,
+    "shape": "ellipse",
+    "func": "combat",
+    "args": []
+},
+{
+    "name": "CombatImg",
+    "isShowing": true,
+    "xPosition": 0.9,
+    "yPosition": 0.05,
+    "width": 0.05,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Image",
+    "path": "settingsIcon.png"
+}
+]
