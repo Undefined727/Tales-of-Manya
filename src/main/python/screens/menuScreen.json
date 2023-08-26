@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Background",
+        "isShowing": true,
+        "xPosition": 0,
+        "yPosition": 0,
+        "width": 1,
+        "height": 1,
+        "tags": [],
+        "entityType": "Image",
+        "path": "mainMenu.png"
+    },{
+        "name": "StartButton",
+        "isShowing": true,
+        "xPosition": 0.11,
+        "yPosition": 0.70,
+        "width": 0.26,
+        "height": 0.26,
+        "tags": [],
+        "entityType": "ImageButton",
+        "path": "startButton.png",
+        "func": "openWorld",
+        "args": []
+    },{
+        "name": "Shape",
+        "isShowing": true,
+        "xPosition": 0.45,
+        "yPosition": 0.8,
+        "width": 0.1,
+        "height": 0.1,
+        "tags": [],
+        "entityType": "Shape",
+        "color": "blue",
+        "isBorder": false,
+        "shape": "rectangle"
+    },{
+        "name": "Paragraph",
+        "isShowing": true,
+        "xPosition": 0.5,
+        "yPosition": 0.8,
+        "width": 0.1,
+        "height": 0.1,
+        "tags": [],
+        "entityType": "Paragraph",
+        "text": "This is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmao",
+        "font": "mono",
+        "fontSize": 16,
+        "fontColor": "black",
+        "highlightColor": null,
+        "align": "Center"
+    }
+]

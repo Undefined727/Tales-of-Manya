@@ -1,0 +1,9 @@
+*.log
+temp/
+target/
+pyvenv.cfg
+*.pyc
+Lib/
+__pycache__/
+.vscode/
+scripts/
