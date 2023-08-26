@@ -107,8 +107,8 @@ def loadInventory(screen, screenX, screenY):
         global party
         nonlocal activeCharacter
         for entity in visualEntities:
-            if (entity.name == "CharacterName"): entity.updateText(party[activeCharacter-1].name, "mono", int(nameFontSize), "black", "green")
-            elif (entity.name == "CharacterLevel"): entity.updateText("Level " + str(party[activeCharacter-1].level), "mono", int(nameFontSize), "black", "green")
+            if (entity.name == "CharacterName"): entity.updateText(party[activeCharacter-1].name)
+            elif (entity.name == "CharacterLevel"): entity.updateText("Level " + str(party[activeCharacter-1].level))
             elif ("Equipped Item" in entity.tags):
                 if (entity.name == "Helmet"):
                     if (party[activeCharacter-1].helmet == None): entity.updateImg("helmet_transparent.png")

@@ -2,6 +2,7 @@ import json as JSON
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
+from view.visualentity.Paragraph import Paragraph
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.CombatCharacterEntity import CharacterEntities
@@ -19,10 +20,12 @@ def loadJson(address, screenX, screenY, lists):
         entity = None
         if item["entityType"] == "Image":
             entity = ImageEntity.createFrom(item)
-        elif item["entityType"] == "Drawing":
+        elif item["entityType"] == "Shape":
             entity = ShapeEntity.createFrom(item)
         elif item["entityType"] == "Text":
             entity = TextEntity.createFrom(item)
+        elif item["entityType"] == "Paragraph":
+            entity = Paragraph.createFrom(item)
         elif item["entityType"] == "Button":
             entity = ShapeButton.createFrom(item)
         elif item["entityType"] == "ImageButton":
