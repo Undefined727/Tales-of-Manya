@@ -27,6 +27,7 @@ class Paragraph(VisualEntity):
         if (fontSize == None): fontSize = self.fontSize
         if (fontColor == None): fontColor = self.fontColor
         if (highlightColor == None): highlightColor = self.highlightColor
+        self.text = text
 
         # CHANGE THIS BASED ON THE FONT FIGURE THIS LATER IG
         fontRatio = 0.61
@@ -40,6 +41,7 @@ class Paragraph(VisualEntity):
             lettersPerLine = math.floor(self.width/(self.fontSize*fontRatio))-xPadding
             lines = math.ceil(len(self.text)/lettersPerLine)
         if (self.scaled):
+            if(len(text) <= 0): return
             self.texts = []
             startIndex = 0
             endIndex = 0
@@ -83,7 +85,6 @@ class Paragraph(VisualEntity):
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.resize(self.width*screenX, self.height*screenY)
         self.scaled = True
-        print("test")
         self.updateText(self.text)
 
     @staticmethod

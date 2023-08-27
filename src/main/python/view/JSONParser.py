@@ -3,6 +3,7 @@ from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
+from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.CombatCharacterEntity import CharacterEntities
@@ -26,6 +27,8 @@ def loadJson(address, screenX, screenY, lists):
             entity = TextEntity.createFrom(item)
         elif item["entityType"] == "Paragraph":
             entity = Paragraph.createFrom(item)
+        elif item["entityType"] == "VisualNovel":
+            entity = VisualNovel.createFrom(item)
         elif item["entityType"] == "Button":
             entity = ShapeButton.createFrom(item)
         elif item["entityType"] == "ImageButton":
@@ -50,5 +53,8 @@ def loadJson(address, screenX, screenY, lists):
             if (item["entityType"] == "ImageButton" or item["entityType"] == "ShapeButton"): 
                 buttons.append(entity)
                 visualEntities.append(entity.buttonVisual())
+            elif(item["entityType"] == "VisualNovel"):
+                buttons.append(entity.continueButton)
+                visualEntities.append(entity)
             elif(item["entityType"] == "CharacterEntityCoords" or item["entityType"] == "InventoryCharacterCoords"): partyVisuals[index] = entity
             else: visualEntities.append(entity)

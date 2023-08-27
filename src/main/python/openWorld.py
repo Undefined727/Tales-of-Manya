@@ -4,6 +4,7 @@ from model.openworld.Rectangle import Rectangle
 from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
+from view.visualentity.VisualNovel import VisualNovel
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
@@ -61,6 +62,12 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
     loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
+
+    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, tags = [], text = "This is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmao")
+    visualEntities.append(visualNovel)
+    visualNovel.scale(screenX, screenY)
+    buttons.append(visualNovel.continueButton)
+
 
     FRICTION_GRASS = 0.005
     CHAR_SIZE_MULTIPLIER = 0.85

@@ -16,7 +16,7 @@ class ImageButton(VisualEntity):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.func = func
         self.args = args
-        self.img = ImageEntity("Button_Image", isShowing, xPosition, yPosition, width, height, tags, path)
+        self.img = ImageEntity(name + "img", isShowing, xPosition, yPosition, width, height, tags, path)
         self.isActive = isActive
            
 
