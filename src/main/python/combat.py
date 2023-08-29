@@ -88,11 +88,12 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
     party[activeCharacter].hasActed = True
 
-def loadCombat(screen, screenX, screenY):
+def loadCombat(screen):
     global visualEntities
     global party
     global partyVisuals
     global quit
+    screenX, screenY = screen.get_size()
     enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
     activeCharacter = 1
     skillSelected = 0

@@ -16,6 +16,9 @@ buttons = []
 quit = False
 nextScreen = "Quit"
 
+visualNovel:VisualNovel
+currentQuests = {"killQuest":"Slime"}
+
 def refreshMenu(screen):
     global visualEntities
     for entity in visualEntities:
@@ -33,12 +36,14 @@ def combatButton():
     quit = True
     nextScreen = "Combat"
 
-def loadOpenWorld(screen, screenX, screenY):
+def loadOpenWorld(screen):
     global quit
     global visualEntities
     global nextScreen
     global buttons
+    global visualNovel
     FPS = 60
+    screenX, screenY = screen.get_size()
     prev_time = time.time()
     img = Image.open("src/main/python/maps/samplemap.png")
     npArray = np.array(img)
@@ -62,10 +67,10 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
     loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
-
     visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, tags = [], text = "This is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmao")
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
+    visualNovel.isShowing = False
     buttons.append(visualNovel.continueButton)
 
 
@@ -89,9 +94,15 @@ def loadOpenWorld(screen, screenX, screenY):
     testEnemyStats = Character("Wizard", "wizard.png", 5)
     testEnemy = OpenWorldEntity("frog_head.png", Circle((character.getCenter()[0]+5, character.getCenter()[1]+1), radius), "enemy", testEnemyStats, "attack")
 
+    testNPC = OpenWorldEntity("catgirl.png", Circle((character.getCenter()[0]+1, character.getCenter()[1]+5), radius), "npc", "testDialogue", "attack")
+    testNPC.data = ["test1", "test2"]
+    currentTextPosition = 0
+
+
     currentEntities = []
     currentEntities.append(character)
     currentEntities.append(testEnemy)
+    currentEntities.append(testNPC)
 
     
     movementSpeed = 0.1
@@ -135,6 +146,14 @@ def loadOpenWorld(screen, screenX, screenY):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
+                        if (entity.func == "continueText"): 
+                            if (currentTextPosition >= len(testNPC.data) or testNPC.data[currentTextPosition] == ""):
+                                currentTextPosition = 0
+                                visualNovel.isShowing = False
+                            else:
+                                visualNovel.updateText(testNPC.data[currentTextPosition])
+                                currentTextPosition +=1
+                            break
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
@@ -286,9 +305,15 @@ def loadOpenWorld(screen, screenX, screenY):
                    if (trigger.entityType == entity.trigger):
                         if (ShapeMath.collides(trigger.shape, entity.shape)):
                              if (entity.entityType == "enemy"):
+                                  currentQuests["killQuest"] = ""
+                                  testNPC.data = {"Congratulations on killing the slime", "You are a true warrior"}
                                   combatButton()
                              if (entity.entityType == "player"):
                                   combatButton()
+                             if (entity.entityType == "npc"):
+                                 visualNovel.updateText(testNPC.data[0])
+                                 currentTextPosition = 1
+                                 visualNovel.isShowing = True
 
 
         ## Update Sword Position ##

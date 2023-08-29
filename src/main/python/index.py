@@ -76,9 +76,9 @@ def switchScreens(newScreen):
     loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
 
-    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen, screenX, screenY)
-    elif (newScreen == "Combat"): newScreen = loadCombat(screen, screenX, screenY)
-    elif (newScreen == "Inventory"): newScreen = loadInventory(screen, screenX, screenY)
+    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen)
+    elif (newScreen == "Combat"): newScreen = loadCombat(screen)
+    elif (newScreen == "Inventory"): newScreen = loadInventory(screen)
     switchScreens(newScreen)
 
 

@@ -20,6 +20,7 @@ class VisualNovel(VisualEntity):
         
 
     def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):
+        self.text = text
         self.paragraph.updateText(text, font, fontSize, fontColor, highlightColor)
     
     def resize(self, width, height):
@@ -34,7 +35,7 @@ class VisualNovel(VisualEntity):
         self.yPosition = yPosition
         self.background.reposition(xPosition, yPosition)
         self.paragraph.reposition(xPosition + self.width/5, yPosition + 6*self.height/16)
-        self.continueButton.reposition(xPosition + 0.85*self.width, yPosition + self.height/16)
+        self.continueButton.reposition(xPosition + 0.85*self.width, yPosition + 6*self.height/16)
     
     def scale(self, screenX, screenY):
         self.resize(self.width, self.height)

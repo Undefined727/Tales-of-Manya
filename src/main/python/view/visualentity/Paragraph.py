@@ -41,8 +41,8 @@ class Paragraph(VisualEntity):
             lettersPerLine = math.floor(self.width/(self.fontSize*fontRatio))-xPadding
             lines = math.ceil(len(self.text)/lettersPerLine)
         if (self.scaled):
-            if(len(text) <= 0): return
             self.texts = []
+            if(len(text) <= 0): return
             startIndex = 0
             endIndex = 0
             if(not text[len(text)-1] == " "):

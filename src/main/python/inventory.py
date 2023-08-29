@@ -60,11 +60,12 @@ def refreshScreen(screen):
 
 
 
-def loadInventory(screen, screenX, screenY):
+def loadInventory(screen):
     global visualEntities
     global party
     global inventory
     global partyVisuals
+    screenX, screenY = screen.get_size()
     leaveScreen = False
     nextScreen = None
     attachedItem = None
