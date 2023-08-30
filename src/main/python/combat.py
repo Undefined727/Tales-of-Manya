@@ -88,7 +88,7 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
     party[activeCharacter].hasActed = True
 
-def loadCombat(screen):
+def loadCombat(screen, player):
     global visualEntities
     global party
     global partyVisuals

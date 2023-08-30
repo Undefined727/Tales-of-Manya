@@ -95,7 +95,7 @@ def loadOpenWorld(screen, player):
     sword.currentHeight = -1
     swordSwinging = 0
 
-    interactBox = OpenWorldEntity("nekoarc.png", Rectangle([(0, 0),  (0, 2*radius), (2*radius, 0), (2*radius, 2*radius)]), "interact", None, None, (spawnX, spawnY))
+    interactBox = OpenWorldEntity("emptyimg.png", Circle((0, 0), 3*radius), "interact", None, None, (spawnX, spawnY))
     # Sets height to -1 to indicate no corner correction
     interactBox.currentHeight = -1
     interacting = 0
@@ -236,9 +236,10 @@ def loadOpenWorld(screen, player):
             elif (lastInput == "Right"): angle = 90
             elif (lastInput == "Up"): angle = 0
             elif (lastInput == "Down"): angle = 180
-            interactBoxCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-3*radius), charCenter, angle)
+            interactBoxCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-2*radius), charCenter, angle)
             interactBox.setCenter(interactBoxCenter)
-            currentEntities.append(interactBox)
+            if (not interactBox in currentEntities):
+                currentEntities.append(interactBox)
 
 
         ### Physics ###
