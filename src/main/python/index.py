@@ -1,6 +1,7 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
 
+from player.Player import Player
 from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
@@ -19,6 +20,8 @@ screen = pygame.display.set_mode([screenX, screenY])
 
 visualEntities = []
 buttons = []
+
+player = Player()
 
 
 def refreshScreen():
@@ -70,15 +73,16 @@ def run():
 def switchScreens(newScreen):
     global visualEntities
     global buttons
+    global player
     visualEntities = []
     buttons = []
     screen.fill((0, 0, 0))
     loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
 
-    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen)
-    elif (newScreen == "Combat"): newScreen = loadCombat(screen)
-    elif (newScreen == "Inventory"): newScreen = loadInventory(screen)
+    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen, player)
+    elif (newScreen == "Combat"): newScreen = loadCombat(screen, player)
+    elif (newScreen == "Inventory"): newScreen = loadInventory(screen, player)
     switchScreens(newScreen)
 
 

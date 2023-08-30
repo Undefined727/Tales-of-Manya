@@ -24,9 +24,12 @@ class OpenWorldEntity:
     # This will likely be replaced with a dictionary later so different triggers can cause different effects
     entityType = "grass"
     data = Character("Wizard", "wizard.png", 5)
+    spawnX = 30
+    spawnY = 30
+    respawnTimer = 0
     trigger = "attack"
 
-    def __init__(self, imgPath, shape, entityType, data, trigger):
+    def __init__(self, imgPath, shape, entityType, data, trigger, spawn):
         self.shape = shape
         self.imgPath = imgPath
         self.entityType = entityType
@@ -36,6 +39,7 @@ class OpenWorldEntity:
         self.currentHeight = 0
         self.speedX = 0
         self.speedY = 0
+        self.spawnX, self.spawnY = spawn
 
 
         img = pygame.image.load("src/main/python/sprites/" + imgPath)

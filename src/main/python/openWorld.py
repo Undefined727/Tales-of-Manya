@@ -5,6 +5,7 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
+from player.Player import Player
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
@@ -17,7 +18,8 @@ quit = False
 nextScreen = "Quit"
 
 visualNovel:VisualNovel
-currentQuests = {"killQuest":"Slime"}
+
+playerData:Player
 
 def refreshMenu(screen):
     global visualEntities
@@ -36,12 +38,14 @@ def combatButton():
     quit = True
     nextScreen = "Combat"
 
-def loadOpenWorld(screen):
+def loadOpenWorld(screen, player):
     global quit
     global visualEntities
     global nextScreen
     global buttons
     global visualNovel
+    global playerData
+    playerData = Player()
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
@@ -82,23 +86,33 @@ def loadOpenWorld(screen):
     spawnY = height/2
     characterSize = CHAR_SIZE_MULTIPLIER*TILE_SIZE
     radius = characterSize/(2*TILE_SIZE)
-    character = OpenWorldEntity("catgirl_head.png", Circle((spawnX, spawnY), radius), "player", None, "enemy")
+    character = OpenWorldEntity("catgirl_head.png", Circle((spawnX, spawnY), radius), "player", None, "enemy", (spawnX, spawnY))
     cameraX = character.getCenter()[0]
     cameraY = character.getCenter()[1]
 
-    sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
+    sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None, (spawnX, spawnY))
     # Sets height to -1 to indicate no corner correction
     sword.currentHeight = -1
     swordSwinging = 0
 
-    testEnemyStats = Character("Wizard", "wizard.png", 5)
-    testEnemy = OpenWorldEntity("frog_head.png", Circle((character.getCenter()[0]+5, character.getCenter()[1]+1), radius), "enemy", testEnemyStats, "attack")
+    interactBox = OpenWorldEntity("nekoarc.png", Rectangle([(0, 0),  (0, 2*radius), (2*radius, 0), (2*radius, 2*radius)]), "interact", None, None, (spawnX, spawnY))
+    # Sets height to -1 to indicate no corner correction
+    interactBox.currentHeight = -1
+    interacting = 0
 
-    testNPC = OpenWorldEntity("catgirl.png", Circle((character.getCenter()[0]+1, character.getCenter()[1]+5), radius), "npc", "testDialogue", "attack")
-    testNPC.data = ["test1", "test2"]
+    testEnemyStats = Character("Slime", "wizard.png", 5)
+    testEnemy = OpenWorldEntity("frog_head.png", Circle((character.getCenter()[0]+5, character.getCenter()[1]+1), radius), "enemy", testEnemyStats, "attack", (character.getCenter()[0]+5, character.getCenter()[1]+1))
+
+    testNPC = OpenWorldEntity("catgirl.png", Circle((character.getCenter()[0]+1, character.getCenter()[1]+5), radius), "npc", "testDialogue", "interact", (character.getCenter()[0]+1, character.getCenter()[1]+5))
+    testNPC.data = ["Please help us kill these slimes!", "Slime Kill Count: 0"]
+
     currentTextPosition = 0
 
 
+    allEntities = []
+    allEntities.append(character)
+    allEntities.append(testEnemy)
+    allEntities.append(testNPC)
     currentEntities = []
     currentEntities.append(character)
     currentEntities.append(testEnemy)
@@ -198,7 +212,7 @@ def loadOpenWorld(screen):
 
         
 
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_z]:
             if (swordSwinging <= 0):
                 swordSwinging = 30
                 if (lastInput == "UpLeft"): sword.rotate(285, character.getCenter())
@@ -210,6 +224,21 @@ def loadOpenWorld(screen):
                 elif (lastInput == "Up"): sword.rotate(330, character.getCenter())
                 elif (lastInput == "Down"): sword.rotate(150, character.getCenter())
                 currentEntities.append(sword)
+
+        if keys[pygame.K_c]:
+            interacting = 10
+            angle = 0
+            if (lastInput == "UpLeft"): angle = 315
+            elif (lastInput == "DownLeft"): angle = 225
+            elif (lastInput == "Left"): angle = 270
+            elif (lastInput == "UpRight"): angle = 45
+            elif (lastInput == "DownRight"): angle = 135
+            elif (lastInput == "Right"): angle = 90
+            elif (lastInput == "Up"): angle = 0
+            elif (lastInput == "Down"): angle = 180
+            interactBoxCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-3*radius), charCenter, angle)
+            interactBox.setCenter(interactBoxCenter)
+            currentEntities.append(interactBox)
 
 
         ### Physics ###
@@ -299,15 +328,25 @@ def loadOpenWorld(screen):
 
 
         ## Entity Collision Logic ##
-        for entity in currentEntities:
+        for entity in list(currentEntities):
          if (not entity.trigger == None):
-              for trigger in currentEntities:
+              for trigger in list(currentEntities):
                    if (trigger.entityType == entity.trigger):
                         if (ShapeMath.collides(trigger.shape, entity.shape)):
                              if (entity.entityType == "enemy"):
-                                  currentQuests["killQuest"] = ""
-                                  testNPC.data = {"Congratulations on killing the slime", "You are a true warrior"}
-                                  combatButton()
+                                  currentQuests = player.getCurrentQuests()
+                                  for quest in currentQuests:
+                                      if (quest.questType == "killQuest"):
+                                          if(quest.questData == entity.data.name):
+                                              quest.questProgress += 1
+                                              if (quest.questProgress >= quest.questGoal): 
+                                                  quest.questProgress = quest.questGoal
+                                                  testNPC.data = ["Thank you for saving us!"]
+                                              # Add update npc thing here or have npcs connected to quests
+                                              else: testNPC.data = ["Please help us kill these slimes!", "Slime Kill Count: " + str(quest.questProgress)]
+                                  # combatButton()
+                                  currentEntities.remove(entity)
+                                  entity.respawnTimer = 60
                              if (entity.entityType == "player"):
                                   combatButton()
                              if (entity.entityType == "npc"):
@@ -329,6 +368,16 @@ def loadOpenWorld(screen):
                 sword.rotate((sword.currentRotation-360), charCenter)
                 if (sword in currentEntities):
                     currentEntities.remove(sword)
+
+
+        ## Update InteractBox ##
+        print(interacting)
+        if (interacting > 0):
+            interacting -= 1
+            if (interacting <= 0):
+                currentEntities.remove(interactBox)
+                interacting = 0
+
 
         ## Move Enemies ##
         if (changeEnemyDirection <= 0):
@@ -365,6 +414,18 @@ def loadOpenWorld(screen):
                     elif (enemyMoveDirection == 9):
                         entity.speedX = -0.707*enemyMovementSpeed
                         entity.speedY = -0.707*enemyMovementSpeed
+        
+
+        ## Respawn Enemies ##
+        for entity in allEntities:
+            if (not entity.respawnTimer == 0):
+                entity.respawnTimer -= 1
+                if (entity.respawnTimer <= 0):
+                    entity.respawnTimer = 0
+                    entity.setCenter((entity.spawnX, entity.spawnY))
+                    currentEntities.append(entity)
+
+
         
 
 
