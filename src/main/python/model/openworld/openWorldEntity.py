@@ -2,7 +2,7 @@ from model.openworld.Circle import Circle
 from model.openworld.Rectangle import Rectangle
 import model.openworld.ShapeMath as ShapeMath
 from model.character.Character import Character
-import pygame, numpy
+import pygame
 
 class OpenWorldEntity:
     speedX = 0
@@ -45,14 +45,10 @@ class OpenWorldEntity:
         self.currentRotation = 0
     
     def rotate(self, angle, pivot):
-        oldX, oldY = self.shape.getCenter()
-        ShapeMath.rotate(self.shape, angle, pivot)
-        newX, newY = self.shape.getCenter()
-        changedAngle = numpy.arctan((newY-oldY)/(newX-oldX))
-        changedAngle *= 2*numpy.pi
+        changedAngle = ShapeMath.rotate(self.shape, angle, pivot)
         self.currentRotation += changedAngle
         self.currentRotation %= 360
-        self.rotImg = pygame.transform.rotate(self.img, int(self.currentRotation))
+        self.rotImg = pygame.transform.rotate(self.img, int(-self.currentRotation))
     
     def getSprite(self):
         return self.rotImg

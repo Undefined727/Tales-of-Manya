@@ -98,3 +98,6 @@ class Rectangle:
     def newMoved(self, diff):
         diff = np.array(diff)
         return Rectangle([self.corner1 + diff, self.corner2 + diff, self.corner3 + diff, self.corner4 + diff])
+    
+    def corners(self):
+        return [self.corner1, self.corner2, self.corner3, self.corner4]

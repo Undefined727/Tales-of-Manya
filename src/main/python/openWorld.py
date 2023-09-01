@@ -240,17 +240,19 @@ def loadOpenWorld(screen, player):
                 elif (lastInput == "Down"): startAngle = 180
                 startAngle -= ((testAttack.duration*testAttack.swingSpeed)/2)
                 startAngle %= 360
-                attackCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-(testAttack.attackRatio*testAttack.attackSize/2)), charCenter, startAngle)
+                testAttack.rotate(-testAttack.worldObject.currentRotation, testAttack.worldObject.getCenter())
+                attackCenter = (charCenter[0], charCenter[1]-(testAttack.attackRatio*testAttack.attackSize/2))
                 testAttack.setCenter(attackCenter)
+                testAttack.rotate(startAngle, charCenter)
 
                 simulatedObjects.append(testAttack.worldObject)
 
         ## Trigger Attack Movement ##
         if (testAttack.currentDuration > 0):
             testAttack.currentDuration -=1
-            testAttack.rotate(2, charCenter)
+            charCenter = character.getCenter()
+            testAttack.rotate(testAttack.swingSpeed, charCenter)
             if (testAttack.currentDuration <= 0):
-                testAttack.rotate((testAttack.worldObject.currentRotation-360), charCenter)
                 if (testAttack.worldObject in simulatedObjects):
                     simulatedObjects.remove(testAttack.worldObject)
 
@@ -336,6 +338,8 @@ def loadOpenWorld(screen, player):
 
             ## Move Thing ##
             entity.shape.move(movedVector)
+            if (entity == character):
+                testAttack.worldObject.shape.move(movedVector)
             entity.currentHeight = tiles[math.floor(entity.getCenter()[0]) + math.floor(entity.getCenter()[1])*width].height
             if (movedVector[0] == 0): entity.speedX = 0
             if (movedVector[1] == 0): entity.speedY = 0
@@ -465,6 +469,13 @@ def loadOpenWorld(screen, player):
                     screen.blit(tileImgIndex[tiles[width*y + x].img], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
         for entity in simulatedObjects:
             screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
+
+        corners = testAttack.worldObject.shape.corners().copy()
+        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[0]), convertToScreen(*corners[1]))
+        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[1]), convertToScreen(*corners[2]))
+        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[2]), convertToScreen(*corners[3]))
+        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
+        #pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
 
             
         refreshMenu(screen)
