@@ -2,7 +2,7 @@ from model.openworld.Circle import Circle
 from model.openworld.Rectangle import Rectangle
 import model.openworld.ShapeMath as ShapeMath
 from model.character.Character import Character
-import pygame
+import pygame, numpy
 
 class OpenWorldEntity:
     speedX = 0
@@ -23,23 +23,18 @@ class OpenWorldEntity:
     # "trigger" is the type of entity that activates the entity with whatever data is contained within it
     # This will likely be replaced with a dictionary later so different triggers can cause different effects
     entityType = "grass"
-    data = Character("Wizard", "wizard.png", 5)
-    spawnX = 30
-    spawnY = 30
-    respawnTimer = 0
+    
     trigger = "attack"
 
-    def __init__(self, imgPath, shape, entityType, data, trigger, spawn):
+    def __init__(self, imgPath, shape, entityType, trigger):
         self.shape = shape
         self.imgPath = imgPath
         self.entityType = entityType
-        self.data = data 
         self.trigger = trigger
         self.name = imgPath
         self.currentHeight = 0
         self.speedX = 0
         self.speedY = 0
-        self.spawnX, self.spawnY = spawn
 
 
         img = pygame.image.load("src/main/python/sprites/" + imgPath)
@@ -50,10 +45,14 @@ class OpenWorldEntity:
         self.currentRotation = 0
     
     def rotate(self, angle, pivot):
-        self.currentRotation -= angle
-        self.currentRotation %= 360
+        oldX, oldY = self.shape.getCenter()
         ShapeMath.rotate(self.shape, angle, pivot)
-        self.rotImg = pygame.transform.rotate(self.img, self.currentRotation)
+        newX, newY = self.shape.getCenter()
+        changedAngle = numpy.arctan((newY-oldY)/(newX-oldX))
+        changedAngle *= 2*numpy.pi
+        self.currentRotation += changedAngle
+        self.currentRotation %= 360
+        self.rotImg = pygame.transform.rotate(self.img, int(self.currentRotation))
     
     def getSprite(self):
         return self.rotImg
