@@ -37,3 +37,9 @@ class PlayerAttackObject:
 
     def move(self, diff):
         self.worldObject.move(diff)
+
+    def getSprite(self):
+        return self.worldObject.getSprite()
+    
+    def getImagePosition(self):
+        return self.worldObject.getImagePosition()

@@ -3,7 +3,7 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 
 class Enemy:
-    id:int
+    enemyID:int
     spawnX:int
     spawnY:int
     respawnTimer:int
@@ -15,7 +15,7 @@ class Enemy:
         self.enemyStats = Character(enemyID, img, level)
         self.spawnX, self.spawnY = position
         self.respawnTimer = respawnTimer
-        self.id = enemyID
+        self.enemyID = enemyID
         self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "enemy", "attack")
 
     def setCenter(self, point):
@@ -23,3 +23,9 @@ class Enemy:
 
     def move(self, diff):
         self.worldObject.move(diff)
+
+    def getSprite(self):
+        return self.worldObject.getSprite()
+    
+    def getImagePosition(self):
+        return self.worldObject.getImagePosition()

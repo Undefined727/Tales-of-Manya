@@ -4,6 +4,7 @@ from model.openworld.worldentities.NPC import NPC
 from model.openworld.worldentities.Enemy import Enemy
 from model.openworld.worldentities.PlayerAttackObject import PlayerAttackObject
 from model.openworld.worldentities.PlayerInteractionObject import PlayerInteractionObject
+from model.openworld.worldentities.PlayerObject import PlayerObject
 from model.openworld.Rectangle import Rectangle
 from model.openworld.Circle import Circle
 from model.character.Character import Character
@@ -22,6 +23,8 @@ quit = False
 nextScreen = "Quit"
 
 visualNovel:VisualNovel
+currentDialogue = []
+currentDialoguePosition = 0
 
 playerData:Player
 
@@ -42,6 +45,17 @@ def combatButton():
     quit = True
     nextScreen = "Combat"
 
+def continueText():
+    global currentDialogue
+    global currentDialoguePosition
+    global visualNovel
+    if (currentDialoguePosition >= len(currentDialogue) or currentDialogue[currentDialoguePosition] == ""):
+        currentDialoguePosition = 0
+        visualNovel.isShowing = False
+    else:
+        visualNovel.updateText(currentDialogue[currentDialoguePosition])
+        currentDialoguePosition +=1
+
 def loadOpenWorld(screen, player):
     global quit
     global visualEntities
@@ -49,6 +63,8 @@ def loadOpenWorld(screen, player):
     global buttons
     global visualNovel
     global playerData
+    global currentDialoguePosition
+    global currentDialogue
     playerData = Player()
     FPS = 60
     screenX, screenY = screen.get_size()
@@ -101,15 +117,16 @@ def loadOpenWorld(screen, player):
     spawnY = height/2
     characterSize = CHAR_SIZE_MULTIPLIER*TILE_SIZE
     radius = characterSize/(2*TILE_SIZE)
-    character = OpenWorldEntity("catgirl_head.png", Circle((spawnX, spawnY), radius), "player", "enemy")
-    cameraX = character.getCenter()[0]
-    cameraY = character.getCenter()[1]
-    currentTextPosition = 0
+    cameraX = 0
+    cameraY = 0
 
+
+    character = PlayerObject((spawnX, spawnY))
     testInteractionObject = PlayerInteractionObject((0, 0))
     testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     testEnemy = Enemy("Slime", 5, "wizard.png", (character.getCenter()[0]+5, character.getCenter()[1]+1), 30)
     testNPC = NPC(["Test Dialogue3"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), 1)
+    
 
     
 
@@ -124,15 +141,17 @@ def loadOpenWorld(screen, player):
 
     simulatedObjects = []
     simulatedObjects.append(character)
-    simulatedObjects.append(testEnemy.worldObject)
-    simulatedObjects.append(testNPC.worldObject)
+    simulatedObjects.append(testEnemy)
+    simulatedObjects.append(testNPC)
 
     
     movementSpeed = 0.1
-    character.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
+    character.worldObject.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
     
 
     def convertToScreen(xValue, yValue):
+        nonlocal cameraX
+        nonlocal cameraY
         xValue = (xValue-cameraX)*TILE_SIZE + screenX/2
         yValue = (yValue-cameraY)*TILE_SIZE + screenY/2
         return (xValue, yValue)
@@ -172,14 +191,7 @@ def loadOpenWorld(screen, player):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
-                        if (entity.func == "continueText"): 
-                            if (currentTextPosition >= len(testNPC.dialogue) or testNPC.dialogue[currentTextPosition] == ""):
-                                currentTextPosition = 0
-                                visualNovel.isShowing = False
-                            else:
-                                visualNovel.updateText(testNPC.dialogue[currentTextPosition])
-                                currentTextPosition +=1
-                            break
+                        if (entity.func == "continueText"): buttonFunc = continueText
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
@@ -194,32 +206,32 @@ def loadOpenWorld(screen, player):
             movementSpeed = 0.05
 
         if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
-            character.speedX = -0.707*movementSpeed
-            character.speedY = -0.707*movementSpeed
+            character.worldObject.speedX = -0.707*movementSpeed
+            character.worldObject.speedY = -0.707*movementSpeed
             lastInput = "UpLeft"
         elif (keys[pygame.K_LEFT] and keys[pygame.K_DOWN]):
-            character.speedX = -0.707*movementSpeed
-            character.speedY = 0.707*movementSpeed
+            character.worldObject.speedX = -0.707*movementSpeed
+            character.worldObject.speedY = 0.707*movementSpeed
             lastInput = "DownLeft"
         elif (keys[pygame.K_LEFT]):
-            character.speedX = -movementSpeed
+            character.worldObject.speedX = -movementSpeed
             lastInput = "Left"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_UP]):
-            character.speedX = 0.707*movementSpeed
-            character.speedY = -0.707*movementSpeed
+            character.worldObject.speedX = 0.707*movementSpeed
+            character.worldObject.speedY = -0.707*movementSpeed
             lastInput = "UpRight"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_DOWN]):
-            character.speedX = 0.707*movementSpeed
-            character.speedY = 0.707*movementSpeed
+            character.worldObject.speedX = 0.707*movementSpeed
+            character.worldObject.speedY = 0.707*movementSpeed
             lastInput = "DownRight"
         elif (keys[pygame.K_RIGHT]):
-            character.speedX = movementSpeed
+            character.worldObject.speedX = movementSpeed
             lastInput = "Right"
         elif (keys[pygame.K_UP]):
-            character.speedY = -movementSpeed
+            character.worldObject.speedY = -movementSpeed
             lastInput = "Up"
         elif (keys[pygame.K_DOWN]):
-            character.speedY = movementSpeed
+            character.worldObject.speedY = movementSpeed
             lastInput = "Down"
 
         
@@ -245,7 +257,7 @@ def loadOpenWorld(screen, player):
                 testAttack.setCenter(attackCenter)
                 testAttack.rotate(startAngle, charCenter)
 
-                simulatedObjects.append(testAttack.worldObject)
+                simulatedObjects.append(testAttack)
 
         ## Trigger Attack Movement ##
         if (testAttack.currentDuration > 0):
@@ -253,16 +265,14 @@ def loadOpenWorld(screen, player):
             charCenter = character.getCenter()
             testAttack.rotate(testAttack.swingSpeed, charCenter)
             if (testAttack.currentDuration <= 0):
-                if (testAttack.worldObject in simulatedObjects):
-                    simulatedObjects.remove(testAttack.worldObject)
+                if (testAttack in simulatedObjects):
+                    simulatedObjects.remove(testAttack)
 
         
 
         ## Update InteractBox ##
-        if (testInteractionObject.worldObject in simulatedObjects):
-            simulatedObjects.remove(testInteractionObject.worldObject)
-
-        
+        if (testInteractionObject in simulatedObjects):
+            simulatedObjects.remove(testInteractionObject)
 
         if keys[pygame.K_c]:
             charCenter = character.getCenter()
@@ -277,12 +287,17 @@ def loadOpenWorld(screen, player):
             elif (lastInput == "Down"): angle = 180
             interactObjectCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-2*radius), charCenter, angle)
             testInteractionObject.setCenter(interactObjectCenter)
-            if (not testInteractionObject.worldObject in simulatedObjects):
-                simulatedObjects.append(testInteractionObject.worldObject)
+            if (not testInteractionObject in simulatedObjects):
+                simulatedObjects.append(testInteractionObject)
+
+
+        if keys[pygame.K_SPACE]:
+            continueText()
 
 
         ### Physics ###
-        for entity in simulatedObjects:
+        for object in simulatedObjects:
+            entity = object.worldObject
             ## Friction ##
             if (abs(entity.speedX) < FRICTION_GRASS):
                 entity.speedX = 0
@@ -338,7 +353,7 @@ def loadOpenWorld(screen, player):
 
             ## Move Thing ##
             entity.shape.move(movedVector)
-            if (entity == character):
+            if (object == character):
                 testAttack.worldObject.shape.move(movedVector)
             entity.currentHeight = tiles[math.floor(entity.getCenter()[0]) + math.floor(entity.getCenter()[1])*width].height
             if (movedVector[0] == 0): entity.speedX = 0
@@ -371,30 +386,32 @@ def loadOpenWorld(screen, player):
 
         ## Entity Collision Logic ##
         for entity in list(simulatedObjects):
-         if (not entity.trigger == None):
-              for trigger in list(simulatedObjects):
-                   if (trigger.entityType == entity.trigger):
-                        if (ShapeMath.collides(trigger.shape, entity.shape)):
-                             if (entity.entityType == "enemy"):
-                                  currentQuests = player.getCurrentQuests()
-                                  for quest in currentQuests:
-                                      if (quest.questType == "killQuest"):
-                                          if(quest.questData == entity.data.name):
-                                              quest.questProgress += 1
-                                              if (quest.questProgress >= quest.questGoal): 
-                                                  quest.questProgress = quest.questGoal
-                                                  testNPC.data = ["Thank you for saving us!"]
-                                              # Add update npc thing here or have npcs connected to quests
-                                              else: testNPC.data = ["Please help us kill these slimes!", "Slime Kill Count: " + str(quest.questProgress)]
-                                  # combatButton()
-                                  simulatedObjects.remove(entity)
-                                  entity.respawnTimer = 60
-                             if (entity.entityType == "player"):
-                                  combatButton()
-                             if (entity.entityType == "npc"):
-                                 visualNovel.updateText(testNPC.dialogue[0])
-                                 currentTextPosition = 1
-                                 visualNovel.isShowing = True
+            if (not entity.worldObject.trigger == None):
+                for trigger in list(simulatedObjects):
+                    if (trigger.worldObject.entityType == entity.worldObject.trigger):
+                        if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
+                            if (type(entity) == Enemy):
+                                currentQuests = player.getCurrentQuests()
+                                for quest in currentQuests:
+                                    if (quest.questType == "killQuest"):
+                                        if(quest.questData == entity.enemyID):
+                                            quest.questProgress += 1
+                                            if (quest.questProgress >= quest.questGoal): 
+                                                quest.questProgress = quest.questGoal
+                                                testNPC.dialogue = ["Thank you for saving us!"]
+                                            # Add update npc thing here or have npcs connected to quests
+                                            else: testNPC.dialogue = ["Please help us kill these slimes!", "Slime Kill Count: " + str(quest.questProgress)]
+                                # combatButton()
+                                simulatedObjects.remove(entity)
+                                entity.respawnTimer = 60
+                            if (type(entity) == PlayerObject):
+                                combatButton()
+                            if (type(entity) == NPC):
+                                currentDialogue = entity.dialogue
+                                visualNovel.isShowing = True
+                                currentDialoguePosition = 0
+                                continueText()
+                                 
 
         ## Move Enemies ##
         if (changeEnemyDirection <= 0):
@@ -402,35 +419,35 @@ def loadOpenWorld(screen, player):
             changeEnemyDirection += random.randint(90, 180)
         else: changeEnemyDirection -= 1
         for entity in simulatedObjects:
-                if entity.entityType == "enemy":
+                if type(entity) == Enemy:
                     enemyMovementSpeed = 0.015
                     if (enemyMoveDirection == 1):
-                        entity.speedX = 0
-                        entity.speedY = enemyMovementSpeed
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = enemyMovementSpeed
                     elif (enemyMoveDirection == 2):
-                        entity.speedX = 0.707*enemyMovementSpeed
-                        entity.speedY = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 3):
-                        entity.speedX = -0.707*enemyMovementSpeed
-                        entity.speedY = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 4):
-                        entity.speedX = enemyMovementSpeed
-                        entity.speedY = 0
+                        entity.worldObject.speedX = enemyMovementSpeed
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 5):
-                        entity.speedX = -enemyMovementSpeed
-                        entity.speedY = 0
+                        entity.worldObject.speedX = -enemyMovementSpeed
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 6):
-                        entity.speedX = 0
-                        entity.speedY = 0
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 7):
-                        entity.speedX = 0.707*enemyMovementSpeed
-                        entity.speedY = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 8):
-                        entity.speedX = 0
-                        entity.speedY = -enemyMovementSpeed
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = -enemyMovementSpeed
                     elif (enemyMoveDirection == 9):
-                        entity.speedX = -0.707*enemyMovementSpeed
-                        entity.speedY = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
         
 
         ## Respawn Enemies ##
@@ -441,7 +458,7 @@ def loadOpenWorld(screen, player):
                     if (entity.respawnTimer <= 0):
                         entity.respawnTimer = 0
                         entity.setCenter((entity.spawnX, entity.spawnY))
-                        simulatedObjects.append(entity.worldObject)
+                        simulatedObjects.append(entity)
 
 
         
