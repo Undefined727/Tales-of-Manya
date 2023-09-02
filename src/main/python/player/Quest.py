@@ -8,6 +8,9 @@ class Quest:
     questGoal = 10
     questProgress = 0
 
+    NPCDialogue = {"Test_NPC": ["Please help us kill these slimes!", "Good Luck!"]}
+    followUpQuests = ["Congratulations"]
+
     def __init__(self, questType = None, questData = None, questGoal = None):
         # In the future we will pull from a database with a quest ID for now we just use the default values
         self.questID = 0

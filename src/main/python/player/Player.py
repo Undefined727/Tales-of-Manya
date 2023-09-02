@@ -8,7 +8,7 @@ class Player:
 
     def __init__(self, fileName = None):
         # This will pull from a file in the future
-        self.currentQuests = [Quest("killQuest", "Slime", 10)]
+        self.currentQuests = [Quest("killQuest", "Slime", 3)]
         self.party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10), Character("lmao", "catgirl.png", 20)]
 
 

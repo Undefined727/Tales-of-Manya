@@ -65,7 +65,7 @@ def loadOpenWorld(screen, player):
     global playerData
     global currentDialoguePosition
     global currentDialogue
-    playerData = Player()
+    playerData = player
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
@@ -125,7 +125,7 @@ def loadOpenWorld(screen, player):
     testInteractionObject = PlayerInteractionObject((0, 0))
     testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     testEnemy = Enemy("Slime", 5, "wizard.png", (character.getCenter()[0]+5, character.getCenter()[1]+1), 30)
-    testNPC = NPC(["Test Dialogue3"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), 1)
+    testNPC = NPC(["Test Dialogue3"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
     
 
     
@@ -394,14 +394,16 @@ def loadOpenWorld(screen, player):
                                 currentQuests = player.getCurrentQuests()
                                 for quest in currentQuests:
                                     if (quest.questType == "killQuest"):
-                                        if(quest.questData == entity.enemyID):
+                                        if (quest.questData == entity.enemyID):
                                             quest.questProgress += 1
                                             if (quest.questProgress >= quest.questGoal): 
                                                 quest.questProgress = quest.questGoal
-                                                testNPC.dialogue = ["Thank you for saving us!"]
-                                            # Add update npc thing here or have npcs connected to quests
-                                            else: testNPC.dialogue = ["Please help us kill these slimes!", "Slime Kill Count: " + str(quest.questProgress)]
+                                                for npc in simulatedObjects:
+                                                    if (type(npc) == NPC):
+                                                        if (npc.NPCID in quest.NPCDialogue.keys()):
+                                                            npc.dialogue = quest.NPCDialogue[npc.NPCID]
                                 # combatButton()
+                                print(type(entity))
                                 simulatedObjects.remove(entity)
                                 entity.respawnTimer = 60
                             if (type(entity) == PlayerObject):

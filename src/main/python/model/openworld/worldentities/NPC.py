@@ -2,19 +2,25 @@ from model.openworld.OpenWorldEntity import OpenWorldEntity
 from model.openworld.Circle import Circle
 
 class NPC:
-    id:int
+    NPCID:int
     spawnX:int
     spawnY:int
     worldObject:OpenWorldEntity
 
     dialogue = ["Test Dialogue", "Test2"]
+    name = "Test NPC"
 
-    # In the future dialogue and id will be connected directly using a database and thus dialogue will no longer be required for initialization
-    def __init__(self, dialogue, img, position, id):
+    # In the future dialogue/img/name and id will be connected directly using a database and thus dialogue will no longer be required for initialization
+    def __init__(self, dialogue, img, position, NPCID, quests):
         self.dialogue = dialogue
         self.spawnX, self.spawnY = position
-        self.id = id
+        self.NPCID = NPCID
+        self.name = "Test NPC"
         self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "npc", "interact")
+
+        for quest in quests:
+            if (self.NPCID in quest.NPCDialogue.keys()):
+                self.dialogue = quest.NPCDialogue[self.NPCID]
     
 
     def setCenter(self, point):
