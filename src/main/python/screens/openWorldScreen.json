@@ -27,12 +27,33 @@
 {
     "name": "QuestListing",
     "isShowing": true,
-    "xPosition": 0.1,
-    "yPosition": 0.05,
-    "width": 0.05,
+    "xPosition": 0.15,
+    "yPosition": 0.025,
+    "width": 0.2,
     "height": 0.05,
     "tags": [],
     "entityType": "Paragraph",
-    "path": "settingsIcon.png"
+    "text": "Current Quests: ",
+    "font": "mono",
+    "fontSize": 18,
+    "fontColor": "black",
+    "highlightColor": null,
+    "align": "Left"
+},
+{
+    "name": "CurrentQuestListing",
+    "isShowing": true,
+    "xPosition": 0.15,
+    "yPosition": 0.075,
+    "width": 0.2,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Paragraph",
+    "text": "template",
+    "font": "mono",
+    "fontSize": 16,
+    "fontColor": "black",
+    "highlightColor": null,
+    "align": "Left"
 }
 ]

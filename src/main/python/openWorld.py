@@ -26,6 +26,7 @@ newSceneData = []
 visualNovel:VisualNovel
 currentDialogue = []
 currentDialoguePosition = 0
+currentNPC = None
 
 playerData:Player
 
@@ -46,31 +47,53 @@ def combatButton(screen, enemies):
     quit = True
     newSceneData = [screen, "Combat", enemies, playerData]
 
-def continueText():
+def continueText(renderedEntities):
     global currentDialogue
     global currentDialoguePosition
     global visualNovel
-    if (currentDialoguePosition >= len(currentDialogue) or currentDialogue[currentDialoguePosition] == ""):
+    global currentNPC
+    if (currentDialoguePosition >= len(currentDialogue)):
+        currentQuests = playerData.getCurrentQuests()
+        for quest in currentQuests:
+            if (quest.questType == "NPCInteractionQuest"):
+                if (quest.questData == currentNPC):
+                    quest.questProgress += 1
+                    if (quest.questProgress >= quest.questGoal): 
+                        completeQuest(quest, renderedEntities)
         currentDialoguePosition = 0
         visualNovel.isShowing = False
     else:
         visualNovel.updateText(currentDialogue[currentDialoguePosition])
         currentDialoguePosition +=1
 
-def addQuest(quest, renderedEntities):
+def updateNPCS(renderedEntities):
     global playerData
-    playerData.currentQuests.append(quest)
-    for npc in renderedEntities:
-        if (type(npc) == NPC):
-            if (npc.NPCID in quest.NPCDialogue.keys()):
-                npc.dialogue = quest.NPCDialogue[npc.NPCID]
+    for quest in playerData.getCurrentQuests():
+        for npc in renderedEntities:
+            if (type(npc) == NPC):
+                if (npc.NPCID in quest.NPCDialogue.keys()):
+                    npc.dialogue = quest.NPCDialogue[npc.NPCID]
 
 def completeQuest(quest, renderedEntities):
     global playerData
+
     quest.questProgress = quest.questGoal
     playerData.currentQuests.remove(quest)
-    for id in quest.followUpQuests:
-        addQuest(Quest(id), renderedEntities)
+    for npc in renderedEntities:
+        if (type(npc) == NPC):
+            if (npc.NPCID in quest.NPCDialogue.keys()):
+                npc.dialogue = npc.defaultDialogue
+
+    for id in quest.followUpQuests: 
+        playerData.currentQuests.append(Quest(id))
+    updateNPCS(renderedEntities)
+
+    for entity in visualEntities:
+        if entity.name == "CurrentQuestListing":
+            if (len(playerData.getCurrentQuests()) > 0):
+                entity.updateText(playerData.getCurrentQuests()[0].questName)
+            else: entity.updateText("No current quests :/")
+
         
 
 def loadOpenWorld(sceneData):
@@ -81,6 +104,7 @@ def loadOpenWorld(sceneData):
     global playerData
     global currentDialoguePosition
     global currentDialogue
+    global currentNPC
     screen = sceneData[0]
     playerData = sceneData[3]
     FPS = 60
@@ -126,6 +150,12 @@ def loadOpenWorld(sceneData):
     visualNovel.isShowing = False
     buttons.append(visualNovel.continueButton)
 
+    for entity in visualEntities:
+        if entity.name == "CurrentQuestListing":
+            if (len(playerData.getCurrentQuests()) > 0):
+                entity.updateText(playerData.getCurrentQuests()[0].questName)
+            else: entity.updateText("No current quests :/")
+
 
     FRICTION_GRASS = 0.005
     CHAR_SIZE_MULTIPLIER = 0.85
@@ -142,7 +172,7 @@ def loadOpenWorld(sceneData):
     testInteractionObject = PlayerInteractionObject((0, 0))
     testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     testEnemy = Enemy("Slime", 5, "wizard.png", (character.getCenter()[0]+5, character.getCenter()[1]+1), 30)
-    testNPC = NPC(["Test Dialogue3"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
+    testNPC = NPC(["I am an NPC with default dialogue :D"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
     
 
     
@@ -195,6 +225,7 @@ def loadOpenWorld(sceneData):
     lastInput = "Right"
     changeEnemyDirection = 0
     frameCounter = 0
+    continueTextCooldown = 20
 
 
     ### Running Game :D ###
@@ -208,7 +239,9 @@ def loadOpenWorld(sceneData):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
-                        if (entity.func == "continueText"): buttonFunc = continueText
+                        if (entity.func == "continueText"): 
+                            continueText(simulatedObjects)
+                            break
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(entity.args)
                         break
@@ -308,9 +341,12 @@ def loadOpenWorld(sceneData):
                 simulatedObjects.append(testInteractionObject)
 
 
+        
         if keys[pygame.K_SPACE]:
-            continueText()
-
+            if (continueTextCooldown <= 0):
+                continueText(simulatedObjects)
+                continueTextCooldown += 20
+        if (continueTextCooldown > 0): continueTextCooldown -= 1
 
         ### Physics ###
         for object in simulatedObjects:
@@ -413,10 +449,10 @@ def loadOpenWorld(sceneData):
                                     if (quest.questType == "killQuest"):
                                         if (quest.questData == entity.enemyID):
                                             quest.questProgress += 1
+                                            print(quest.questProgress)
                                             if (quest.questProgress >= quest.questGoal): 
                                                 completeQuest(quest, simulatedObjects)
                                 combatButton(screen, [entity.enemyStats])
-                                print(type(entity))
                                 simulatedObjects.remove(entity)
                                 entity.respawnTimer = 60
                             if (type(entity) == PlayerObject):
@@ -425,7 +461,8 @@ def loadOpenWorld(sceneData):
                                 currentDialogue = entity.dialogue
                                 visualNovel.isShowing = True
                                 currentDialoguePosition = 0
-                                continueText()
+                                currentNPC = entity.NPCID
+                                continueText(simulatedObjects)
                                  
 
         ## Move Enemies ##
@@ -466,14 +503,14 @@ def loadOpenWorld(sceneData):
         
 
         ## Respawn Enemies ##
-        for entity in allEntities:
-            if (type(entity) == Enemy):
-                if (not entity.respawnTimer == 0):
-                    entity.respawnTimer -= 1
-                    if (entity.respawnTimer <= 0):
-                        entity.respawnTimer = 0
-                        entity.setCenter((entity.spawnX, entity.spawnY))
-                        simulatedObjects.append(entity)
+        # for entity in allEntities:
+        #     if (type(entity) == Enemy):
+        #         if (not entity.respawnTimer == 0):
+        #             entity.respawnTimer -= 1
+        #             if (entity.respawnTimer <= 0):
+        #                 entity.respawnTimer = 0
+        #                 entity.setCenter((entity.spawnX, entity.spawnY))
+        #                 simulatedObjects.append(entity)
 
 
         

@@ -8,11 +8,13 @@ class NPC:
     worldObject:OpenWorldEntity
 
     dialogue = ["Test Dialogue", "Test2"]
+    defaultDialogue = ["Test Dialogue", "Test2"]
     name = "Test NPC"
 
     # In the future dialogue/img/name and id will be connected directly using a database and thus dialogue will no longer be required for initialization
-    def __init__(self, dialogue, img, position, NPCID, quests):
-        self.dialogue = dialogue
+    def __init__(self, defaultDialogue, img, position, NPCID, quests):
+        self.defaultDialogue = defaultDialogue
+        self.dialogue = defaultDialogue
         self.spawnX, self.spawnY = position
         self.NPCID = NPCID
         self.name = "Test NPC"

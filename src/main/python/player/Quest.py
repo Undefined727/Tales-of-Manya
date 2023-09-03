@@ -22,14 +22,14 @@ class Quest:
             self.questName = "Kill The Slimes!"
             self.questType = "killQuest"
             self.questData = "Slime"
-            self.questGoal = 5
+            self.questGoal = 2
             self.NPCDialogue = {"Test_NPC": ["Please help us kill these slimes!", "Good Luck!"]}
             self.followUpQuests = [1]
             self.questXPReward = 0
             self.questItemReward = []
         else:
-            self.questName = "Thank You!"
-            self.questType = "interactNPCQuest"
+            self.questName = "Kill The Slimes! - Accept Reward"
+            self.questType = "NPCInteractionQuest"
             self.questData = "Test_NPC"
             self.questGoal = 1
             self.NPCDialogue = {"Test_NPC": ["Thank you for saving us!", "Take This Reward!"]}
