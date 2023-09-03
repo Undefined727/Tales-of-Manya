@@ -11,6 +11,7 @@ from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
 from player.Player import Player
+from player.Quest import Quest
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
@@ -20,7 +21,7 @@ from PIL import Image
 visualEntities = []
 buttons = []
 quit = False
-nextScreen = "Quit"
+newSceneData = []
 
 visualNovel:VisualNovel
 currentDialogue = []
@@ -39,11 +40,11 @@ def exitButton():
     global quit
     quit = True
 
-def combatButton():
+def combatButton(screen, enemies):
     global quit
-    global nextScreen
+    global newSceneData
     quit = True
-    nextScreen = "Combat"
+    newSceneData = [screen, "Combat", enemies, playerData]
 
 def continueText():
     global currentDialogue
@@ -56,20 +57,36 @@ def continueText():
         visualNovel.updateText(currentDialogue[currentDialoguePosition])
         currentDialoguePosition +=1
 
-def loadOpenWorld(screen, player):
+def addQuest(quest, renderedEntities):
+    global playerData
+    playerData.currentQuests.append(quest)
+    for npc in renderedEntities:
+        if (type(npc) == NPC):
+            if (npc.NPCID in quest.NPCDialogue.keys()):
+                npc.dialogue = quest.NPCDialogue[npc.NPCID]
+
+def completeQuest(quest, renderedEntities):
+    global playerData
+    quest.questProgress = quest.questGoal
+    playerData.currentQuests.remove(quest)
+    for id in quest.followUpQuests:
+        addQuest(Quest(id), renderedEntities)
+        
+
+def loadOpenWorld(sceneData):
     global quit
     global visualEntities
-    global nextScreen
     global buttons
     global visualNovel
     global playerData
     global currentDialoguePosition
     global currentDialogue
-    playerData = player
+    screen = sceneData[0]
+    playerData = sceneData[3]
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open("src/main/python/maps/samplemap.png")
+    img = Image.open("src/main/python/maps/" + sceneData[2] + ".png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
@@ -391,23 +408,19 @@ def loadOpenWorld(screen, player):
                     if (trigger.worldObject.entityType == entity.worldObject.trigger):
                         if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
                             if (type(entity) == Enemy):
-                                currentQuests = player.getCurrentQuests()
+                                currentQuests = playerData.getCurrentQuests()
                                 for quest in currentQuests:
                                     if (quest.questType == "killQuest"):
                                         if (quest.questData == entity.enemyID):
                                             quest.questProgress += 1
                                             if (quest.questProgress >= quest.questGoal): 
-                                                quest.questProgress = quest.questGoal
-                                                for npc in simulatedObjects:
-                                                    if (type(npc) == NPC):
-                                                        if (npc.NPCID in quest.NPCDialogue.keys()):
-                                                            npc.dialogue = quest.NPCDialogue[npc.NPCID]
-                                # combatButton()
+                                                completeQuest(quest, simulatedObjects)
+                                combatButton(screen, [entity.enemyStats])
                                 print(type(entity))
                                 simulatedObjects.remove(entity)
                                 entity.respawnTimer = 60
                             if (type(entity) == PlayerObject):
-                                combatButton()
+                                combatButton(screen, [trigger.enemyStats])
                             if (type(entity) == NPC):
                                 currentDialogue = entity.dialogue
                                 visualNovel.isShowing = True
@@ -489,12 +502,12 @@ def loadOpenWorld(screen, player):
         for entity in simulatedObjects:
             screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
 
-        corners = testAttack.worldObject.shape.corners().copy()
-        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[0]), convertToScreen(*corners[1]))
-        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[1]), convertToScreen(*corners[2]))
-        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[2]), convertToScreen(*corners[3]))
-        pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
-        #pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
+        # corners = testAttack.worldObject.shape.corners().copy()
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[0]), convertToScreen(*corners[1]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[1]), convertToScreen(*corners[2]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[2]), convertToScreen(*corners[3]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
+        # pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
 
             
         refreshMenu(screen)
@@ -513,4 +526,4 @@ def loadOpenWorld(screen, player):
         if (quit):
             quit = False 
             break
-    return nextScreen
+    return newSceneData

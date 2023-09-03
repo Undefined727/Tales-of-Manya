@@ -36,7 +36,7 @@ def run():
     global buttons
     global visualEntities
     leaveScreen = False
-    nextScreen = None
+    newSceneData = None
 
     loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
 
@@ -44,9 +44,10 @@ def run():
         pygame.quit()
 
     def openWorldButton():
-        nonlocal nextScreen
+        nonlocal newSceneData
         nonlocal leaveScreen
-        nextScreen = "Open World"
+        global player
+        newSceneData = [screen, "Open World", "samplemap", player]
         leaveScreen = True
 
     buttonFunc = exit
@@ -67,10 +68,10 @@ def run():
 
         refreshScreen()
         if (leaveScreen): break
-    switchScreens(nextScreen)
+    switchScreens(newSceneData)
 
 
-def switchScreens(newScreen):
+def switchScreens(newSceneData):
     global visualEntities
     global buttons
     global player
@@ -80,10 +81,10 @@ def switchScreens(newScreen):
     loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
 
-    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen, player)
-    elif (newScreen == "Combat"): newScreen = loadCombat(screen, player)
-    elif (newScreen == "Inventory"): newScreen = loadInventory(screen, player)
-    switchScreens(newScreen)
+    if (newSceneData[1] == "Open World"): newSceneData = loadOpenWorld(newSceneData)
+    elif (newSceneData[1] == "Combat"): newSceneData = loadCombat(newSceneData)
+    elif (newSceneData[1] == "Inventory"): newSceneData = loadInventory(newSceneData)
+    switchScreens(newSceneData)
 
 
 run()
