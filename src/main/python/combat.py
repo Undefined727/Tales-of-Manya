@@ -9,7 +9,7 @@ from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.CombatCharacterEntity import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
-from player.Player import Player
+from model.player.Player import Player
 from model.item.Item import Item
 from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from view.displayHandler import displayEntity

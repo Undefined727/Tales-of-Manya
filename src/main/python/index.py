@@ -1,7 +1,7 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
 
-from player.Player import Player
+from model.player.Player import Player
 from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat

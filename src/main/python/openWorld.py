@@ -10,8 +10,8 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
-from player.Player import Player
-from player.Quest import Quest
+from model.player.Player import Player
+from model.player.Quest import Quest
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np

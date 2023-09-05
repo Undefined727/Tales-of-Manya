@@ -17,11 +17,19 @@ def displayEntity(entity, screen):
         screen.blit(entity.img, (entity.xPosition, entity.yPosition))
     elif (type(entity) == ShapeEntity):
         if entity.shape == "rectangle":
-            if entity.isBorder:
-                pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
+            if (not entity.color[3] == "e"):
+                transparentRect = pygame.Surface((entity.width,entity.height)).convert_alpha()
+                transparentRect.fill(entity.color)
+                screen.blit(transparentRect, (entity.xPosition,entity.yPosition)) 
+            elif entity.isBorder:
+                pygame.draw.rect(screen, entity.color ,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height), 2)
             else:
-                pygame.draw.rect(screen,entity.color,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
+                pygame.draw.rect(screen, entity.color ,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
         if entity.shape == "ellipse":
+            if (not entity.color[3] == "e"):
+                transparentEllipse = pygame.Surface((entity.width,entity.height)).convert_alpha()
+                transparentEllipse.fill(entity.color)
+                screen.blit(transparentEllipse, (entity.xPosition,entity.yPosition)) 
             if entity.isBorder:
                 pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
             else:
@@ -36,7 +44,8 @@ def displayEntity(entity, screen):
         for item in entity.texts:
             displayEntity(item, screen)
     elif (type(entity) == VisualNovel):
-        displayEntity(entity.background, screen)
+        displayEntity(entity.backgroundBox, screen)
+        displayEntity(entity.frame, screen)
         displayEntity(entity.paragraph, screen)
         displayEntity(entity.continueButton, screen)
 

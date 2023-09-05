@@ -1,4 +1,4 @@
-from player.Quest import Quest
+from model.player.Quest import Quest
 from model.character.Character import Character
 
 class Player:
