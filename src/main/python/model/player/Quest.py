@@ -8,7 +8,7 @@ class Quest:
     questGoal = 10
     questProgress = 0
 
-    NPCDialogue = {"Test_NPC": ["Please help us kill these slimes!", "Good Luck!"]}
+    NPCDialogue = {"Test_NPC": 0}
     followUpQuests = [1]
 
     questXPReward = 0
@@ -23,7 +23,7 @@ class Quest:
             self.questType = "killQuest"
             self.questData = "Slime"
             self.questGoal = 2
-            self.NPCDialogue = {"Test_NPC": ["Please help us kill these slimes!", "Good Luck!"]}
+            self.NPCDialogue = {"Test_NPC": 0}
             self.followUpQuests = [1]
             self.questXPReward = 0
             self.questItemReward = []
@@ -32,7 +32,7 @@ class Quest:
             self.questType = "NPCInteractionQuest"
             self.questData = "Test_NPC"
             self.questGoal = 1
-            self.NPCDialogue = {"Test_NPC": ["Thank you for saving us!", "Take This Reward!"]}
+            self.NPCDialogue = {"Test_NPC": 1}
             self.followUpQuests = []
             self.questXPReward = 0
             self.questItemReward = []

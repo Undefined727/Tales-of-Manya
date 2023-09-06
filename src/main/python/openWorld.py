@@ -24,8 +24,6 @@ quit = False
 newSceneData = []
 
 visualNovel:VisualNovel
-currentDialogue = []
-currentDialoguePosition = 0
 currentNPC = None
 
 playerData:Player
@@ -48,11 +46,10 @@ def combatButton(screen, enemies):
     newSceneData = [screen, "Combat", enemies, playerData]
 
 def continueText(renderedEntities):
-    global currentDialogue
-    global currentDialoguePosition
     global visualNovel
     global currentNPC
-    if (currentDialoguePosition >= len(currentDialogue)):
+    finished = visualNovel.continueText()
+    if (finished):
         currentQuests = playerData.getCurrentQuests()
         for quest in currentQuests:
             if (quest.questType == "NPCInteractionQuest"):
@@ -60,11 +57,7 @@ def continueText(renderedEntities):
                     quest.questProgress += 1
                     if (quest.questProgress >= quest.questGoal): 
                         completeQuest(quest, renderedEntities)
-        currentDialoguePosition = 0
         visualNovel.isShowing = False
-    else:
-        visualNovel.updateText(currentDialogue[currentDialoguePosition])
-        currentDialoguePosition +=1
 
 def updateNPCS(renderedEntities):
     global playerData
@@ -144,7 +137,7 @@ def loadOpenWorld(sceneData):
 
 
     loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
-    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, tags = [], text = "This is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmaoThis is a text paragraph example it's supposed to be very long blah blah blah blah blah, this actually doesn't end lmao")
+    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
     visualNovel.isShowing = False
@@ -449,7 +442,6 @@ def loadOpenWorld(sceneData):
                                     if (quest.questType == "killQuest"):
                                         if (quest.questData == entity.enemyID):
                                             quest.questProgress += 1
-                                            print(quest.questProgress)
                                             if (quest.questProgress >= quest.questGoal): 
                                                 completeQuest(quest, simulatedObjects)
                                 combatButton(screen, [entity.enemyStats])
@@ -458,11 +450,9 @@ def loadOpenWorld(sceneData):
                             if (type(entity) == PlayerObject):
                                 combatButton(screen, [trigger.enemyStats])
                             if (type(entity) == NPC):
-                                currentDialogue = entity.dialogue
+                                visualNovel.updateDialogue(entity.dialogue)
                                 visualNovel.isShowing = True
-                                currentDialoguePosition = 0
                                 currentNPC = entity.NPCID
-                                continueText(simulatedObjects)
                                  
 
         ## Move Enemies ##

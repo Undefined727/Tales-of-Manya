@@ -14,21 +14,39 @@ class VisualNovel(VisualEntity):
     dialogue:Dialogue
     name:TextEntity
     currentTextPosition:int
+    text:str
 
 
-    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], text = ""):
+    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = 0):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
-        self.text = text
+        self.currentTextPosition = 0
+        self.dialogue = Dialogue(0)
+        self.text = self.dialogue.text[self.currentTextPosition][1]
         self.frame = ImageEntity("vn_frame", True, xPosition, yPosition, width, height/3, tags, "visual_novel_frame.png")
         self.backgroundBox = ShapeEntity("vn_background", True, xPosition, yPosition + height/4, width, 3*height/4, tags, (0, 0, 255, 160), False, "rectangle")
-        self.paragraph = Paragraph("text", True, xPosition + width/5, yPosition + 6*height/16, 0.4*width, 0.55*height, tags, text, "mono", 24)
+        self.paragraph = Paragraph("text", True, xPosition + width/5, yPosition + 6*height/16, 0.4*width, 0.55*height, tags, self.text, "mono", 24)
         self.paragraph.align = "Left"
         self.continueButton = ImageButton("continue_button", True, xPosition + 0.85*width, yPosition + 6*height/16, width/10, height/8, tags, "change_active_right.png", "continueText")
         
 
+
+    def updateDialogue(self, dialogueID):
+        self.currentTextPosition = 0
+        self.dialogue = Dialogue(dialogueID)
+        self.text = self.dialogue.text[self.currentTextPosition][1]
+        self.updateText(self.text)
+
     def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):
         self.text = text
         self.paragraph.updateText(text, font, fontSize, fontColor, highlightColor)
+
+    def continueText(self):
+        self.currentTextPosition += 1
+        if (self.currentTextPosition < len(self.dialogue.text)):
+            self.updateText(self.dialogue.text[self.currentTextPosition][1])
+            return False
+        else: return True
+
     
     def resize(self, width, height):
         self.width = width

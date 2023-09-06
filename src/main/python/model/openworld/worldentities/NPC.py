@@ -7,8 +7,8 @@ class NPC:
     spawnY:int
     worldObject:OpenWorldEntity
 
-    dialogue = ["Test Dialogue", "Test2"]
-    defaultDialogue = ["Test Dialogue", "Test2"]
+    defaultDialogue:int
+    dialogue:int
     name = "Test NPC"
 
     # In the future dialogue/img/name and id will be connected directly using a database and thus dialogue will no longer be required for initialization

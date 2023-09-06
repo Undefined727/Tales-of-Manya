@@ -17,7 +17,7 @@ def displayEntity(entity, screen):
         screen.blit(entity.img, (entity.xPosition, entity.yPosition))
     elif (type(entity) == ShapeEntity):
         if entity.shape == "rectangle":
-            if (not entity.color[3] == "e"):
+            if (len(entity.color) > 3 and not entity.color[3] == "e"):
                 transparentRect = pygame.Surface((entity.width,entity.height)).convert_alpha()
                 transparentRect.fill(entity.color)
                 screen.blit(transparentRect, (entity.xPosition,entity.yPosition)) 
@@ -26,7 +26,7 @@ def displayEntity(entity, screen):
             else:
                 pygame.draw.rect(screen, entity.color ,pygame.Rect(entity.xPosition,entity.yPosition,entity.width,entity.height))
         if entity.shape == "ellipse":
-            if (not entity.color[3] == "e"):
+            if (len(entity.color) > 3 and not entity.color[3] == "e"):
                 transparentEllipse = pygame.Surface((entity.width,entity.height)).convert_alpha()
                 transparentEllipse.fill(entity.color)
                 screen.blit(transparentEllipse, (entity.xPosition,entity.yPosition)) 
