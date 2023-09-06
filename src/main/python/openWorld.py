@@ -1,5 +1,4 @@
 from model.openworld.Tile import Tile
-from model.openworld.OpenWorldEntity import OpenWorldEntity
 from model.openworld.worldentities.NPC import NPC
 from model.openworld.worldentities.Enemy import Enemy
 from model.openworld.worldentities.PlayerAttackObject import PlayerAttackObject
@@ -10,6 +9,7 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
+from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
 from model.player.Quest import Quest
 from view.displayHandler import displayEntity
@@ -49,6 +49,7 @@ def continueText(renderedEntities):
     global visualNovel
     global currentNPC
     finished = visualNovel.continueText()
+    print(finished)
     if (finished):
         currentQuests = playerData.getCurrentQuests()
         for quest in currentQuests:
@@ -95,8 +96,6 @@ def loadOpenWorld(sceneData):
     global buttons
     global visualNovel
     global playerData
-    global currentDialoguePosition
-    global currentDialogue
     global currentNPC
     screen = sceneData[0]
     playerData = sceneData[3]
@@ -141,7 +140,7 @@ def loadOpenWorld(sceneData):
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
     visualNovel.isShowing = False
-    buttons.append(visualNovel.continueButton)
+    #buttons.append(visualNovel.continueButton)
 
     for entity in visualEntities:
         if entity.name == "CurrentQuestListing":
@@ -165,7 +164,7 @@ def loadOpenWorld(sceneData):
     testInteractionObject = PlayerInteractionObject((0, 0))
     testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     testEnemy = Enemy("Slime", 5, "wizard.png", (character.getCenter()[0]+5, character.getCenter()[1]+1), 30)
-    testNPC = NPC(["I am an NPC with default dialogue :D"], "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
+    testNPC = NPC(2, "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
     
 
     
@@ -229,6 +228,7 @@ def loadOpenWorld(sceneData):
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
+                    print(button.name)
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
@@ -239,6 +239,10 @@ def loadOpenWorld(sceneData):
                         else: buttonFunc(entity.args)
                         break
 
+        ### Make Hover Buttons shine funny color
+        for button in buttons:
+            if (type(button) == HoverShapeButton):
+                button.mouseInRegion(mouse)
 
 
         ### Inputs ###

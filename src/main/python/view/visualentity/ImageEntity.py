@@ -16,15 +16,19 @@ class ImageEntity(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
+        if (width > 1 and height > 1):
+            self.img = pygame.transform.scale(self.img, (self.width, self.height))
 
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition
         self.yPosition = yPosition
 
     def scale(self, screenX, screenY):
-        self.img = pygame.transform.scale(self.img, (self.width*screenX, self.height*screenY))
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.resize(self.width*screenX, self.height*screenY)
+        if (self.width > 1 and self.height > 1):
+            self.img = pygame.transform.scale(self.img, (self.width, self.height))
+        
 
 
     @staticmethod

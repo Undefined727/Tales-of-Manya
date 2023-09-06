@@ -1,6 +1,7 @@
 from view.visualentity.Paragraph import Paragraph
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ImageButton import ImageButton
+from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
@@ -15,13 +16,17 @@ class VisualNovel(VisualEntity):
     name:TextEntity
     currentTextPosition:int
     text:str
+    isShowingOptions:bool
+    optionButtons:list
+    optionParagraphs:list
 
 
     def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = 0):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.currentTextPosition = 0
-        self.dialogue = Dialogue(0)
+        self.dialogue = Dialogue(dialogue)
         self.text = self.dialogue.text[self.currentTextPosition][1]
+        self.isShowingOptions = False
         self.frame = ImageEntity("vn_frame", True, xPosition, yPosition, width, height/3, tags, "visual_novel_frame.png")
         self.backgroundBox = ShapeEntity("vn_background", True, xPosition, yPosition + height/4, width, 3*height/4, tags, (0, 0, 255, 160), False, "rectangle")
         self.paragraph = Paragraph("text", True, xPosition + width/5, yPosition + 6*height/16, 0.4*width, 0.55*height, tags, self.text, "mono", 24)
@@ -31,6 +36,7 @@ class VisualNovel(VisualEntity):
 
 
     def updateDialogue(self, dialogueID):
+        if(self.isShowingOptions): return
         self.currentTextPosition = 0
         self.dialogue = Dialogue(dialogueID)
         self.text = self.dialogue.text[self.currentTextPosition][1]
@@ -45,7 +51,21 @@ class VisualNovel(VisualEntity):
         if (self.currentTextPosition < len(self.dialogue.text)):
             self.updateText(self.dialogue.text[self.currentTextPosition][1])
             return False
-        else: return True
+        else:
+            if (len(self.dialogue.options) > 0 and not self.isShowingOptions):
+                self.backgroundBox.reposition(self.xPosition, self.yPosition + self.height/4 - 3*self.height/4)
+                self.frame.reposition(self.xPosition, self.yPosition - 3*self.height/4)
+                self.continueButton.reposition(self.xPosition + 0.85*self.width, self.yPosition - 3*self.height/4 + 6*self.height/16)
+                self.paragraph.reposition(self.xPosition + self.width/5, self.yPosition - 3*self.height/4 + 6*self.height/16)
+                self.backgroundBox.resize(self.width, 6*self.height/4)
+                self.isShowingOptions = True
+                return False
+            elif (self.isShowingOptions): 
+                self.isShowingOptions = False
+                self.reposition(self.xPosition, self.yPosition)
+                self.resize(self.width, self.height)
+                return True
+            else: return True
 
     
     def resize(self, width, height):
