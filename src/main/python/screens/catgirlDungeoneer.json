@@ -7,7 +7,7 @@
     "height": 0.075,
     "tags": [],
     "entityType": "HoverShapeButton",
-    "color": "blue",
+    "primaryColor": "blue",
     "secondaryColor": "cyan",
     "shape": "ellipse",
     "func": "exit",
@@ -25,6 +25,33 @@
     "path": "settingsIcon.png"
 },
 {
-    
+    "name": "TileSelectionButton",
+    "isShowing": true,
+    "xPosition": 0.025,
+    "yPosition": 0.03,
+    "width": 0.15,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "HoverShapeButton",
+    "primaryColor": "white",
+    "secondaryColor": "cyan",
+    "shape": "rectangle",
+    "func": "tileSelection",
+    "args": []
+},
+{
+    "name": "TileSelectionButtonText",
+    "isShowing": true,
+    "xPosition": 0.0775,
+    "yPosition": 0.03,
+    "width": 0.15,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Text",
+    "text": "Select Tile",
+    "font": "mono",
+    "fontSize": 20,
+    "fontColor": "black",
+    "highlightColor": null
 }
 ]

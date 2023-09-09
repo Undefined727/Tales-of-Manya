@@ -7,7 +7,7 @@
     "height": 0.075,
     "tags": [],
     "entityType": "HoverShapeButton",
-    "color": "blue",
+    "primaryColor": "blue",
     "secondaryColor": "cyan",
     "shape": "ellipse",
     "func": "combat",

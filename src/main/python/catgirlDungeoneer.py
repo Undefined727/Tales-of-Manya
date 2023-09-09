@@ -4,6 +4,7 @@ import numpy as np
 from view.JSONParser import loadJson
 from view.displayHandler import displayEntity
 from model.openworld.Tile import Tile
+from view.visualentity.TextEntity import TextEntity
 
 from view.visualentity.HoverShapeButton import HoverShapeButton
 sys.path.append(os.path.abspath("."))
@@ -53,6 +54,9 @@ for y in range(0, height):
 
 
 loadJson("catgirlDungeoneer.json", screenX, screenY, [visualEntities, buttons])
+for entity in visualEntities:
+    if (type(entity) == TextEntity):
+        print(entity.fontSize)
 
 backgroundHeight = 3*screenY
 backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()

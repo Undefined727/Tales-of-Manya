@@ -37,7 +37,6 @@ class TextEntity(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
-        self.fontSize = int(width/6)
         self.updateText(self.text, self.font, self.fontSize, self.fontColor, self.highlightColor)
     
     def reposition(self, xPosition, yPosition):

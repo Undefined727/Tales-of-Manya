@@ -47,7 +47,6 @@ def loadJson(address, screenX, screenY, lists):
         elif item["entityType"] == "InventoryCharacterCoords":
             index = 0
             entity = InventoryCharacterEntity.createFrom(item, party[index])
-            print(entity)
 
 
 
