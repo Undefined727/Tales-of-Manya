@@ -5,11 +5,11 @@ class HoverShapeButton(ShapeButton):
     primaryColor:str
     secondaryColor:str
 
-    def __init__(self, name = "Default_Button", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], color = "Blue", secondaryColor = "cyan", shape = "ellipse", func = None, args = [], isActive = True):
-        super().__init__(name, isShowing, xPosition, yPosition, width, height, tags, color, False, shape, func, args, isActive)
-        self.primaryColor = color
+    def __init__(self, name = "Default_Button", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], primaryColor = "Blue", secondaryColor = "cyan", shape = "ellipse", func = None, args = [], isActive = True):
+        super().__init__(name, isShowing, xPosition, yPosition, width, height, tags, primaryColor, False, shape, func, args, isActive)
+        self.primaryColor = primaryColor
         self.secondaryColor = secondaryColor
-        self.shapeEntity.color = color
+        self.shapeEntity.color = primaryColor
 
     def mouseInRegion(self, mouse):
         inRegion = super().mouseInRegion(mouse)

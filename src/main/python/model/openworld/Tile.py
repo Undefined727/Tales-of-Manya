@@ -2,12 +2,12 @@ import pygame
 
 class Tile:
     height = 0
-    img = "grass.png"
+    name = "grass.png"
     solid = False
 
-    def __init__(self, img, height, solid = False):
+    def __init__(self, name, height, solid = False):
         self.height = height
-        self.img = img
+        self.name = name
         self.solid = solid
     
     def isSolid(self):

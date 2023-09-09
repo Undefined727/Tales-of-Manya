@@ -29,7 +29,7 @@
     "isShowing": true,
     "xPosition": 0.025,
     "yPosition": 0.03,
-    "width": 0.15,
+    "width": 0.12,
     "height": 0.05,
     "tags": [],
     "entityType": "HoverShapeButton",
@@ -42,16 +42,14 @@
 {
     "name": "TileSelectionButtonText",
     "isShowing": true,
-    "xPosition": 0.0775,
-    "yPosition": 0.03,
-    "width": 0.15,
+    "xPosition": 0.085,
+    "yPosition": 0.055,
+    "width": 0.12,
     "height": 0.05,
     "tags": [],
     "entityType": "Text",
     "text": "Select Tile",
     "font": "mono",
-    "fontSize": 20,
-    "fontColor": "black",
-    "highlightColor": null
+    "fontSize": 20
 }
 ]

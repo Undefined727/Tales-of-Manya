@@ -5,6 +5,9 @@ from view.JSONParser import loadJson
 from view.displayHandler import displayEntity
 from model.openworld.Tile import Tile
 from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.Tag import Tag
 
 from view.visualentity.HoverShapeButton import HoverShapeButton
 sys.path.append(os.path.abspath("."))
@@ -72,6 +75,21 @@ cameraX = spawnX
 cameraY = spawnY
 
 
+## Tile Selection Menu ##
+menuHeight = len(tiledata)*0.05
+visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
+counter = 0
+for tile in tiledata:
+    button = HoverShapeButton(f"Tile_Selection_Button_Entry{counter}", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", [tile['name']])
+    visualEntities.append(button)
+    buttons.append(button)
+    visualEntities.append(TextEntity(f"Tile_Selection_Text_Entry{counter}", False, 0.0625, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_TILE_SELECTION], tile['name'], "mono", 20))
+    visualEntities.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", False, 0.11, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION], f"tiles/{tile['image']}"))
+    counter += 1
+for entity in visualEntities:
+    if (Tag.EDITOR_TILE_SELECTION in entity.tags):
+        entity.scale(screenX, screenY)
+
 def refreshMenu():
     global visualEntities
     global screen
@@ -87,11 +105,38 @@ def convertToScreen(xValue, yValue):
     yValue = (yValue-cameraY)*tileSize + screenY/2
     return (xValue, yValue)
 
+def convertToMap(xValue, yValue):
+    global cameraX
+    global cameraY
+    xValue = (xValue - screenX/2)/tileSize + cameraX
+    yValue = (yValue - screenY/2)/tileSize + cameraY
+    return (xValue, yValue)
+
 def exitButton():
     pygame.quit()
 
+def tileSelectionMenuButton():
+    for entity in visualEntities:
+        if (Tag.EDITOR_TILE_SELECTION in entity.tags):
+            entity.isShowing = not entity.isShowing
+
+equippedTileName = tiledata[0]['name']
+equippedTileImage = ImageEntity("Equipped_Tile_Image", True, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
+equippedTileImage.scale(screenX, screenY)
+visualEntities.append(equippedTileImage)
+
+def equipTile(tileName):
+    global equippedTileImage
+    global equippedTileName
+    equippedTileName = tileName
+    for tile in tiledata:
+        if (tile['name'] == tileName):
+            equippedTileImage.updateImg(f"tiles/{tile['image']}")
+            break
+
 
 frameCounter = 0
+buttonPressed = False
 ### Running Editor ###
 while True:
     mouse = pygame.mouse.get_pos()
@@ -99,24 +144,36 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
         if (event.type == pygame.MOUSEBUTTONDOWN):
+            buttonPressed = False
             for entity in buttons:
-                if entity.mouseInRegion(mouse):
-                    if (entity.func == "exit"): buttonFunc = exitButton
-                    if (len(entity.args) == 0): buttonFunc()
-                    else: buttonFunc(*entity.args)
-                    break
+                if entity.isShowing:
+                    if entity.mouseInRegion(mouse):
+                        if (entity.func == "exit"): buttonFunc = exitButton
+                        if (entity.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
+                        if (entity.func == "equipTile"): buttonFunc = equipTile
+                        if (len(entity.args) == 0): buttonFunc()
+                        else: buttonFunc(*entity.args)
+                        buttonPressed = True
+                        break
+        if (event.type == pygame.MOUSEBUTTONUP):
+            buttonPressed = False
         if event.type == pygame.MOUSEWHEEL:
             tileSize += 2*event.y
             if (tileSize <= 0): tileSize = 1
             for tile in tileImagesDisplayed:
                 tileImagesDisplayed[tile] = pygame.transform.scale(tileImages[tile], (tileSize, tileSize))
+        if event.type == pygame.MOUSEMOTION:
+            for button in buttons:
+                if (type(button) == HoverShapeButton):
+                    button.mouseInRegion(mouse)
+            equippedTileImage.xPosition = mouse[0]
+            equippedTileImage.yPosition = mouse[1]
 
-
-
-    ### Make Hover Buttons shine funny color
-    for button in buttons:
-        if (type(button) == HoverShapeButton):
-            button.mouseInRegion(mouse)
+    if (pygame.mouse.get_pressed()[0] and not buttonPressed):
+        mouseX, mouseY = convertToMap(mouse[0], mouse[1])
+        mouseX = math.floor(mouseX)
+        mouseY = math.floor(mouseY)
+        tiles[width*mouseY + mouseX].name = equippedTileName
 
 
     ### Inputs ###
@@ -164,8 +221,8 @@ while True:
 
     for x in range(0, width):
         for y in range(0, height):
-            if (not tiles[width*y + x].img == "tileNotFound"):
-                screen.blit(tileImagesDisplayed[tiles[width*y + x].img], ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
+            if (not tiles[width*y + x].name == "tileNotFound"):
+                screen.blit(tileImagesDisplayed[tiles[width*y + x].name], ((screenX/2-(cameraX-x)*tileSize), (screenY/2-(cameraY-y)*tileSize)))
         
     refreshMenu()
 

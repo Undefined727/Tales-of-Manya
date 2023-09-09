@@ -8,7 +8,7 @@ class TextEntity(VisualEntity):
     font = "mono"
     fontSize = 32
     fontColor = "black"
-    highlightColor = "green"
+    highlightColor = None
 
     def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], text = "", font = "mono", fontSize = 32, fontColor = "black", highlightColor = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
