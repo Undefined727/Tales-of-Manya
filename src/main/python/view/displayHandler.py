@@ -47,4 +47,8 @@ def displayEntity(entity, screen):
         displayEntity(entity.frame, screen)
         displayEntity(entity.paragraph, screen)
         displayEntity(entity.continueButton, screen)
-
+        for option in entity.optionButtons:
+            displayEntity(option, screen)
+        for option in entity.optionParagraphs:
+            displayEntity(option, screen)
+        

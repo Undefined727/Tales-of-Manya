@@ -1,7 +1,7 @@
 from view.visualentity.Paragraph import Paragraph
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ImageButton import ImageButton
-from view.visualentity.ShapeButton import ShapeButton
+from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
@@ -27,6 +27,8 @@ class VisualNovel(VisualEntity):
         self.dialogue = Dialogue(dialogue)
         self.text = self.dialogue.text[self.currentTextPosition][1]
         self.isShowingOptions = False
+        self.optionParagraphs = []
+        self.optionButtons = []
         self.frame = ImageEntity("vn_frame", True, xPosition, yPosition, width, height/3, tags, "visual_novel_frame.png")
         self.backgroundBox = ShapeEntity("vn_background", True, xPosition, yPosition + height/4, width, 3*height/4, tags, (0, 0, 255, 160), False, "rectangle")
         self.paragraph = Paragraph("text", True, xPosition + width/5, yPosition + 6*height/16, 0.4*width, 0.55*height, tags, self.text, "mono", 24)
@@ -50,7 +52,7 @@ class VisualNovel(VisualEntity):
         self.currentTextPosition += 1
         if (self.currentTextPosition < len(self.dialogue.text)):
             self.updateText(self.dialogue.text[self.currentTextPosition][1])
-            return False
+            return "Text"
         else:
             if (len(self.dialogue.options) > 0 and not self.isShowingOptions):
                 self.backgroundBox.reposition(self.xPosition, self.yPosition + self.height/4 - 3*self.height/4)
@@ -59,13 +61,26 @@ class VisualNovel(VisualEntity):
                 self.paragraph.reposition(self.xPosition + self.width/5, self.yPosition - 3*self.height/4 + 6*self.height/16)
                 self.backgroundBox.resize(self.width, 6*self.height/4)
                 self.isShowingOptions = True
-                return False
+                self.optionParagraphs = []
+                counter = -1
+                for option in self.dialogue.options:
+                    counter += 1
+                    height = self.yPosition + 6*self.height/16 + counter*((3*self.height/5)/len(self.dialogue.options))
+                    optionParagraph = Paragraph("option", True, self.xPosition + self.width/5, height, 0.4*self.width, ((3*self.height/5)/len(self.dialogue.options)), self.tags, ">> " + option[0], "mono", 24)
+                    optionParagraph.align = "Left"
+                    optionParagraph.scaled = True
+                    optionParagraph.updateText(optionParagraph.text)
+                    self.optionParagraphs.append(optionParagraph)
+                    optionButton = HoverShapeButton("option_button", True, self.xPosition, height, 0.4*self.width, ((3*self.height/5)/len(self.dialogue.options)), self.tags, (0, 0, 0, 0), (0, 80, 255, 190), "rectangle", "textOption", [option[1], option[2]], True)
+                    self.optionButtons.append(optionButton)
+                return "Options"
             elif (self.isShowingOptions): 
                 self.isShowingOptions = False
+                self.optionParagraphs = []
                 self.reposition(self.xPosition, self.yPosition)
                 self.resize(self.width, self.height)
-                return True
-            else: return True
+                return "Finished"
+            else: return "Finished"
 
     
     def resize(self, width, height):

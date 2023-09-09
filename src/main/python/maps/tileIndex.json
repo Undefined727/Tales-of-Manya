@@ -1,0 +1,62 @@
+[
+    {
+        "name": "tree",
+        "color": [100, 80, 10],
+        "image": "tree.png",
+        "defaultSolid": true
+    },
+    {
+        "name": "bridge",
+        "color": [210, 130, 50],
+        "image": "bridge.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "wall",
+        "color": [255, 255, 255],
+        "image": "wall.png",
+        "defaultSolid": true
+    },
+    {
+        "name": "water",
+        "color": [40, 100, 200],
+        "image": "water.png",
+        "defaultSolid": true
+    },
+    {
+        "name": "wet_sand",
+        "color": [100, 100, 10],
+        "image": "wet_sand.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "sand",
+        "color": [100, 100, 0],
+        "image": "sand.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "grass4",
+        "color": [40, 255, 40],
+        "image": "grass4.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "grass3",
+        "color": [30, 255, 30],
+        "image": "grass3.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "grass2",
+        "color": [20, 255, 20],
+        "image": "grass2.png",
+        "defaultSolid": false
+    },
+    {
+        "name": "grass1",
+        "color": [10, 255, 10],
+        "image": "grass1.png",
+        "defaultSolid": false
+    }
+]

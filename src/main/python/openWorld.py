@@ -45,12 +45,14 @@ def combatButton(screen, enemies):
     quit = True
     newSceneData = [screen, "Combat", enemies, playerData]
 
-def continueText(renderedEntities):
+def continueText(renderedEntities, buttons):
     global visualNovel
     global currentNPC
-    finished = visualNovel.continueText()
-    print(finished)
-    if (finished):
+    result = visualNovel.continueText()
+    if (result == "Options"):
+        for button in visualNovel.optionButtons:
+            buttons.append(button)
+    elif (result == "Finished"):
         currentQuests = playerData.getCurrentQuests()
         for quest in currentQuests:
             if (quest.questType == "NPCInteractionQuest"):
@@ -59,6 +61,9 @@ def continueText(renderedEntities):
                     if (quest.questProgress >= quest.questGoal): 
                         completeQuest(quest, renderedEntities)
         visualNovel.isShowing = False
+
+def textOption(type, data):
+    print("test")
 
 def updateNPCS(renderedEntities):
     global playerData
@@ -102,13 +107,13 @@ def loadOpenWorld(sceneData):
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open("src/main/python/maps/" + sceneData[2] + ".png")
+    img = Image.open("src/main/python/maps/" + sceneData[2] + "/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
     TILE_SIZE = 48
     tileImgIndex ={"tree":"tree.png", "bridge":"bridge.png","wall":"wall.png","water":"water.png","wet_sand":"wet_sand.png","sand":"sand.png","grass4":"grass4.png"}
-    tileImgIndex.update({"grass3":"grass3.png","grass2":"grass2.png","grass1":"grass1.png","nekoarc":"nekoarc.png"})
+    tileImgIndex.update({"grass3":"grass3.png","grass2":"grass2.png","grass1":"grass1.png","missingTile":"nekoarc.png"})
     for name, image in tileImgIndex.items():
         img = image
         img = pygame.image.load(f"src/main/python/sprites/tiles/{img}").convert()
@@ -131,7 +136,7 @@ def loadOpenWorld(sceneData):
             elif ((npArray[y, x] == (51, 223, 0, 255)).all()): tiles.append(Tile("grass3", 3))
             elif ((npArray[y, x] == (44, 189, 1, 255)).all()): tiles.append(Tile("grass2", 2))
             elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("grass1", 1))
-            else: tiles.append(Tile("nekoarc", 4))
+            else: tiles.append(Tile("missingTile", 4))
     
 
 
@@ -140,7 +145,7 @@ def loadOpenWorld(sceneData):
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
     visualNovel.isShowing = False
-    #buttons.append(visualNovel.continueButton)
+    buttons.append(visualNovel.continueButton)
 
     for entity in visualEntities:
         if entity.name == "CurrentQuestListing":
@@ -218,6 +223,7 @@ def loadOpenWorld(sceneData):
     changeEnemyDirection = 0
     frameCounter = 0
     continueTextCooldown = 20
+    keyboardMode = False
 
 
     ### Running Game :D ###
@@ -228,21 +234,24 @@ def loadOpenWorld(sceneData):
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
-                    print(button.name)
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
+                        if (entity.func == "textOption"): buttonFunc = textOption
                         if (entity.func == "continueText"): 
-                            continueText(simulatedObjects)
+                            continueText(simulatedObjects, buttons)
                             break
                         if (len(entity.args) == 0): buttonFunc()
-                        else: buttonFunc(entity.args)
+                        else: buttonFunc(*entity.args)
                         break
+            if (event.type == pygame.MOUSEMOTION):
+                keyboardMode = False
 
         ### Make Hover Buttons shine funny color
-        for button in buttons:
-            if (type(button) == HoverShapeButton):
-                button.mouseInRegion(mouse)
+        if (keyboardMode == False):
+            for button in buttons:
+                if (type(button) == HoverShapeButton):
+                    button.mouseInRegion(mouse)
 
 
         ### Inputs ###
@@ -251,6 +260,12 @@ def loadOpenWorld(sceneData):
             movementSpeed = 0.1
         else:
             movementSpeed = 0.05
+
+        if (keyboardMode == False and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN])):
+            keyboardMode = True
+            for button in buttons:
+                if (type(button) == HoverShapeButton):
+                    button.shapeEntity.color = button.primaryColor
 
         if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
             character.worldObject.speedX = -0.707*movementSpeed
@@ -341,8 +356,9 @@ def loadOpenWorld(sceneData):
         
         if keys[pygame.K_SPACE]:
             if (continueTextCooldown <= 0):
-                continueText(simulatedObjects)
-                continueTextCooldown += 20
+                if (visualNovel.isShowing):
+                    continueText(simulatedObjects, buttons)
+                    continueTextCooldown += 20
         if (continueTextCooldown > 0): continueTextCooldown -= 1
 
         ### Physics ###
