@@ -15,7 +15,7 @@ from model.player.Quest import Quest
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
-import math, pygame, time, random
+import math, pygame, time, random, json
 from PIL import Image
 
 visualEntities = []
@@ -112,31 +112,33 @@ def loadOpenWorld(sceneData):
     height, width, dim = npArray.shape
     tiles = []
     TILE_SIZE = 48
-    tileImgIndex ={"tree":"tree.png", "bridge":"bridge.png","wall":"wall.png","water":"water.png","wet_sand":"wet_sand.png","sand":"sand.png","grass4":"grass4.png"}
-    tileImgIndex.update({"grass3":"grass3.png","grass2":"grass2.png","grass1":"grass1.png","missingTile":"nekoarc.png"})
-    for name, image in tileImgIndex.items():
-        img = image
-        img = pygame.image.load(f"src/main/python/sprites/tiles/{img}").convert()
+
+    file = open("src/main/python/maps/tileIndex.json", 'r')
+    tiledata = json.load(file)
+    tileImages = {}
+
+    for tile in tiledata:
+        img = pygame.image.load(f"src/main/python/sprites/tiles/{tile['image']}").convert()
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
-        tileImgIndex.update({name:img})
-    backgroundHeight = 3*screenY
-    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
-    backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
+        tileImages.update({tile['name']:img})
 
 
     for y in range(0, height):
         for x in range(0, width):
-            if ((npArray[y, x] == [107, 82, 10, 255]).all()): tiles.append(Tile("tree", 1, True)) # tree
-            elif ((npArray[y, x] == (210, 132, 53, 255)).all()): tiles.append(Tile("bridge", 1)) # bridge
-            elif ((npArray[y, x] == (0, 0, 0, 255)).all()): tiles.append(Tile("wall", 1, True)) # wall
-            elif ((npArray[y, x] == (36, 98, 200, 255)).all()): tiles.append(Tile("water", 1, True)) # water
-            elif ((npArray[y, x] == (193, 174, 2, 255)).all()): tiles.append(Tile("wet_sand", 1)) # wet_sand
-            elif ((npArray[y, x] == (204, 225, 77, 255)).all()): tiles.append(Tile("sand", 1)) #sand
-            elif ((npArray[y, x] == (58, 255, 0, 255)).all()): tiles.append(Tile("grass4", 4))
-            elif ((npArray[y, x] == (51, 223, 0, 255)).all()): tiles.append(Tile("grass3", 3))
-            elif ((npArray[y, x] == (44, 189, 1, 255)).all()): tiles.append(Tile("grass2", 2))
-            elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("grass1", 1))
-            else: tiles.append(Tile("missingTile", 4))
+            tileFound = False
+            tileColor = npArray[y, x][:3]
+            tileHeight = npArray[y, x][3]
+            for tile in tiledata:
+                if ((tileColor == tile['color']).all()): 
+                    #tiles.append(Tile(tile['name'], 1, tile['defaultSolid']))
+                    tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
+                    tileFound = True
+                    break
+            if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight, True))
+
+    backgroundHeight = 3*screenY
+    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
+    backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
     
 
 
@@ -210,7 +212,11 @@ def loadOpenWorld(sceneData):
         entityHeight = tiles[math.floor(movedCenter[0]) + math.floor(movedCenter[1])*width].height
         
         tileData = tiles[round(minX) + round(minY)*width]
-        if ((abs(entityHeight - tileData.height) > 1) or tileData.isSolid()):
+        heightDifference = abs(int(entityHeight) - int(tileData.height))
+        if (heightDifference == 255): 
+            print(entityHeight)
+            print(tileData.height)
+        if ((heightDifference > 1) or tileData.isSolid()):
             if (ShapeMath.collides(moved, tile)):
                 return True
         return False
@@ -544,8 +550,8 @@ def loadOpenWorld(sceneData):
 
         for x in range(0, width):
             for y in range(0, height):
-                if (not tiles[width*y + x].img == "nekoarc"):
-                    screen.blit(tileImgIndex[tiles[width*y + x].img], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
+                if (not tiles[width*y + x].img == "tileNotFound"):
+                    screen.blit(tileImages[tiles[width*y + x].img], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
         for entity in simulatedObjects:
             screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
 
