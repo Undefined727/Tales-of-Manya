@@ -58,5 +58,11 @@
         "color": [10, 255, 10],
         "image": "grass1.png",
         "defaultSolid": false
+    },
+    {
+        "name": "tileNotFound",
+        "color": [0, 0, 0],
+        "image": "emptyimg.png",
+        "defaultSolid": false
     }
 ]

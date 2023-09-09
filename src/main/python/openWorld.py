@@ -550,8 +550,8 @@ def loadOpenWorld(sceneData):
 
         for x in range(0, width):
             for y in range(0, height):
-                if (not tiles[width*y + x].img == "tileNotFound"):
-                    screen.blit(tileImages[tiles[width*y + x].img], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
+                if (not tiles[width*y + x].name == "tileNotFound"):
+                    screen.blit(tileImages[tiles[width*y + x].name], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
         for entity in simulatedObjects:
             screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
 
