@@ -213,9 +213,6 @@ def loadOpenWorld(sceneData):
         
         tileData = tiles[round(minX) + round(minY)*width]
         heightDifference = abs(int(entityHeight) - int(tileData.height))
-        if (heightDifference == 255): 
-            print(entityHeight)
-            print(tileData.height)
         if ((heightDifference > 1) or tileData.isSolid()):
             if (ShapeMath.collides(moved, tile)):
                 return True

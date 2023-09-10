@@ -58,9 +58,6 @@ for y in range(0, height):
 
 
 loadJson("catgirlDungeoneer.json", screenX, screenY, [visualEntities, buttons])
-for entity in visualEntities:
-    if (type(entity) == TextEntity):
-        print(entity.fontSize)
 
 backgroundHeight = 3*screenY
 backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
@@ -121,6 +118,9 @@ def convertToMap(xValue, yValue):
 def exitButton():
     pygame.quit()
 
+
+
+
 def save():
     global displayedMap
     im = Image.fromarray(displayedMap)
@@ -135,13 +135,29 @@ equippedTileName = tiledata[0]['name']
 equippedTileImage = ImageEntity("Equipped_Tile_Image", True, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
 equippedTileImage.scale(screenX, screenY)
 equippedTileColor = tiledata[0]['color']
+equippedTileSolid = tiledata[0]['defaultSolid']
+
+
 equippedTileElevation = 0
+elevationOffsetMode = False
+elevationOffset = 0
 visualEntities.append(equippedTileImage)
+for entity in visualEntities:
+    if (entity.name == "Current_Elevation_Label"):
+        currentElevationLabel = entity
+        break
+
+for entity in buttons:
+    if (entity.name == "ElevationToggleButton"):
+        elevationToggleButton = entity
+        break
+
 
 def equipTile(tileName):
     global equippedTileImage
     global equippedTileName
     global equippedTileColor
+    global equippedTileSolid
     equippedTileName = tileName
     if (tileName == "tileNotFound"):
         equippedTileColor = (0, 0, 0)
@@ -150,19 +166,34 @@ def equipTile(tileName):
     for tile in tiledata:
         if (tile['name'] == tileName):
             equippedTileColor = tile['color']
+            equippedTileSolid = tile['defaultSolid']
             equippedTileImage.updateImg(f"tiles/{tile['image']}")
             break
+
+def elevationToggle():
+    print("test")
+    global elevationOffsetMode
+    global currentElevationLabel
+    global elevationOffset
+    global equippedTileElevation
+    elevationOffsetMode = not elevationOffsetMode
+    if (elevationOffsetMode):
+        if (elevationOffset >= 0): currentElevationLabel.updateText(f"Current Elevation: +{elevationOffset}")
+        else: currentElevationLabel.updateText(f"Current Elevation: -{-1*elevationOffset}")
+    else:
+        currentElevationLabel.updateText(f"Current Elevation: {equippedTileElevation}")
 
 
 frameCounter = 0
 buttonPressed = False
+
 ### Running Editor ###
 while True:
     mouse = pygame.mouse.get_pos()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
-        if (event.type == pygame.MOUSEBUTTONDOWN):
+        if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             buttonPressed = False
             for entity in buttons:
                 if entity.isShowing:
@@ -170,17 +201,29 @@ while True:
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
                         if (entity.func == "equipTile"): buttonFunc = equipTile
+                        if (entity.func == "elevationToggle"): buttonFunc = elevationToggle
                         if (len(entity.args) == 0): buttonFunc()
                         else: buttonFunc(*entity.args)
                         buttonPressed = True
                         break
-        if (event.type == pygame.MOUSEBUTTONUP):
+        if event.type == pygame.MOUSEBUTTONUP:
             buttonPressed = False
+            for tile in tiles:
+                tile.justChanged = False
         if event.type == pygame.MOUSEWHEEL:
-            tileSize += 2*event.y
-            if (tileSize <= 0): tileSize = 1
-            for tile in tileImagesDisplayed:
-                tileImagesDisplayed[tile] = pygame.transform.scale(tileImages[tile], (tileSize, tileSize))
+            if (elevationToggleButton.mouseInRegion(mouse)):
+                if (elevationOffsetMode): 
+                    elevationOffset += event.y
+                    if (elevationOffset >= 0): currentElevationLabel.updateText(f"Current Elevation: +{elevationOffset}")
+                    else: currentElevationLabel.updateText(f"Current Elevation: -{-1*elevationOffset}")
+                else: 
+                    equippedTileElevation += event.y
+                    currentElevationLabel.updateText(f"Current Elevation: {equippedTileElevation}")
+            else:
+                tileSize += 2*event.y
+                if (tileSize <= 0): tileSize = 1
+                for tile in tileImagesDisplayed:
+                    tileImagesDisplayed[tile] = pygame.transform.scale(tileImages[tile], (tileSize, tileSize))
         if event.type == pygame.MOUSEMOTION:
             for button in buttons:
                 if (type(button) == HoverShapeButton):
@@ -194,7 +237,13 @@ while True:
             if (mouseY < 0): mouseY = 0
             if (mouseX >= width): mouseX = width-1
             if (mouseY >= height): mouseY = height-1
-            equippedTileElevation = tiles[width*mouseY + mouseX].height
+
+
+
+    ### Inputs ###
+    keys = pygame.key.get_pressed()
+    keymods = pygame.key.get_mods()
+    movementSpeed = (screenY/tileSize)*0.01
 
     if (pygame.mouse.get_pressed()[0] and not buttonPressed):
         mouseX, mouseY = convertToMap(mouse[0], mouse[1])
@@ -206,13 +255,12 @@ while True:
         if (mouseY >= height): mouseY = height-1
         displayedMap[mouseY, mouseX][:3] = equippedTileColor
         displayedMap[mouseY, mouseX][3] = equippedTileElevation
-        tiles[width*mouseY + mouseX].name = equippedTileName
-
-
-    ### Inputs ###
-    keys = pygame.key.get_pressed()
-    keymods = pygame.key.get_mods()
-    movementSpeed = (screenY/tileSize)*0.01
+        if (not tiles[width*mouseY + mouseX].justChanged):
+            tiles[width*mouseY + mouseX].name = equippedTileName
+            if (elevationOffsetMode): tiles[width*mouseY + mouseX].height = tiles[width*mouseY + mouseX].height + elevationOffset
+            else: tiles[width*mouseY + mouseX].height = equippedTileElevation
+            tiles[width*mouseY + mouseX].solid = equippedTileSolid
+            tiles[width*mouseY + mouseX].justChanged = True
 
     if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
         cameraX += -0.707*movementSpeed
@@ -258,10 +306,37 @@ while True:
     screen.blit(backgroundFog, (0, bgY2))
     screen.blit(backgroundFog, (0, bgY3))
 
+    ## Show Tiles ##
     for x in range(0, width):
         for y in range(0, height):
             screen.blit(tileImagesDisplayed[tiles[width*y + x].name], (convertToScreen(x, y)))
+            
         
+    LINE_THICKNESS = 1
+    elevationMarkerTextFont = pygame.font.SysFont("mono", int(tileSize/3))
+    ## Show Hitboxes and Elevation ##
+    for x in range(0, width):
+        for y in range(0, height):
+            if (not tiles[width*y + x].name == "tileNotFound"):
+                    if (tiles[width*y + x].solid): 
+                        pygame.draw.line(screen, "Purple", convertToScreen(x, y), convertToScreen(x, y+1), LINE_THICKNESS)
+                        pygame.draw.line(screen, "Purple", convertToScreen(x+1, y), convertToScreen(x+1, y+1), LINE_THICKNESS)
+                        pygame.draw.line(screen, "Purple", convertToScreen(x, y), convertToScreen(x+1, y), LINE_THICKNESS)
+                        pygame.draw.line(screen, "Purple", convertToScreen(x, y+1), convertToScreen(x+1, y+1), LINE_THICKNESS)
+                    else:
+                        textLabel = elevationMarkerTextFont.render(str(tiles[width*y + x].height), False, "Red")
+                        textRect = textLabel.get_rect()
+                        textRect.center = convertToScreen(x+0.75, y+0.75)
+                        screen.blit(textLabel, textRect)
+                        if (x < width-1 and (not tiles[width*y + x+1].name == "tileNotFound") and (not tiles[width*y + x+1].solid)):
+                            heightDiff = abs(int(tiles[width*y + x].height) - int(tiles[width*y + x+1].height))
+                            if (heightDiff == 1): pygame.draw.line(screen, "Yellow", convertToScreen(x+1, y), convertToScreen(x+1, y+1), LINE_THICKNESS)
+                            elif (heightDiff > 1): pygame.draw.line(screen, "Red", convertToScreen(x+1, y), convertToScreen(x+1, y+1), LINE_THICKNESS)
+                        if (y < height-1 and (not tiles[width*(y+1) + x].name == "tileNotFound") and (not tiles[width*(y+1) + x].solid)):
+                            heightDiff = abs(int(tiles[width*y + x].height) - int(tiles[width*(y+1) + x].height))
+                            if (heightDiff == 1): pygame.draw.line(screen, "Yellow", convertToScreen(x, y+1), convertToScreen(x+1, y+1), LINE_THICKNESS)
+                            elif (heightDiff > 1): pygame.draw.line(screen, "Red", convertToScreen(x, y+1), convertToScreen(x+1, y+1), LINE_THICKNESS)
+
     refreshMenu()
 
     ## Frame Limiter ##

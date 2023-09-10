@@ -51,5 +51,33 @@
     "text": "Select Tile",
     "font": "mono",
     "fontSize": 20
+},
+{
+    "name": "ElevationToggleButton",
+    "isShowing": true,
+    "xPosition": 0.025,
+    "yPosition": 0.9,
+    "width": 0.12,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "HoverShapeButton",
+    "primaryColor": "white",
+    "secondaryColor": "cyan",
+    "shape": "rectangle",
+    "func": "elevationToggle",
+    "args": []
+},
+{
+    "name": "Current_Elevation_Label",
+    "isShowing": true,
+    "xPosition": 0.085,
+    "yPosition": 0.925,
+    "width": 0.12,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Text",
+    "text": "Current Elevation: 0",
+    "font": "mono",
+    "fontSize": 16
 }
 ]

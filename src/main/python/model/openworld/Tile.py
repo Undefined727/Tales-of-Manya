@@ -4,11 +4,13 @@ class Tile:
     height = 0
     name = "grass.png"
     solid = False
+    justChanged = False
 
     def __init__(self, name, height, solid = False):
         self.height = height
         self.name = name
         self.solid = solid
+        self.justChanged = False
     
     def isSolid(self):
         return self.solid
