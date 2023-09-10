@@ -131,17 +131,17 @@ def tileSelectionMenuButton():
         if (Tag.EDITOR_TILE_SELECTION in entity.tags):
             entity.isShowing = not entity.isShowing
 
-equippedTileName = tiledata[0]['name']
-equippedTileImage = ImageEntity("Equipped_Tile_Image", True, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
+equippedTileName = None
+equippedTileImage = ImageEntity("Equipped_Tile_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
 equippedTileImage.scale(screenX, screenY)
 equippedTileColor = tiledata[0]['color']
 equippedTileSolid = tiledata[0]['defaultSolid']
+visualEntities.append(equippedTileImage)
 
 
 equippedTileElevation = 0
-elevationOffsetMode = False
+elevationOffsetMode = True
 elevationOffset = 0
-visualEntities.append(equippedTileImage)
 for entity in visualEntities:
     if (entity.name == "Current_Elevation_Label"):
         currentElevationLabel = entity
@@ -158,6 +158,7 @@ def equipTile(tileName):
     global equippedTileName
     global equippedTileColor
     global equippedTileSolid
+    equippedTileImage.isShowing = True
     equippedTileName = tileName
     if (tileName == "tileNotFound"):
         equippedTileColor = (0, 0, 0)
@@ -206,6 +207,9 @@ while True:
                         else: buttonFunc(*entity.args)
                         buttonPressed = True
                         break
+        if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 3):
+            equippedTileName = None
+            equippedTileImage.isShowing = False
         if event.type == pygame.MOUSEBUTTONUP:
             buttonPressed = False
             for tile in tiles:
@@ -253,13 +257,13 @@ while True:
         if (mouseY < 0): mouseY = 0
         if (mouseX >= width): mouseX = width-1
         if (mouseY >= height): mouseY = height-1
-        displayedMap[mouseY, mouseX][:3] = equippedTileColor
+        if (not equippedTileName == None): displayedMap[mouseY, mouseX][:3] = equippedTileColor
         displayedMap[mouseY, mouseX][3] = equippedTileElevation
         if (not tiles[width*mouseY + mouseX].justChanged):
-            tiles[width*mouseY + mouseX].name = equippedTileName
+            if (not equippedTileName == None): tiles[width*mouseY + mouseX].name = equippedTileName
             if (elevationOffsetMode): tiles[width*mouseY + mouseX].height = tiles[width*mouseY + mouseX].height + elevationOffset
             else: tiles[width*mouseY + mouseX].height = equippedTileElevation
-            tiles[width*mouseY + mouseX].solid = equippedTileSolid
+            if (not equippedTileName == None): tiles[width*mouseY + mouseX].solid = equippedTileSolid
             tiles[width*mouseY + mouseX].justChanged = True
 
     if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
