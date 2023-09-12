@@ -6,9 +6,9 @@
     "width": 0.075,
     "height": 0.075,
     "tags": [],
-    "entityType": "ShapeButton",
-    "color": "blue",
-    "isBorder": false,
+    "entityType": "HoverShapeButton",
+    "primaryColor": "blue",
+    "secondaryColor": "cyan",
     "shape": "ellipse",
     "func": "combat",
     "args": []
@@ -23,5 +23,37 @@
     "tags": [],
     "entityType": "Image",
     "path": "settingsIcon.png"
+},
+{
+    "name": "QuestListing",
+    "isShowing": true,
+    "xPosition": 0.15,
+    "yPosition": 0.025,
+    "width": 0.2,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Paragraph",
+    "text": "Current Quests: ",
+    "font": "mono",
+    "fontSize": 18,
+    "fontColor": "black",
+    "highlightColor": null,
+    "align": "Left"
+},
+{
+    "name": "CurrentQuestListing",
+    "isShowing": true,
+    "xPosition": 0.15,
+    "yPosition": 0.075,
+    "width": 0.2,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Paragraph",
+    "text": "template",
+    "font": "mono",
+    "fontSize": 16,
+    "fontColor": "black",
+    "highlightColor": null,
+    "align": "Left"
 }
 ]

@@ -1,6 +1,7 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
 
+from model.player.Player import Player
 from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
@@ -20,6 +21,8 @@ screen = pygame.display.set_mode([screenX, screenY])
 visualEntities = []
 buttons = []
 
+player = Player()
+
 
 def refreshScreen():
     global visualEntities
@@ -33,7 +36,7 @@ def run():
     global buttons
     global visualEntities
     leaveScreen = False
-    nextScreen = None
+    newSceneData = None
 
     loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
 
@@ -41,9 +44,10 @@ def run():
         pygame.quit()
 
     def openWorldButton():
-        nonlocal nextScreen
+        nonlocal newSceneData
         nonlocal leaveScreen
-        nextScreen = "Open World"
+        global player
+        newSceneData = [screen, "Open World", "samplemap", player]
         leaveScreen = True
 
     buttonFunc = exit
@@ -64,22 +68,23 @@ def run():
 
         refreshScreen()
         if (leaveScreen): break
-    switchScreens(nextScreen)
+    switchScreens(newSceneData)
 
 
-def switchScreens(newScreen):
+def switchScreens(newSceneData):
     global visualEntities
     global buttons
+    global player
     visualEntities = []
     buttons = []
     screen.fill((0, 0, 0))
     loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
 
-    if (newScreen == "Open World"): newScreen = loadOpenWorld(screen, screenX, screenY)
-    elif (newScreen == "Combat"): newScreen = loadCombat(screen, screenX, screenY)
-    elif (newScreen == "Inventory"): newScreen = loadInventory(screen, screenX, screenY)
-    switchScreens(newScreen)
+    if (newSceneData[1] == "Open World"): newSceneData = loadOpenWorld(newSceneData)
+    elif (newSceneData[1] == "Combat"): newSceneData = loadCombat(newSceneData)
+    elif (newSceneData[1] == "Inventory"): newSceneData = loadInventory(newSceneData)
+    switchScreens(newSceneData)
 
 
 run()

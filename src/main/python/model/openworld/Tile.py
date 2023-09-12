@@ -1,16 +1,16 @@
 import pygame
 
 class Tile:
-    tileSize = 48
     height = 0
-    img = "grass.png"
+    name = "grass.png"
     solid = False
+    justChanged = False
 
-    def __init__(self, img, height, solid = False):
+    def __init__(self, name, height, solid = False):
         self.height = height
-        self.img = pygame.image.load(f"src/main/python/sprites/tiles/{img}")
-        self.img = pygame.transform.scale(self.img, (self.tileSize, self.tileSize))
+        self.name = name
         self.solid = solid
+        self.justChanged = False
     
     def isSolid(self):
         return self.solid

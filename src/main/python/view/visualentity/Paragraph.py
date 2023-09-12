@@ -10,6 +10,7 @@ class Paragraph(VisualEntity):
     fontColor = "black"
     highlightColor = "green"
     scaled = False
+    align = "Center"
 
 
     def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], text = "", font = "mono", fontSize = 12, fontColor = "black", highlightColor = None, align = "Center"):
@@ -27,6 +28,7 @@ class Paragraph(VisualEntity):
         if (fontSize == None): fontSize = self.fontSize
         if (fontColor == None): fontColor = self.fontColor
         if (highlightColor == None): highlightColor = self.highlightColor
+        self.text = text
 
         # CHANGE THIS BASED ON THE FONT FIGURE THIS LATER IG
         fontRatio = 0.61
@@ -41,6 +43,7 @@ class Paragraph(VisualEntity):
             lines = math.ceil(len(self.text)/lettersPerLine)
         if (self.scaled):
             self.texts = []
+            if(len(text) <= 0): return
             startIndex = 0
             endIndex = 0
             if(not text[len(text)-1] == " "):
@@ -65,7 +68,6 @@ class Paragraph(VisualEntity):
                     textX -= (2 + lettersPerLine-charCount)*fontSize*0.5*fontRatio
                 if (self.align == "Right"):
                     textX += (2 + lettersPerLine-charCount)*fontSize*0.5*fontRatio
-
                 if (textY + textHeight * (yPadding) > self.yPosition + self.height): break
                 self.texts.append(TextEntity(self.name + str(i), self.isShowing, textX, textY, textWidth, textHeight, [], " " + text[startIndex:endIndex], self.font, self.fontSize, self.fontColor, self.highlightColor))
 
@@ -83,7 +85,6 @@ class Paragraph(VisualEntity):
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.resize(self.width*screenX, self.height*screenY)
         self.scaled = True
-        print("test")
         self.updateText(self.text)
 
     @staticmethod

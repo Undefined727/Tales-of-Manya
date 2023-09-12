@@ -9,6 +9,7 @@ from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.CombatCharacterEntity import CharacterEntities
 from model.skill.Skill import Skill
 from model.character.Character import Character
+from model.player.Player import Player
 from model.item.Item import Item
 from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from view.displayHandler import displayEntity
@@ -19,10 +20,11 @@ visualEntities = []
 partyVisuals = []
 buttons = []
 quit = False
-nextScreen = "Quit"
-
-
+newSceneData = []
 inventory = []
+
+playerData:Player
+screen:pygame.surface
 
 party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
 party.append(Character("lmao", "catgirl.png", 20))
@@ -37,18 +39,22 @@ inventory.append(Item(7))
 
 party[0].helmet = Item(2)
 
-def openWorldButton():
+def openWorld(map):
     global quit
-    global nextScreen
+    global newSceneData
+    global screen
     quit = True
-    nextScreen = "Open World"
+    newSceneData = [screen, "Open World", map, playerData]
+
+def openWorldButton():
+    openWorld("samplemap")
 
 def inventoryButton():
     global quit
-    global nextScreen
+    global newSceneData
+    global screen
     quit = True
-    nextScreen = "Inventory"
-    print("test")
+    newSceneData = [screen, "Open World",  playerData]
 
 
 def refreshScreen(screen):
@@ -88,12 +94,18 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
     party[activeCharacter].hasActed = True
 
-def loadCombat(screen, screenX, screenY):
+def loadCombat(sceneData):
     global visualEntities
     global party
     global partyVisuals
     global quit
-    enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
+    global playerData
+    global screen
+    screen = sceneData[0]
+    screenX, screenY = screen.get_size()
+    enemies = sceneData[2]
+    playerData = sceneData[3]
+    party = playerData.party
     activeCharacter = 1
     skillSelected = 0
     skillsShowing = False
@@ -274,4 +286,4 @@ def loadCombat(screen, screenX, screenY):
         if (quit):
             quit = False 
             break
-    return nextScreen
+    return newSceneData

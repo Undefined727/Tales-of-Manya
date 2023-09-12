@@ -16,7 +16,7 @@ class ImageButton(VisualEntity):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.func = func
         self.args = args
-        self.img = ImageEntity("Button_Image", isShowing, xPosition, yPosition, width, height, tags, path)
+        self.img = ImageEntity(name + "img", isShowing, xPosition, yPosition, width, height, tags, path)
         self.isActive = isActive
            
 
@@ -31,15 +31,19 @@ class ImageButton(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
+        self.img.resize(width, height)
 
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition
         self.yPosition = yPosition
+        self.img.reposition(xPosition, yPosition)
 
     def scale(self, screenX, screenY):
+        self.resize(self.width, self.height)
+        self.reposition(self.xPosition, self.yPosition)
+        self.img.scale(screenX, screenY)
         self.resize(self.width*screenX, self.height*screenY)
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
-        self.img.scale(screenX, screenY)
         PILimg = Image.open("src/main/python/sprites/" + self.path).convert('RGBA')
         PILimg = PILimg.resize((int(self.width), int(self.height)))
         self.npArray = numpy.asarray(PILimg)

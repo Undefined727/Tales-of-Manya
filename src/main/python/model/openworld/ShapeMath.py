@@ -7,8 +7,21 @@ from model.openworld.Rectangle import Rectangle
 def rotate(shape, angle, pivot):
         if (type(shape) == Circle):
                 rotateCircle(shape, angle, pivot)
+                return 0
         elif(type(shape) == Rectangle):
-               rotateRectangle(shape, angle, pivot)
+                oldX, oldY = shape.corner1
+                oldCenterX, oldCenterY = shape.getCenter()
+                rotateRectangle(shape, angle, pivot)
+                newX, newY = shape.corner1
+                newCenterX, newCenterY = shape.getCenter()
+                v1 = np.squeeze(np.array([[oldX-oldCenterX, oldY-oldCenterY]]))
+                v2 = np.squeeze(np.array([[newX-newCenterX, newY-newCenterY]]))
+                dot = np.dot(v1, v2)
+                det = v1[0]*v2[1] - v1[1]*v2[0]
+                selfAngle = np.rad2deg(np.arctan2(det, dot))
+                return selfAngle
+
+        return 0
 
 def rotateCircle(shape, angle, pivot):
        pass

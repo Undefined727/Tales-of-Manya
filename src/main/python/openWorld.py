@@ -1,19 +1,32 @@
 from model.openworld.Tile import Tile
-from model.openworld.OpenWorldEntity import OpenWorldEntity
+from model.openworld.worldentities.NPC import NPC
+from model.openworld.worldentities.Enemy import Enemy
+from model.openworld.worldentities.PlayerAttackObject import PlayerAttackObject
+from model.openworld.worldentities.PlayerInteractionObject import PlayerInteractionObject
+from model.openworld.worldentities.PlayerObject import PlayerObject
 from model.openworld.Rectangle import Rectangle
 from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
+from view.visualentity.VisualNovel import VisualNovel
+from view.visualentity.HoverShapeButton import HoverShapeButton
+from model.player.Player import Player
+from model.player.Quest import Quest
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
-import math, pygame, time, random
+import math, pygame, time, random, json
 from PIL import Image
 
 visualEntities = []
 buttons = []
 quit = False
-nextScreen = "Quit"
+newSceneData = []
+
+visualNovel:VisualNovel
+currentNPC = None
+
+playerData:Player
 
 def refreshMenu(screen):
     global visualEntities
@@ -26,72 +39,171 @@ def exitButton():
     global quit
     quit = True
 
-def combatButton():
+def combatButton(screen, enemies):
     global quit
-    global nextScreen
+    global newSceneData
     quit = True
-    nextScreen = "Combat"
+    newSceneData = [screen, "Combat", enemies, playerData]
 
-def loadOpenWorld(screen, screenX, screenY):
+def continueText(renderedEntities, buttons):
+    global visualNovel
+    global currentNPC
+    result = visualNovel.continueText()
+    if (result == "Options"):
+        for button in visualNovel.optionButtons:
+            buttons.append(button)
+    elif (result == "Finished"):
+        currentQuests = playerData.getCurrentQuests()
+        for quest in currentQuests:
+            if (quest.questType == "NPCInteractionQuest"):
+                if (quest.questData == currentNPC):
+                    quest.questProgress += 1
+                    if (quest.questProgress >= quest.questGoal): 
+                        completeQuest(quest, renderedEntities)
+        visualNovel.isShowing = False
+
+def textOption(type, data):
+    print("test")
+
+def updateNPCS(renderedEntities):
+    global playerData
+    for quest in playerData.getCurrentQuests():
+        for npc in renderedEntities:
+            if (type(npc) == NPC):
+                if (npc.NPCID in quest.NPCDialogue.keys()):
+                    npc.dialogue = quest.NPCDialogue[npc.NPCID]
+
+def completeQuest(quest, renderedEntities):
+    global playerData
+
+    quest.questProgress = quest.questGoal
+    playerData.currentQuests.remove(quest)
+    for npc in renderedEntities:
+        if (type(npc) == NPC):
+            if (npc.NPCID in quest.NPCDialogue.keys()):
+                npc.dialogue = npc.defaultDialogue
+
+    for id in quest.followUpQuests: 
+        playerData.currentQuests.append(Quest(id))
+    updateNPCS(renderedEntities)
+
+    for entity in visualEntities:
+        if entity.name == "CurrentQuestListing":
+            if (len(playerData.getCurrentQuests()) > 0):
+                entity.updateText(playerData.getCurrentQuests()[0].questName)
+            else: entity.updateText("No current quests :/")
+
+        
+
+def loadOpenWorld(sceneData):
     global quit
     global visualEntities
-    global nextScreen
     global buttons
+    global visualNovel
+    global playerData
+    global currentNPC
+    screen = sceneData[0]
+    playerData = sceneData[3]
     FPS = 60
+    screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open("src/main/python/maps/samplemap.png")
+    img = Image.open("src/main/python/maps/" + sceneData[2] + "/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
+    TILE_SIZE = 48
+
+    file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+    entitydata = json.load(file)
+
+    spawnX = 0
+    spawnY = 0
+    allEntities = []
+    simulatedObjects = []
+    for entity in entitydata:
+        print(entity['type'])
+        if (entity['type'] == "spawnPoint"):
+            spawnX = entity['position'][0]
+            spawnY = entity['position'][1]
+        elif(entity['type'] == "enemy"):
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], 30)
+            allEntities.append(enemy)
+            simulatedObjects.append(enemy)
+        elif(entity['type'] == "npc"):
+            npc = NPC(entity['defaultDialogue'], f"entities/{entity['image']}", entity['position'], entity['NPCID'], playerData.currentQuests)
+            allEntities.append(npc)
+            simulatedObjects.append(npc)
+
+    file = open("src/main/python/maps/tileIndex.json", 'r')
+    tiledata = json.load(file)
+    tileImages = {}
+
+    for tile in tiledata:
+        img = pygame.image.load(f"src/main/python/sprites/tiles/{tile['image']}").convert()
+        img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+        tileImages.update({tile['name']:img})
+
 
     for y in range(0, height):
         for x in range(0, width):
-            if ((npArray[y, x] == [107, 82, 10, 255]).all()): tiles.append(Tile("tree.png", 1, True))
-            elif ((npArray[y, x] == (210, 132, 53, 255)).all()): tiles.append(Tile("bridge.png", 1))
-            elif ((npArray[y, x] == (0, 0, 0, 255)).all()): tiles.append(Tile("wall.png", 1, True))
-            elif ((npArray[y, x] == (36, 98, 200, 255)).all()): tiles.append(Tile("water.png", 1, True))
-            elif ((npArray[y, x] == (193, 174, 2, 255)).all()): tiles.append(Tile("wet_sand.png", 1))
-            elif ((npArray[y, x] == (204, 225, 77, 255)).all()): tiles.append(Tile("sand.png", 1))
-            elif ((npArray[y, x] == (58, 255, 0, 255)).all()): tiles.append(Tile("grass4.png", 4))
-            elif ((npArray[y, x] == (51, 223, 0, 255)).all()): tiles.append(Tile("grass3.png", 3))
-            elif ((npArray[y, x] == (44, 189, 1, 255)).all()): tiles.append(Tile("grass2.png", 2))
-            elif ((npArray[y, x] == (30, 133, 0, 255)).all()): tiles.append(Tile("grass1.png", 1))
-            else: tiles.append(Tile("nekoarc.png", 4))
+            tileFound = False
+            tileColor = npArray[y, x][:3]
+            tileHeight = npArray[y, x][3]
+            for tile in tiledata:
+                if ((tileColor == tile['color']).all()): 
+                    #tiles.append(Tile(tile['name'], 1, tile['defaultSolid']))
+                    tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
+                    tileFound = True
+                    break
+            if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight, True))
+
+    backgroundHeight = 3*screenY
+    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
+    backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
     
 
 
     loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
+    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
+    visualEntities.append(visualNovel)
+    visualNovel.scale(screenX, screenY)
+    visualNovel.isShowing = False
+    buttons.append(visualNovel.continueButton)
+
+    for entity in visualEntities:
+        if entity.name == "CurrentQuestListing":
+            if (len(playerData.getCurrentQuests()) > 0):
+                entity.updateText(playerData.getCurrentQuests()[0].questName)
+            else: entity.updateText("No current quests :/")
+
 
     FRICTION_GRASS = 0.005
     CHAR_SIZE_MULTIPLIER = 0.85
-    TILE_SIZE = 48
 
-    spawnX = width/2
-    spawnY = height/2
     characterSize = CHAR_SIZE_MULTIPLIER*TILE_SIZE
     radius = characterSize/(2*TILE_SIZE)
-    character = OpenWorldEntity("catgirl_head.png", Circle((spawnX, spawnY), radius), "player", None, "enemy")
-    cameraX = character.getCenter()[0]
-    cameraY = character.getCenter()[1]
+    cameraX = 0
+    cameraY = 0
 
-    sword = OpenWorldEntity("sample_sword.png", Rectangle([(0, 0),  (0, 4*radius), (2*radius, 0), (2*radius, 4*radius)]), "attack", None, None)
-    # Sets height to -1 to indicate no corner correction
-    sword.currentHeight = -1
-    swordSwinging = 0
 
-    testEnemyStats = Character("Wizard", "wizard.png", 5)
-    testEnemy = OpenWorldEntity("frog_head.png", Circle((character.getCenter()[0]+5, character.getCenter()[1]+1), radius), "enemy", testEnemyStats, "attack")
+    character = PlayerObject((spawnX, spawnY))
+    testInteractionObject = PlayerInteractionObject((0, 0))
+    testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
+    
+    allEntities.append(character)
+    allEntities.append(testAttack)
+    allEntities.append(testInteractionObject)
 
-    currentEntities = []
-    currentEntities.append(character)
-    currentEntities.append(testEnemy)
+    simulatedObjects.append(character)
 
     
     movementSpeed = 0.1
-    character.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
+    character.worldObject.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
     
 
     def convertToScreen(xValue, yValue):
+        nonlocal cameraX
+        nonlocal cameraY
         xValue = (xValue-cameraX)*TILE_SIZE + screenX/2
         yValue = (yValue-cameraY)*TILE_SIZE + screenY/2
         return (xValue, yValue)
@@ -106,7 +218,8 @@ def loadOpenWorld(screen, screenX, screenY):
         entityHeight = tiles[math.floor(movedCenter[0]) + math.floor(movedCenter[1])*width].height
         
         tileData = tiles[round(minX) + round(minY)*width]
-        if ((abs(entityHeight - tileData.height) > 1) or tileData.isSolid()):
+        heightDifference = abs(int(entityHeight) - int(tileData.height))
+        if ((heightDifference > 1) or tileData.isSolid()):
             if (ShapeMath.collides(moved, tile)):
                 return True
         return False
@@ -117,6 +230,11 @@ def loadOpenWorld(screen, screenX, screenY):
 
     lastInput = "Right"
     changeEnemyDirection = 0
+    frameCounter = 0
+    continueTextCooldown = 20
+    keyboardMode = False
+
+
     ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()
@@ -128,10 +246,21 @@ def loadOpenWorld(screen, screenX, screenY):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
+                        if (entity.func == "textOption"): buttonFunc = textOption
+                        if (entity.func == "continueText"): 
+                            continueText(simulatedObjects, buttons)
+                            break
                         if (len(entity.args) == 0): buttonFunc()
-                        else: buttonFunc(entity.args)
+                        else: buttonFunc(*entity.args)
                         break
+            if (event.type == pygame.MOUSEMOTION):
+                keyboardMode = False
 
+        ### Make Hover Buttons shine funny color
+        if (keyboardMode == False):
+            for button in buttons:
+                if (type(button) == HoverShapeButton):
+                    button.mouseInRegion(mouse)
 
 
         ### Inputs ###
@@ -141,53 +270,109 @@ def loadOpenWorld(screen, screenX, screenY):
         else:
             movementSpeed = 0.05
 
+        if (keyboardMode == False and (keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN])):
+            keyboardMode = True
+            for button in buttons:
+                if (type(button) == HoverShapeButton):
+                    button.shapeEntity.color = button.primaryColor
+
         if (keys[pygame.K_LEFT] and keys[pygame.K_UP]):
-            character.speedX = -0.707*movementSpeed
-            character.speedY = -0.707*movementSpeed
+            character.worldObject.speedX = -0.707*movementSpeed
+            character.worldObject.speedY = -0.707*movementSpeed
             lastInput = "UpLeft"
         elif (keys[pygame.K_LEFT] and keys[pygame.K_DOWN]):
-            character.speedX = -0.707*movementSpeed
-            character.speedY = 0.707*movementSpeed
+            character.worldObject.speedX = -0.707*movementSpeed
+            character.worldObject.speedY = 0.707*movementSpeed
             lastInput = "DownLeft"
         elif (keys[pygame.K_LEFT]):
-            character.speedX = -movementSpeed
+            character.worldObject.speedX = -movementSpeed
             lastInput = "Left"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_UP]):
-            character.speedX = 0.707*movementSpeed
-            character.speedY = -0.707*movementSpeed
+            character.worldObject.speedX = 0.707*movementSpeed
+            character.worldObject.speedY = -0.707*movementSpeed
             lastInput = "UpRight"
         elif (keys[pygame.K_RIGHT] and keys[pygame.K_DOWN]):
-            character.speedX = 0.707*movementSpeed
-            character.speedY = 0.707*movementSpeed
+            character.worldObject.speedX = 0.707*movementSpeed
+            character.worldObject.speedY = 0.707*movementSpeed
             lastInput = "DownRight"
         elif (keys[pygame.K_RIGHT]):
-            character.speedX = movementSpeed
+            character.worldObject.speedX = movementSpeed
             lastInput = "Right"
         elif (keys[pygame.K_UP]):
-            character.speedY = -movementSpeed
+            character.worldObject.speedY = -movementSpeed
             lastInput = "Up"
         elif (keys[pygame.K_DOWN]):
-            character.speedY = movementSpeed
+            character.worldObject.speedY = movementSpeed
             lastInput = "Down"
 
         
 
-        if keys[pygame.K_SPACE]:
-            if (swordSwinging <= 0):
-                swordSwinging = 30
-                if (lastInput == "UpLeft"): sword.rotate(285, character.getCenter())
-                elif (lastInput == "DownLeft"): sword.rotate(195, character.getCenter())
-                elif (lastInput == "Left"): sword.rotate(235, character.getCenter())
-                elif (lastInput == "UpRight"): sword.rotate(15, character.getCenter())
-                elif (lastInput == "DownRight"): sword.rotate(105, character.getCenter())
-                elif (lastInput == "Right"): sword.rotate(55, character.getCenter())
-                elif (lastInput == "Up"): sword.rotate(330, character.getCenter())
-                elif (lastInput == "Down"): sword.rotate(150, character.getCenter())
-                currentEntities.append(sword)
+        if keys[pygame.K_z]:
+            if (testAttack.currentDuration <= 0):
+                testAttack.currentDuration = testAttack.duration
 
+                charCenter = character.getCenter()
+                startAngle = 0
+                if (lastInput == "UpLeft"): startAngle = 315
+                elif (lastInput == "DownLeft"): startAngle = 225
+                elif (lastInput == "Left"): startAngle = 270
+                elif (lastInput == "UpRight"): startAngle = 45
+                elif (lastInput == "DownRight"): startAngle = 135
+                elif (lastInput == "Right"): startAngle = 90
+                elif (lastInput == "Up"): startAngle = 0
+                elif (lastInput == "Down"): startAngle = 180
+                startAngle -= ((testAttack.duration*testAttack.swingSpeed)/2)
+                startAngle %= 360
+                testAttack.rotate(-testAttack.worldObject.currentRotation, testAttack.worldObject.getCenter())
+                attackCenter = (charCenter[0], charCenter[1]-(testAttack.attackRatio*testAttack.attackSize/2))
+                testAttack.setCenter(attackCenter)
+                testAttack.rotate(startAngle, charCenter)
+
+                simulatedObjects.append(testAttack)
+
+        ## Trigger Attack Movement ##
+        if (testAttack.currentDuration > 0):
+            testAttack.currentDuration -=1
+            charCenter = character.getCenter()
+            testAttack.rotate(testAttack.swingSpeed, charCenter)
+            if (testAttack.currentDuration <= 0):
+                if (testAttack in simulatedObjects):
+                    simulatedObjects.remove(testAttack)
+
+        
+
+        ## Update InteractBox ##
+        if (testInteractionObject in simulatedObjects):
+            simulatedObjects.remove(testInteractionObject)
+
+        if keys[pygame.K_c]:
+            charCenter = character.getCenter()
+            angle = 0
+            if (lastInput == "UpLeft"): angle = 315
+            elif (lastInput == "DownLeft"): angle = 225
+            elif (lastInput == "Left"): angle = 270
+            elif (lastInput == "UpRight"): angle = 45
+            elif (lastInput == "DownRight"): angle = 135
+            elif (lastInput == "Right"): angle = 90
+            elif (lastInput == "Up"): angle = 0
+            elif (lastInput == "Down"): angle = 180
+            interactObjectCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-2*radius), charCenter, angle)
+            testInteractionObject.setCenter(interactObjectCenter)
+            if (not testInteractionObject in simulatedObjects):
+                simulatedObjects.append(testInteractionObject)
+
+
+        
+        if keys[pygame.K_SPACE]:
+            if (continueTextCooldown <= 0):
+                if (visualNovel.isShowing):
+                    continueText(simulatedObjects, buttons)
+                    continueTextCooldown += 20
+        if (continueTextCooldown > 0): continueTextCooldown -= 1
 
         ### Physics ###
-        for entity in currentEntities:
+        for object in simulatedObjects:
+            entity = object.worldObject
             ## Friction ##
             if (abs(entity.speedX) < FRICTION_GRASS):
                 entity.speedX = 0
@@ -243,6 +428,8 @@ def loadOpenWorld(screen, screenX, screenY):
 
             ## Move Thing ##
             entity.shape.move(movedVector)
+            if (object == character):
+                testAttack.worldObject.shape.move(movedVector)
             entity.currentHeight = tiles[math.floor(entity.getCenter()[0]) + math.floor(entity.getCenter()[1])*width].height
             if (movedVector[0] == 0): entity.speedX = 0
             if (movedVector[1] == 0): entity.speedY = 0
@@ -273,81 +460,117 @@ def loadOpenWorld(screen, screenX, screenY):
 
 
         ## Entity Collision Logic ##
-        for entity in currentEntities:
-         if (not entity.trigger == None):
-              for trigger in currentEntities:
-                   if (trigger.entityType == entity.trigger):
-                        if (ShapeMath.collides(trigger.shape, entity.shape)):
-                             if (entity.entityType == "enemy"):
-                                  combatButton()
-                             if (entity.entityType == "player"):
-                                  combatButton()
-
-
-        ## Update Sword Position ##
-        charCenter = character.getCenter()
-        swordCenter = ShapeMath.rotatePoint((charCenter[0], charCenter[1]-3*radius), charCenter, -sword.currentRotation)
-        sword.setCenter(swordCenter)
-
-        ## Swing Sword ##
-        if (swordSwinging > 0):
-            swordSwinging -=1
-            sword.rotate(2, charCenter)
-            if (swordSwinging == 0):
-                sword.rotate((sword.currentRotation-360), charCenter)
-                if (sword in currentEntities):
-                    currentEntities.remove(sword)
+        for entity in list(simulatedObjects):
+            if (not entity.worldObject.trigger == None):
+                for trigger in list(simulatedObjects):
+                    if (trigger.worldObject.entityType == entity.worldObject.trigger):
+                        if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
+                            if (type(entity) == Enemy):
+                                currentQuests = playerData.getCurrentQuests()
+                                for quest in currentQuests:
+                                    if (quest.questType == "killQuest"):
+                                        if (quest.questData == entity.enemyID):
+                                            quest.questProgress += 1
+                                            if (quest.questProgress >= quest.questGoal): 
+                                                completeQuest(quest, simulatedObjects)
+                                combatButton(screen, [entity.enemyStats])
+                                simulatedObjects.remove(entity)
+                                entity.respawnTimer = 60
+                            if (type(entity) == PlayerObject):
+                                combatButton(screen, [trigger.enemyStats])
+                            if (type(entity) == NPC):
+                                visualNovel.updateDialogue(entity.dialogue)
+                                visualNovel.isShowing = True
+                                currentNPC = entity.NPCID
+                                 
 
         ## Move Enemies ##
         if (changeEnemyDirection <= 0):
             enemyMoveDirection = random.randint(1, 9)
             changeEnemyDirection += random.randint(90, 180)
         else: changeEnemyDirection -= 1
-        for entity in currentEntities:
-                if entity.entityType == "enemy":
-                    enemyMovementSpeed = 0.03
+        for entity in simulatedObjects:
+                if type(entity) == Enemy:
+                    enemyMovementSpeed = 0.015
                     if (enemyMoveDirection == 1):
-                        entity.speedX = 0
-                        entity.speedY = enemyMovementSpeed
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = enemyMovementSpeed
                     elif (enemyMoveDirection == 2):
-                        entity.speedX = 0.707*enemyMovementSpeed
-                        entity.speedY = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 3):
-                        entity.speedX = -0.707*enemyMovementSpeed
-                        entity.speedY = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 4):
-                        entity.speedX = enemyMovementSpeed
-                        entity.speedY = 0
+                        entity.worldObject.speedX = enemyMovementSpeed
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 5):
-                        entity.speedX = -enemyMovementSpeed
-                        entity.speedY = 0
+                        entity.worldObject.speedX = -enemyMovementSpeed
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 6):
-                        entity.speedX = 0
-                        entity.speedY = 0
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = 0
                     elif (enemyMoveDirection == 7):
-                        entity.speedX = 0.707*enemyMovementSpeed
-                        entity.speedY = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
                     elif (enemyMoveDirection == 8):
-                        entity.speedX = 0
-                        entity.speedY = -enemyMovementSpeed
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = -enemyMovementSpeed
                     elif (enemyMoveDirection == 9):
-                        entity.speedX = -0.707*enemyMovementSpeed
-                        entity.speedY = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
+        
+
+        ## Respawn Enemies ##
+        # for entity in allEntities:
+        #     if (type(entity) == Enemy):
+        #         if (not entity.respawnTimer == 0):
+        #             entity.respawnTimer -= 1
+        #             if (entity.respawnTimer <= 0):
+        #                 entity.respawnTimer = 0
+        #                 entity.setCenter((entity.spawnX, entity.spawnY))
+        #                 simulatedObjects.append(entity)
+
+
         
 
 
         ## Display ##
         screen.fill((0, 0, 0))
+        fogParallax = 0.2
+        ratio = ((frameCounter%6000)/6000)
+        bgY = (ratio*backgroundHeight) - fogParallax*cameraY*TILE_SIZE
+        bgY2 = bgY - backgroundHeight
+        bgY3 = bgY + backgroundHeight
+
+
+        bgY -= screenY
+        bgY2 -= screenY
+        bgY3 -= screenY
+        screen.blit(backgroundFog, (0, bgY))
+        screen.blit(backgroundFog, (0, bgY2))
+        screen.blit(backgroundFog, (0, bgY3))
+
         for x in range(0, width):
             for y in range(0, height):
-                screen.blit(tiles[width*y + x].img, ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
-        for entity in currentEntities:
-            screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
+                if (not tiles[width*y + x].name == "tileNotFound"):
+                    screen.blit(tileImages[tiles[width*y + x].name], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
+        for entity in simulatedObjects:
+            if (not entity.worldObject.imgPath == "emptyimg.png"):
+                screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
+
+        # corners = testAttack.worldObject.shape.corners().copy()
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[0]), convertToScreen(*corners[1]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[1]), convertToScreen(*corners[2]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[2]), convertToScreen(*corners[3]))
+        # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
+        # pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
 
             
         refreshMenu(screen)
 
         ## Frame Limiter ##
+        frameCounter += 1
         current_time = time.time()
         dt = current_time - prev_time
         prev_time = current_time
@@ -360,4 +583,4 @@ def loadOpenWorld(screen, screenX, screenY):
         if (quit):
             quit = False 
             break
-    return nextScreen
+    return newSceneData
