@@ -23,16 +23,16 @@ class Quest:
             self.questType = "killQuest"
             self.questData = "Slime"
             self.questGoal = 2
-            self.NPCDialogue = {"Test_NPC": 0}
+            self.NPCDialogue = {"Trapped_NPC": 0}
             self.followUpQuests = [1]
             self.questXPReward = 0
             self.questItemReward = []
         else:
             self.questName = "Kill The Slimes! - Accept Reward"
             self.questType = "NPCInteractionQuest"
-            self.questData = "Test_NPC"
+            self.questData = "Trapped_NPC"
             self.questGoal = 1
-            self.NPCDialogue = {"Test_NPC": 1}
+            self.NPCDialogue = {"Trapped_NPC": 1}
             self.followUpQuests = []
             self.questXPReward = 0
             self.questItemReward = []

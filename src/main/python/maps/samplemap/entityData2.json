@@ -1,0 +1,33 @@
+[
+    {
+        "name": "Player Spawn",
+        "type": "spawnPoint",
+        "image": "spawn.png",
+        "position": [
+            32,
+            29
+        ]
+    },
+    {
+        "name": "Slime",
+        "type": "enemy",
+        "image": "slime.png",
+        "position": [
+            34,
+            30
+        ],
+        "enemyType": "Slime",
+        "level": 10
+    },
+    {
+        "name": "Trapped NPC",
+        "type": "npc",
+        "image": "trapped_npc.png",
+        "position": [
+            30,
+            34
+        ],
+        "defaultDialogue": 2,
+        "NPCID": "Trapped_NPC"
+    }
+]

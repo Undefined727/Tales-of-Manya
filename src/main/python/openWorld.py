@@ -113,6 +113,27 @@ def loadOpenWorld(sceneData):
     tiles = []
     TILE_SIZE = 48
 
+    file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+    entitydata = json.load(file)
+
+    spawnX = 0
+    spawnY = 0
+    allEntities = []
+    simulatedObjects = []
+    for entity in entitydata:
+        print(entity['type'])
+        if (entity['type'] == "spawnPoint"):
+            spawnX = entity['position'][0]
+            spawnY = entity['position'][1]
+        elif(entity['type'] == "enemy"):
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], 30)
+            allEntities.append(enemy)
+            simulatedObjects.append(enemy)
+        elif(entity['type'] == "npc"):
+            npc = NPC(entity['defaultDialogue'], f"entities/{entity['image']}", entity['position'], entity['NPCID'], playerData.currentQuests)
+            allEntities.append(npc)
+            simulatedObjects.append(npc)
+
     file = open("src/main/python/maps/tileIndex.json", 'r')
     tiledata = json.load(file)
     tileImages = {}
@@ -159,8 +180,6 @@ def loadOpenWorld(sceneData):
     FRICTION_GRASS = 0.005
     CHAR_SIZE_MULTIPLIER = 0.85
 
-    spawnX = width/2
-    spawnY = height/2
     characterSize = CHAR_SIZE_MULTIPLIER*TILE_SIZE
     radius = characterSize/(2*TILE_SIZE)
     cameraX = 0
@@ -170,25 +189,12 @@ def loadOpenWorld(sceneData):
     character = PlayerObject((spawnX, spawnY))
     testInteractionObject = PlayerInteractionObject((0, 0))
     testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
-    testEnemy = Enemy("Slime", 5, "wizard.png", (character.getCenter()[0]+5, character.getCenter()[1]+1), 30)
-    testNPC = NPC(2, "catgirl.png", (character.getCenter()[0]+1, character.getCenter()[1]+5), "Test_NPC", playerData.currentQuests)
     
-
-    
-
-
-
-    allEntities = []
     allEntities.append(character)
-    allEntities.append(testEnemy)
-    allEntities.append(testNPC)
     allEntities.append(testAttack)
     allEntities.append(testInteractionObject)
 
-    simulatedObjects = []
     simulatedObjects.append(character)
-    simulatedObjects.append(testEnemy)
-    simulatedObjects.append(testNPC)
 
     
     movementSpeed = 0.1
@@ -550,7 +556,8 @@ def loadOpenWorld(sceneData):
                 if (not tiles[width*y + x].name == "tileNotFound"):
                     screen.blit(tileImages[tiles[width*y + x].name], ((screenX/2-(cameraX-x)*TILE_SIZE), (screenY/2-(cameraY-y)*TILE_SIZE)))
         for entity in simulatedObjects:
-            screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
+            if (not entity.worldObject.imgPath == "emptyimg.png"):
+                screen.blit(entity.getSprite(), convertToScreen(*entity.getImagePosition()))
 
         # corners = testAttack.worldObject.shape.corners().copy()
         # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[0]), convertToScreen(*corners[1]))

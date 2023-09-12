@@ -12,6 +12,7 @@ class Enemy:
 
     # In the future img and id will be connected directly using a database and thus dialogue will no longer be required for initialization
     def __init__(self, enemyID, level, img, position, respawnTimer):
+        if (len(position) > 1): position = tuple(position)
         self.enemyStats = Character(enemyID, img, level)
         self.spawnX, self.spawnY = position
         self.respawnTimer = respawnTimer

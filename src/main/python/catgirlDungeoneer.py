@@ -33,6 +33,26 @@ height, width, dim = savedMap.shape
 tiles = []
 tileSize = 48
 
+file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+entitydata = json.load(file)
+entityImages = {}
+entityImagesDisplayed = {}
+mappedEntities = {}
+
+spawnX = 0
+spawnY = 0
+for entity in entitydata:
+    img = pygame.image.load(f"src/main/python/sprites/entities/{entity['image']}")
+    entityImages.update({entity['name']:img})
+    img2 = pygame.transform.scale(img, (tileSize, tileSize))
+    entityImagesDisplayed.update({entity['name']:img2})
+    mappedEntities.update({entity['name']:(entity['position'][0], entity['position'][1])})
+
+    if (entity['type'] == "spawnPoint"):
+        spawnX = entity['position'][0]
+        spawnY = entity['position'][1]
+
+
 file = open("src/main/python/maps/tileIndex.json", 'r')
 tiledata = json.load(file)
 tileImages = {}
@@ -65,8 +85,7 @@ backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight
 
 CHAR_SIZE_MULTIPLIER = 0.85
 
-spawnX = width/2
-spawnY = height/2
+
 characterSize = CHAR_SIZE_MULTIPLIER*tileSize
 radius = characterSize/(2*tileSize)
 cameraX = spawnX
@@ -123,13 +142,26 @@ def exitButton():
 
 def save():
     global displayedMap
+    global mappedEntities
     im = Image.fromarray(displayedMap)
     im.save("src/main/python/maps/samplemap/map.png")
+
+
+    for entity in entitydata:
+        entity['position'] = mappedEntities[entity['name']]
+
+    file = open('src/main/python/maps/samplemap/entityData.json', 'w')
+    json.dump(entitydata, file, indent=4)
 
 def tileSelectionMenuButton():
     for entity in visualEntities:
         if (Tag.EDITOR_TILE_SELECTION in entity.tags):
             entity.isShowing = not entity.isShowing
+
+equippedEntityName = None
+equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/{entitydata[0]['image']}")
+equippedEntityImage.scale(screenX, screenY)
+visualEntities.append(equippedEntityImage)
 
 equippedTileName = None
 equippedTileImage = ImageEntity("Equipped_Tile_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
@@ -172,7 +204,6 @@ def equipTile(tileName):
             break
 
 def elevationToggle():
-    print("test")
     global elevationOffsetMode
     global currentElevationLabel
     global elevationOffset
@@ -196,24 +227,48 @@ while True:
             pygame.quit()
         if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
             buttonPressed = False
-            for entity in buttons:
-                if entity.isShowing:
-                    if entity.mouseInRegion(mouse):
-                        if (entity.func == "exit"): buttonFunc = exitButton
-                        if (entity.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
-                        if (entity.func == "equipTile"): buttonFunc = equipTile
-                        if (entity.func == "elevationToggle"): buttonFunc = elevationToggle
-                        if (len(entity.args) == 0): buttonFunc()
-                        else: buttonFunc(*entity.args)
+            for button in buttons:
+                if button.isShowing:
+                    if button.mouseInRegion(mouse):
+                        if (button.func == "exit"): buttonFunc = exitButton
+                        if (button.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
+                        if (button.func == "equipTile"): buttonFunc = equipTile
+                        if (button.func == "elevationToggle"): buttonFunc = elevationToggle
+                        if (len(button.args) == 0): buttonFunc()
+                        else: buttonFunc(*button.args)
                         buttonPressed = True
                         break
+            if (not buttonPressed):
+                mouseX, mouseY = convertToMap(mouse[0], mouse[1])
+                mouseX = math.floor(mouseX)
+                mouseY = math.floor(mouseY)
+                for entity, position in mappedEntities.items():
+                    if (position == (mouseX, mouseY)):
+                        equippedEntityImage.isShowing = True
+                        equippedEntityName = entity
+                        buttonPressed = True
+                        for entityDataEntry in entitydata:
+                            if (entityDataEntry['name'] == entity):
+                                equippedEntityImage.updateImg(f"entities/{entityDataEntry['image']}")
+                                break
         if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 3):
             equippedTileName = None
             equippedTileImage.isShowing = False
+            elevationOffsetMode = False
+            elevationOffset = 0
+            elevationToggle()
         if event.type == pygame.MOUSEBUTTONUP:
             buttonPressed = False
             for tile in tiles:
                 tile.justChanged = False
+            if (not equippedEntityName == None):
+                mouseX, mouseY = convertToMap(mouse[0], mouse[1])
+                mouseX = math.floor(mouseX)
+                mouseY = math.floor(mouseY)
+                equippedEntityImage.isShowing = False
+                for entity in mappedEntities:
+                    if (entity == equippedEntityName): mappedEntities[entity] = (mouseX, mouseY)
+                equippedEntityName = None
         if event.type == pygame.MOUSEWHEEL:
             if (elevationToggleButton.mouseInRegion(mouse)):
                 if (elevationOffsetMode): 
@@ -226,6 +281,8 @@ while True:
             else:
                 tileSize += 2*event.y
                 if (tileSize <= 0): tileSize = 1
+                for entity in entityImagesDisplayed:
+                    entityImagesDisplayed[entity] = pygame.transform.scale(entityImages[entity], (tileSize, tileSize))
                 for tile in tileImagesDisplayed:
                     tileImagesDisplayed[tile] = pygame.transform.scale(tileImages[tile], (tileSize, tileSize))
         if event.type == pygame.MOUSEMOTION:
@@ -234,13 +291,8 @@ while True:
                     button.mouseInRegion(mouse)
             equippedTileImage.xPosition = mouse[0]
             equippedTileImage.yPosition = mouse[1]
-            mouseX, mouseY = convertToMap(mouse[0], mouse[1])
-            mouseX = math.floor(mouseX)
-            mouseY = math.floor(mouseY)
-            if (mouseX < 0): mouseX = 0
-            if (mouseY < 0): mouseY = 0
-            if (mouseX >= width): mouseX = width-1
-            if (mouseY >= height): mouseY = height-1
+            equippedEntityImage.xPosition = mouse[0]-tileSize/2
+            equippedEntityImage.yPosition = mouse[1]-tileSize/2
 
 
 
@@ -314,6 +366,10 @@ while True:
     for x in range(0, width):
         for y in range(0, height):
             screen.blit(tileImagesDisplayed[tiles[width*y + x].name], (convertToScreen(x, y)))
+
+    ## Show Entities ##
+    for entity, position in mappedEntities.items():
+        screen.blit(entityImagesDisplayed[entity], (convertToScreen(*position)))
             
         
     LINE_THICKNESS = 1
