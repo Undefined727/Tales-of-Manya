@@ -21,19 +21,21 @@ pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 
+OPENED_MAP = "samplemap"
+
 visualEntities = []
 buttons = []
 
 FPS = 60
 prev_time = time.time()
-savedMap = Image.open("src/main/python/maps/samplemap/map.png")
+savedMap = Image.open(f"src/main/python/maps/{OPENED_MAP}/map.png")
 savedMap = np.array(savedMap)
 displayedMap = savedMap
 height, width, dim = savedMap.shape
 tiles = []
 tileSize = 48
 
-file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+file =  open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'r')
 entitydata = json.load(file)
 entityImages = {}
 entityImagesDisplayed = {}
@@ -140,17 +142,18 @@ def exitButton():
 
 
 
+
 def save():
     global displayedMap
     global mappedEntities
     im = Image.fromarray(displayedMap)
-    im.save("src/main/python/maps/samplemap/map.png")
+    im.save(f"src/main/python/maps/{OPENED_MAP}/map.png")
 
 
     for entity in entitydata:
         entity['position'] = mappedEntities[entity['name']]
 
-    file = open('src/main/python/maps/samplemap/entityData.json', 'w')
+    file = open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'w')
     json.dump(entitydata, file, indent=4)
 
 def tileSelectionMenuButton():
