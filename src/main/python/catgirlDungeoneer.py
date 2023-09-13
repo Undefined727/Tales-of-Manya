@@ -21,7 +21,7 @@ pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 
-OPENED_MAP = "samplemap2"
+OPENED_MAP = "samplemap"
 
 visualEntities = []
 buttons = []
@@ -86,81 +86,13 @@ backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").c
 backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
 
 CHAR_SIZE_MULTIPLIER = 0.85
-
-
 characterSize = CHAR_SIZE_MULTIPLIER*tileSize
 radius = characterSize/(2*tileSize)
 cameraX = spawnX
 cameraY = spawnY
 
 
-## Tile Selection Menu ##
-menuHeight = len(tiledata)*0.05
-visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
-counter = 0
-for tile in tiledata:
-    if (tile['name'] == "tileNotFound"): break
-    button = HoverShapeButton(f"Tile_Selection_Button_Entry{counter}", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", [tile['name']])
-    visualEntities.append(button)
-    buttons.append(button)
-    visualEntities.append(TextEntity(f"Tile_Selection_Text_Entry{counter}", False, 0.0625, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_TILE_SELECTION], tile['name'], "mono", 20))
-    visualEntities.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", False, 0.11, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION], f"tiles/{tile['image']}"))
-    counter += 1
-button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
-visualEntities.append(button)
-buttons.append(button)
-visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
-for entity in visualEntities:
-    if (Tag.EDITOR_TILE_SELECTION in entity.tags):
-        entity.scale(screenX, screenY)
-
-def refreshMenu():
-    global visualEntities
-    global screen
-    for entity in visualEntities:
-        if entity.isShowing:
-            displayEntity(entity, screen)
-    pygame.display.flip()
-
-def convertToScreen(xValue, yValue):
-    global cameraX
-    global cameraY
-    xValue = (xValue-cameraX)*tileSize + screenX/2
-    yValue = (yValue-cameraY)*tileSize + screenY/2
-    return (xValue, yValue)
-
-def convertToMap(xValue, yValue):
-    global cameraX
-    global cameraY
-    xValue = (xValue - screenX/2)/tileSize + cameraX
-    yValue = (yValue - screenY/2)/tileSize + cameraY
-    return (xValue, yValue)
-
-def exitButton():
-    pygame.quit()
-
-
-
-
-
-def save():
-    global displayedMap
-    global mappedEntities
-    im = Image.fromarray(displayedMap)
-    im.save(f"src/main/python/maps/{OPENED_MAP}/map.png")
-
-
-    for entity in entitydata:
-        entity['position'] = mappedEntities[entity['name']]
-
-    file = open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'w')
-    json.dump(entitydata, file, indent=4)
-
-def tileSelectionMenuButton():
-    for entity in visualEntities:
-        if (Tag.EDITOR_TILE_SELECTION in entity.tags):
-            entity.isShowing = not entity.isShowing
-
+## Equipped Tile/Entity/Elevation ##
 equippedEntityName = None
 equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/{entitydata[0]['image']}")
 equippedEntityImage.scale(screenX, screenY)
@@ -187,6 +119,62 @@ for entity in buttons:
         elevationToggleButton = entity
         break
 
+
+
+## Tile Selection Menu ##
+menuHeight = len(tiledata)*0.05
+visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
+counter = 0
+for tile in tiledata:
+    if (tile['name'] == "tileNotFound"): break
+    button = HoverShapeButton(f"Tile_Selection_Button_Entry{counter}", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", [tile['name']])
+    visualEntities.append(button)
+    buttons.append(button)
+    visualEntities.append(TextEntity(f"Tile_Selection_Text_Entry{counter}", False, 0.0625, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_TILE_SELECTION], tile['name'], "mono", 20))
+    visualEntities.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", False, 0.11, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION], f"tiles/{tile['image']}"))
+    counter += 1
+button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
+visualEntities.append(button)
+buttons.append(button)
+visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
+for entity in visualEntities:
+    if (Tag.EDITOR_TILE_SELECTION in entity.tags):
+        entity.scale(screenX, screenY)
+
+
+
+## Functions ##
+def refreshMenu():
+    global visualEntities
+    global screen
+    for entity in visualEntities:
+        if entity.isShowing:
+            displayEntity(entity, screen)
+    pygame.display.flip()
+
+def convertToScreen(xValue, yValue):
+    global cameraX
+    global cameraY
+    xValue = (xValue-cameraX)*tileSize + screenX/2
+    yValue = (yValue-cameraY)*tileSize + screenY/2
+    return (xValue, yValue)
+
+def convertToMap(xValue, yValue):
+    global cameraX
+    global cameraY
+    xValue = (xValue - screenX/2)/tileSize + cameraX
+    yValue = (yValue - screenY/2)/tileSize + cameraY
+    return (xValue, yValue)
+
+def save():
+    global displayedMap
+    global mappedEntities
+    im = Image.fromarray(displayedMap)
+    im.save(f"src/main/python/maps/{OPENED_MAP}/map.png")
+    for entity in entitydata:
+        entity['position'] = mappedEntities[entity['name']]
+    file = open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'w')
+    json.dump(entitydata, file, indent=4)
 
 def equipTile(tileName):
     global equippedTileImage
@@ -217,6 +205,27 @@ def elevationToggle():
         else: currentElevationLabel.updateText(f"Current Elevation: -{-1*elevationOffset}")
     else:
         currentElevationLabel.updateText(f"Current Elevation: {equippedTileElevation}")
+
+def fill(location, tile):
+    global width
+    global height
+    filledMap = np.append(savedMap, np.zeros([len(savedMap),1]),1)
+    print(filledMap)
+    #for x in range(0, width):
+    #    for y in range(0, height):
+
+
+
+## Button Functions ##
+def exitButton():
+    pygame.quit()
+
+def tileSelectionMenuButton():
+    for entity in visualEntities:
+        if (Tag.EDITOR_TILE_SELECTION in entity.tags):
+            entity.isShowing = not entity.isShowing
+
+
 
 
 frameCounter = 0
