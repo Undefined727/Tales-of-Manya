@@ -111,14 +111,15 @@ def loadCombat(sceneData):
     skillsShowing = False
     enemySelectionShowing = False
 
+    
+    visualEntities = []
+    partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
+    loadJson("combatScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
+
     pygame.mixer.init()
     pygame.mixer.music.load("src/main/python/audio/music/bb_ram_ranch.mp3")
     pygame.mixer.music.set_volume(1)
     pygame.mixer.music.play()
-
-    visualEntities = []
-    partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
-    loadJson("combatScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
 
     def buttonExit():
         pygame.quit()

@@ -116,7 +116,6 @@ def loadOpenWorld(sceneData):
     pygame.mixer.init()
     pygame.mixer.music.load("src/main/python/audio/music/ram_ranch.mp3")
     pygame.mixer.music.set_volume(1)
-    pygame.mixer.music.play()
 
     file =  open(f'src/main/python/maps/{sceneData[2]}/entityData.json', 'r')
     entitydata = json.load(file)
@@ -238,7 +237,7 @@ def loadOpenWorld(sceneData):
     continueTextCooldown = 20
     keyboardMode = False
 
-
+    pygame.mixer.music.play()
     ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()
