@@ -107,13 +107,13 @@ def loadOpenWorld(sceneData):
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open("src/main/python/maps/" + sceneData[2] + "/map.png")
+    img = Image.open(f"src/main/python/maps/{sceneData[2]}/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
     TILE_SIZE = 48
 
-    file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+    file =  open(f'src/main/python/maps/{sceneData[2]}/entityData.json', 'r')
     entitydata = json.load(file)
 
     spawnX = 0
@@ -151,7 +151,6 @@ def loadOpenWorld(sceneData):
             tileHeight = npArray[y, x][3]
             for tile in tiledata:
                 if ((tileColor == tile['color']).all()): 
-                    #tiles.append(Tile(tile['name'], 1, tile['defaultSolid']))
                     tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
                     tileFound = True
                     break

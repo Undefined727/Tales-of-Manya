@@ -47,7 +47,7 @@ def run():
         nonlocal newSceneData
         nonlocal leaveScreen
         global player
-        newSceneData = [screen, "Open World", "samplemap", player]
+        newSceneData = [screen, "Open World", "samplemap2", player]
         leaveScreen = True
 
     buttonFunc = exit
