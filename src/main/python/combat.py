@@ -117,8 +117,15 @@ def loadCombat(sceneData):
     loadJson("combatScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
 
     pygame.mixer.init()
-    pygame.mixer.music.load("src/main/python/audio/music/bb_ram_ranch.mp3")
-    pygame.mixer.music.set_volume(1)
+    randInt = random.randint(1, 200)
+    if (randInt == 69): 
+        song = "ram_ranch_bass_boosted.mp3"
+        volume = 1
+    else: 
+        song = "zelda_lost_woods.mp3"
+        volume = 0.2
+    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
+    pygame.mixer.music.set_volume(volume)
     pygame.mixer.music.play()
 
     def buttonExit():

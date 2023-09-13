@@ -114,8 +114,15 @@ def loadOpenWorld(sceneData):
     TILE_SIZE = 48
 
     pygame.mixer.init()
-    pygame.mixer.music.load("src/main/python/audio/music/ram_ranch.mp3")
-    pygame.mixer.music.set_volume(1)
+    randInt = random.randint(1, 300)
+    if (randInt == 69): 
+        song = "ram_ranch_bass_boosted.mp3"
+        volume = 1
+    else: 
+        song = "zelda_lost_woods.mp3"
+        volume = 0.2
+    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
+    pygame.mixer.music.set_volume(volume)
 
     file =  open(f'src/main/python/maps/{sceneData[2]}/entityData.json', 'r')
     entitydata = json.load(file)
