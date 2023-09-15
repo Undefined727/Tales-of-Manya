@@ -3,6 +3,7 @@ import json
 class Quest:
     questID = -1
     questName = "Kill The Slimes!"
+    # List of types of quests that you can have: killQuest, NPCInteractionQuest, freeQuest
     questType = "killQuest"
     questData = "Slime"
     questGoal = 10
@@ -15,7 +16,6 @@ class Quest:
     questItemReward = []
 
     def __init__(self, questID):
-        # In the future we will pull from a database with a quest ID for now we just use the default values
         self.questID = questID
         self.questProgress = 0
 
@@ -23,7 +23,7 @@ class Quest:
         data = json.load(file)
 
         for questEntry in data:
-            if (questEntry['questID'] == questID):
+            if (questEntry['questID'] == questID or questEntry['questName'] == questID):
                 self.questName = questEntry['questName']
                 self.questType = questEntry['questType']
                 self.questData = questEntry['questData']
@@ -37,4 +37,5 @@ class Quest:
                 self.followUpQuests = questEntry['followUpQuests']
                 self.questXPReward = questEntry['questXPReward']
                 self.questItemReward = questEntry['questItemReward']
+                break
     

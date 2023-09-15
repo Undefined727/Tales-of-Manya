@@ -37,39 +37,46 @@ class Paragraph(VisualEntity):
         #Margins
         xPadding = 2
         yPadding = 1
-
-        if (self.width >= self.fontSize):
-            lettersPerLine = math.floor(self.width/(self.fontSize*fontRatio))-xPadding
-            lines = math.ceil(len(self.text)/lettersPerLine)
-        if (self.scaled):
+        if (self.width >= self.fontSize or self.scaled):
             self.texts = []
-            if(len(text) <= 0): return
-            startIndex = 0
-            endIndex = 0
-            if(not text[len(text)-1] == " "):
-                text = text + " "
-            for i in range(0, lines+2):
-                startIndex = endIndex
-                endIndex += lettersPerLine
-                if (endIndex >= len(text)): 
-                    endIndex = len(text)
-                else:
-                    for j in range(0, endIndex):
-                        if (text[endIndex-j] == " "):
-                            endIndex = endIndex-j+1
-                            break
-                
-                charCount = endIndex-startIndex+1
-                if (charCount < 2): break
+            lettersPerLine = math.floor(self.width/(self.fontSize*fontRatio))-xPadding
+            currentTextIndex = 0
+            currentEndIndex = lettersPerLine
+            hasNewLine = False
+
+            currentLineCounter = 0
+            while(True):
+                if (currentTextIndex >= len(text)): 
+                    break
+                elif ((currentTextIndex + lettersPerLine) >= len(text)): 
+                    currentEndIndex = len(text)
+                else: 
+                    currentEndIndex = (currentTextIndex + lettersPerLine)
+
+                line = text[currentTextIndex:currentEndIndex]
+
+                if "%/n%" in line: 
+                    hasNewLine = True
+                    currentEndIndex = currentTextIndex + line.index('%/n%')
+
+                charCount = currentEndIndex-currentTextIndex+1
+
                 textWidth = self.width
                 textX = self.xPosition
-                textY = self.yPosition + (i+yPadding)*textHeight
+                textY = self.yPosition + (currentLineCounter+yPadding)*textHeight
                 if (self.align == "Left"):
                     textX -= (2 + lettersPerLine-charCount)*fontSize*0.5*fontRatio
                 if (self.align == "Right"):
                     textX += (2 + lettersPerLine-charCount)*fontSize*0.5*fontRatio
                 if (textY + textHeight * (yPadding) > self.yPosition + self.height): break
-                self.texts.append(TextEntity(self.name + str(i), self.isShowing, textX, textY, textWidth, textHeight, [], " " + text[startIndex:endIndex], self.font, self.fontSize, self.fontColor, self.highlightColor))
+                self.texts.append(TextEntity(self.name + str(currentLineCounter), self.isShowing, textX, textY, textWidth, textHeight, [], " " + text[currentTextIndex:currentEndIndex], self.font, self.fontSize, self.fontColor, self.highlightColor))
+
+                if (hasNewLine):
+                    currentTextIndex = currentTextIndex + line.index('%/n%') + 4
+                else:
+                    currentTextIndex += lettersPerLine
+                hasNewLine = False
+                currentLineCounter += 1
 
     def resize(self, width, height):
         self.width = width

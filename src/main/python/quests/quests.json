@@ -30,5 +30,16 @@
         "followUpQuests":[],
         "questXPReward": 0,
         "questItemReward": []
+    },
+    {
+        "questName": "Free Loot",
+        "questID": 2,
+        "questType": "freeQuest",
+        "questData": null,
+        "questGoal": 1,
+        "NPCDialogue": [],
+        "followUpQuests": [1],
+        "questXPReward": 0,
+        "questItemReward": []
     }
 ]

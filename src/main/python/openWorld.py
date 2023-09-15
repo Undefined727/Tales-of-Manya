@@ -63,9 +63,40 @@ def continueText(renderedEntities, buttons):
                     if (quest.questProgress >= quest.questGoal): 
                         completeQuest(quest, renderedEntities)
         visualNovel.isShowing = False
+        visualNovel.optionButtons = []
 
-def textOption(type, data):
-    print("test")
+def textOption(optionType, data, renderedEntities, buttons):
+    global visualNovel
+    global playerData
+
+    for optionButton in visualNovel.optionButtons:
+            if optionButton in buttons[:]:
+                buttons.remove(optionButton)
+    visualNovel.hideOptions()
+    visualNovel.isShowing = False
+    
+
+    if (optionType == "End"):
+        pass
+    elif (optionType == "Quest"):
+        continueText(renderedEntities, buttons)
+        playerData.addQuest(data)
+        for entity in visualEntities:
+            if entity.name == "CurrentQuestListing":
+                currentQuests = playerData.getCurrentQuests()
+                if (len(playerData.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + quest.questName
+                        else: listingString = listingString + "%/n%" + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
+    elif (optionType == "Dialogue"):
+        visualNovel.isShowing = True
+        visualNovel.updateDialogue(data)
+
 
 def updateNPCS(renderedEntities):
     global playerData
@@ -86,14 +117,21 @@ def completeQuest(quest, renderedEntities):
                 npc.dialogue = npc.defaultDialogue
 
     for id in quest.followUpQuests: 
-        playerData.currentQuests.append(Quest(id))
+        playerData.addQuest(id)
     updateNPCS(renderedEntities)
 
     for entity in visualEntities:
-        if entity.name == "CurrentQuestListing":
-            if (len(playerData.getCurrentQuests()) > 0):
-                entity.updateText(playerData.getCurrentQuests()[0].questName)
-            else: entity.updateText("No current quests :/")
+            if entity.name == "CurrentQuestListing":
+                currentQuests = playerData.getCurrentQuests()
+                if (len(playerData.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + quest.questName
+                        else: listingString = listingString + "%/n%" + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
 
         
 
@@ -186,9 +224,13 @@ def loadOpenWorld(sceneData):
 
     for entity in visualEntities:
         if entity.name == "CurrentQuestListing":
+            currentQuests = playerData.getCurrentQuests()
             if (len(playerData.getCurrentQuests()) > 0):
-                entity.updateText(playerData.getCurrentQuests()[0].questName)
-            else: entity.updateText("No current quests :/")
+                listingString = ""
+                for quest in currentQuests:
+                    listingString = listingString + quest.questName
+            else: listingString = "No current quests :/"
+            entity.updateText(listingString)
 
 
     FRICTION_GRASS = 0.005
@@ -260,7 +302,9 @@ def loadOpenWorld(sceneData):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
-                        if (entity.func == "textOption"): buttonFunc = textOption
+                        if (entity.func == "textOption"): 
+                            textOption(*entity.args, simulatedObjects, buttons)
+                            break
                         if (entity.func == "continueText"): 
                             continueText(simulatedObjects, buttons)
                             break
@@ -546,7 +590,10 @@ def loadOpenWorld(sceneData):
         #                 simulatedObjects.append(entity)
 
 
-        
+        currentQuests = playerData.getCurrentQuests()
+        for quest in currentQuests:
+            if (quest.questType == "freeQuest"):
+                completeQuest(quest, simulatedObjects)
 
 
         ## Display ##

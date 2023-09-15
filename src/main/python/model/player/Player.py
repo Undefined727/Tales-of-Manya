@@ -14,3 +14,8 @@ class Player:
 
     def getCurrentQuests(self):
         return self.currentQuests
+    
+    def addQuest(self, addedQuest):
+        for quest in self.currentQuests:
+            if (not (quest.questName == addedQuest or quest.questID == addedQuest)):
+                self.currentQuests.append(Quest(addedQuest))
