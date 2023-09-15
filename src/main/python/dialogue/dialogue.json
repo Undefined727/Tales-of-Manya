@@ -2,7 +2,7 @@
     {
         "id": 0,
         "text": [["Calikka", "Help step bro I'm trapped in this slime", "Excited"], ["Generic_NPC", "D:", "Default"]],
-        "options": [["Yes", "Quest", "Free Loot"], ["No", "End", null], ["What", "Dialogue", 0]]
+        "options": [["Trust me bro I killed them", "Quest", 1], ["ok owo", "End", null], ["What", "Dialogue", 0]]
     },
     {
         "id": 1,

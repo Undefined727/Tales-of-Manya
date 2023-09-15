@@ -79,7 +79,6 @@ def textOption(optionType, data, renderedEntities, buttons):
     if (optionType == "End"):
         pass
     elif (optionType == "Quest"):
-        continueText(renderedEntities, buttons)
         playerData.addQuest(data)
         for entity in visualEntities:
             if entity.name == "CurrentQuestListing":
@@ -93,6 +92,7 @@ def textOption(optionType, data, renderedEntities, buttons):
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
+        updateNPCS(renderedEntities)
     elif (optionType == "Dialogue"):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
