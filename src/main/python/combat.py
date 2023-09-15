@@ -25,6 +25,7 @@ inventory = []
 
 playerData:Player
 screen:pygame.surface
+currentSceneData:list
 
 party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
 party.append(Character("lmao", "catgirl.png", 20))
@@ -47,7 +48,7 @@ def openWorld(map):
     newSceneData = [screen, "Open World", map, playerData]
 
 def openWorldButton():
-    openWorld("samplemap")
+    openWorld(currentSceneData[4])
 
 def inventoryButton():
     global quit
@@ -101,6 +102,8 @@ def loadCombat(sceneData):
     global quit
     global playerData
     global screen
+    global currentSceneData
+    currentSceneData = sceneData
     screen = sceneData[0]
     screenX, screenY = screen.get_size()
     enemies = sceneData[2]
@@ -126,7 +129,7 @@ def loadCombat(sceneData):
         volume = 0.2
     pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
     pygame.mixer.music.set_volume(volume)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
     def buttonExit():
         pygame.quit()

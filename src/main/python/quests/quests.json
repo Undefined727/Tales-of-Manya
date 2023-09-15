@@ -1,0 +1,34 @@
+[
+    {
+        "questName": "Kill The Slimes!",
+        "questID": 0,
+        "questType": "killQuest",
+        "questData": "Slime",
+        "questGoal": 2,
+        "NPCDialogue": [
+            {
+                "NPCID": "Trapped_NPC",
+                "Dialogue": 0
+            }
+        ],
+        "followUpQuests": [1],
+        "questXPReward": 0,
+        "questItemReward": []
+    },
+    {
+        "questName": "Kill The Slimes! - Accept Reward",
+        "questID": 1,
+        "questType": "NPCInteractionQuest",
+        "questData": "Trapped_NPC",
+        "questGoal": 1,
+        "NPCDialogue": [
+            {
+                "NPCID": "Trapped_NPC",
+                "Dialogue": 1
+            }
+        ],
+        "followUpQuests":[],
+        "questXPReward": 0,
+        "questItemReward": []
+    }
+]

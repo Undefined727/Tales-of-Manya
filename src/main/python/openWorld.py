@@ -22,6 +22,7 @@ visualEntities = []
 buttons = []
 quit = False
 newSceneData = []
+currentSceneData:list
 
 visualNovel:VisualNovel
 currentNPC = None
@@ -42,8 +43,9 @@ def exitButton():
 def combatButton(screen, enemies):
     global quit
     global newSceneData
+    global currentSceneData
     quit = True
-    newSceneData = [screen, "Combat", enemies, playerData]
+    newSceneData = [screen, "Combat", enemies, playerData, currentSceneData[2]]
 
 def continueText(renderedEntities, buttons):
     global visualNovel
@@ -102,6 +104,9 @@ def loadOpenWorld(sceneData):
     global visualNovel
     global playerData
     global currentNPC
+    global currentSceneData
+    currentSceneData = sceneData
+
     screen = sceneData[0]
     playerData = sceneData[3]
     FPS = 60
@@ -132,7 +137,6 @@ def loadOpenWorld(sceneData):
     allEntities = []
     simulatedObjects = []
     for entity in entitydata:
-        print(entity['type'])
         if (entity['type'] == "spawnPoint"):
             spawnX = entity['position'][0]
             spawnY = entity['position'][1]
@@ -244,7 +248,7 @@ def loadOpenWorld(sceneData):
     continueTextCooldown = 20
     keyboardMode = False
 
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
     ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()

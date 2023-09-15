@@ -1,0 +1,17 @@
+[
+    {
+        "id": 0,
+        "text": [["Calikka", "Help step bro I'm trapped in this slime", "Excited"], ["Generic_NPC", "D:", "Default"]],
+        "options": [["Yes", "Quest", "FreeLoot"], ["No", "End", null], ["What", "Dialogue", 0]]
+    },
+    {
+        "id": 1,
+        "text": [["Calikka", "I'm still stuck", "Excited"], ["Generic_NPC", "Fuck", "Default"]],
+        "options": []
+    },
+    {
+        "id": 2,
+        "text": [["Generic_NPC", "default text", "Default"]],
+        "options": []
+    }
+]
