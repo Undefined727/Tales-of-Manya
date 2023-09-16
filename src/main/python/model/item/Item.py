@@ -1,5 +1,5 @@
 from sqlalchemy.engine.row import Row
-from model.item.ItemSlot import ItemSlot
+from model.item.ItemSlotType import ItemSlotType
 from model.item.ItemTag import ItemTag
 from model.effect.EffectType import EffectType
 import uuid
@@ -7,24 +7,31 @@ import uuid
 class Item:
     id : str
     name : str
-    slots : list[ ItemSlot ]
+    itemType : list[ ItemSlotType ]
     item_tags : list[ ItemTag ]
     item_bonuses : dict[ EffectType, int ]
+    stackLimit:int
     description : str
     #Statuses below when implemented
 
-    def __init__(self, name:str = "Placeholder Name", slots:list[ItemSlot] = [ItemSlot.WEAPON], description:str = "", item_tags:list[ItemTag] = list()):
+    def __init__(self, name:str = "Placeholder Name", itemType:list[ItemSlotType] = [ItemSlotType.WEAPON], description:str = "", item_tags:list[ItemTag] = list(), stackLimit:int = 1):
         self.id = str(uuid.uuid5(uuid.NAMESPACE_DNS,"basedstudios.dev"))
         self.name = name
-        self.slots = slots
+        self.itemType = itemType
         self.description = description
         self.item_tags = item_tags
+        self.stackLimit = stackLimit
 
-    def getSlots(self) -> list[ItemSlot]:
-        return self.slots
+    def getItemType(self) -> list[ItemSlotType]:
+        return self.itemType
 
     def isStackable(self) -> bool:
-        return ItemTag.STACKABLE in self.item_tags
+        return (self.stackLimit == 1)
 
     def getBonuses(self) -> dict[ EffectType, int]:
         return self.item_bonuses
+    
+    def equals(self, item):
+        if (type(item) == Item):
+            if (item.name == self.name): return True
+        return False

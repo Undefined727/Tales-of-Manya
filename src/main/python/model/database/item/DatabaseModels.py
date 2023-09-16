@@ -10,7 +10,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
 from src.main.python.model.item import Item
 from src.main.python.model.skill import Skill
-from src.main.python.model.item import ItemSlot
+from main.python.model.item import ItemSlotType
 from src.main.python.model.effect import Effect
 
 # TODO Everything here is hopelessly broken
@@ -31,7 +31,7 @@ class DBItemSlot(Base):
         return result
 
     @staticmethod
-    def fromItemSlot(item_slot:ItemSlot, item_id:str):
+    def fromItemSlot(item_slot:ItemSlotType, item_id:str):
         return DBItemSlot(id        = item_slot.value,
                           item_id   = item_id,
                           slot      = item_slot.name)

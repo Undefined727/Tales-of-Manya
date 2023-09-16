@@ -28,14 +28,14 @@
     "name": "QuestListing",
     "isShowing": true,
     "xPosition": 0.15,
-    "yPosition": 0.025,
-    "width": 0.2,
-    "height": 0.05,
+    "yPosition": 0.075,
+    "width": 0.25,
+    "height": 0.1,
     "tags": [],
     "entityType": "Paragraph",
     "text": "Current Quests: ",
     "font": "mono",
-    "fontSize": 18,
+    "fontSize": 24,
     "fontColor": "black",
     "highlightColor": null,
     "align": "Left"
@@ -44,7 +44,7 @@
     "name": "CurrentQuestListing",
     "isShowing": true,
     "xPosition": 0.15,
-    "yPosition": 0.075,
+    "yPosition": 0.125,
     "width": 0.2,
     "height": 0.3,
     "tags": [],
@@ -55,5 +55,18 @@
     "fontColor": "black",
     "highlightColor": null,
     "align": "Left"
+},
+{
+    "name": "BagButton",
+    "isShowing": true,
+    "xPosition": 0.02,
+    "yPosition": 0.8,
+    "width": 0.12,
+    "height": 0.18,
+    "tags": [],
+    "entityType": "ImageButton",
+    "path": "BagButton.png",
+    "func": "inventory",
+    "args": []
 }
 ]

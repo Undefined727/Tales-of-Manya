@@ -1,62 +1,87 @@
 from util.Messages import Error
 from model.item.Item import Item
+from model.item.InventorySlot import InventorySlot
 from util.IllegalArgumentException import IllegalArgumentException
 
 class Inventory:
-    space : int
-    slots : dict[ Item, int ]
+    maxSpace : int
+    slots:list[InventorySlot]
 
-    def __init__(self, maximum_slots : int = 28):
-        self.space = maximum_slots
-        self.slots = dict()
+    def __init__(self, maximum_slots : int = 64):
+        self.maxSpace = maximum_slots
+        self.slots = []
+
+    def getItems(self) -> list[InventorySlot]:
+        return self.slots
+    
+    def getInventorySize(self) -> int:
+        return len(self.slots)
 
     def getLoad(self) -> int:
-        return self.slots.__len__()
+        currentAmount = 0
+        for currentSlot in self.slots:
+                currentAmount += currentSlot.count
+        return currentAmount
 
-    def getTotalSpace(self) -> int:
-        return self.space
+    def getMaxSpace(self) -> int:
+        return self.maxSpace
 
-    def setTotalSpace(self, new_value : int):
-        if new_value < self.space: raise IllegalArgumentException(Error.CANNOT_BE_NEGATIVE)
-        self.space = new_value
+    def setMaxSpace(self, new_value : int):
+        if new_value < len(self.slots): raise IllegalArgumentException(Error.CANNOT_BE_NEGATIVE)
+        self.maxSpace = new_value
 
-    def addItem(self, item : Item) -> bool:
-        if (item.isStackable() and item in self.slots):
-            if (self.slots[item] >= 99): return False
-            self.slots[item] += 1
-            return True
-        if (self.getLoad() >= self.space): return False
-        self.slots[item] = 1
+    def addItem(self, item : Item, count:int) -> bool:
+        for i in range(count):
+            added = False
+            for currentSlot in self.slots:
+                if (item.equals(currentSlot.item)):
+                    added = currentSlot.addItem(item)
+                    if (added): break
+            if (not added):
+                if (len(self.slots) < self.maxSpace):
+                    self.slots.append(InventorySlot(item))
+                    added = True
+        return added
+
+    def removeItem(self, item : Item, count:int) -> bool:
+        currentAmount = 0
+        for currentSlot in self.slots:
+            if (item.equals(currentSlot.item)):
+                currentAmount += currentSlot.count
+        if (currentAmount < count): return False
+
+        amountLeft = count
+        for currentSlot in self.slots[::-1]:
+            if (item.equals(currentSlot.item)):
+                if (currentSlot.count > amountLeft): 
+                    currentSlot.count -= amountLeft
+                    break
+                else: 
+                    amountLeft -= currentSlot.count
+                    self.slots.remove(currentSlot)
         return True
 
-    def removeItem(self, item : Item) -> int:
-        if item not in self.slots: raise IllegalArgumentException(Error.ITEM_NOT_FOUND)
-        if not item.isStackable() or self.slots.get(item) == 1:
-            self.slots.pop(item)
-            return 0
-        self.slots[item] -= 1
-        return self.slots[item]
+    def hasItem(self, name) -> bool:
+        if (type(name) == Item): name = name.name
+        for currentSlot in self.slots:
+            if (currentSlot.item.name == name): return True
+        return False
 
-    def searchItem(self, name : str) -> Item:
-        for item in self.slots.keys():
-            if (item.name == name): return item
-        return None
+    def howMany(self, name) -> int:
+        if (type(name) == Item): name = name.name
+        currentAmount = 0
+        for currentSlot in self.slots:
+            if (name == currentSlot.item.name):
+                currentAmount += currentSlot.count
+        return currentAmount
 
-    def howMany(self, item : Item) -> int:
-        if item not in self.slots: raise IllegalArgumentException(Error.ITEM_NOT_FOUND)
-        return self.slots.get(item)
+    # Below implemented when IDs are a thing
+    # def searchByID(self, id : str) -> Item:
+    #     for item in self.slots:
+    #         if (item.id == id): return item
+    #     return None
 
-    def searchHowMany(self, name : str) -> tuple[ Item, int ]:
-        item = self.searchItem(name)
-        if item is None: raise IllegalArgumentException(Error.ITEM_NOT_FOUND)
-        return (item, self.slots[item])
-
-    def searchByID(self, id : str) -> Item:
-        for item in self.slots:
-            if (item.id == id): return item
-        return None
-
-    def searchHowManyByID(self, id : str) -> tuple[ Item, int ]:
-        item = self.searchByID(id)
-        if item is None: raise IllegalArgumentException(Error.ITEM_NOT_FOUND)
-        return (item, self.slots[item])
+    # def searchHowManyByID(self, id : str) -> tuple[ Item, int ]:
+    #     item = self.searchByID(id)
+    #     if item is None: raise IllegalArgumentException(Error.ITEM_NOT_FOUND)
+    #     return (item, self.slots[item])

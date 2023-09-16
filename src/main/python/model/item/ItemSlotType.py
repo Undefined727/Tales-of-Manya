@@ -1,6 +1,6 @@
 from enum import Enum
 
-class ItemSlot(Enum):
+class ItemSlotType(Enum):
     HEAD        = 0
     CHEST       = 1
     LEGS        = 2

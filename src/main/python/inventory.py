@@ -60,11 +60,13 @@ def refreshScreen(screen):
 
 
 
-def loadInventory(screen):
+def loadInventory(screenData):
     global visualEntities
     global party
     global inventory
     global partyVisuals
+    #newSceneData = [screen, "Inventory", playerData, currentSceneData[2]]
+    screen = screenData[0]
     screenX, screenY = screen.get_size()
     leaveScreen = False
     nextScreen = None

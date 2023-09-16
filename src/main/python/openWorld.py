@@ -47,6 +47,13 @@ def combatButton(screen, enemies):
     quit = True
     newSceneData = [screen, "Combat", enemies, playerData, currentSceneData[2]]
 
+def inventoryButton(screen):
+    global quit
+    global newSceneData
+    global currentSceneData
+    quit = True
+    newSceneData = [screen, "Inventory", playerData, currentSceneData[2]]
+
 def continueText(renderedEntities, buttons):
     global visualNovel
     global currentNPC
@@ -87,8 +94,8 @@ def textOption(optionType, data, renderedEntities, buttons):
                     listingString = ""
                     first = True
                     for quest in currentQuests:
-                        if (first): listingString = listingString + quest.questName
-                        else: listingString = listingString + "%/n%" + quest.questName
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
@@ -127,8 +134,8 @@ def completeQuest(quest, renderedEntities):
                     listingString = ""
                     first = True
                     for quest in currentQuests:
-                        if (first): listingString = listingString + quest.questName
-                        else: listingString = listingString + "%/n%" + quest.questName
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
@@ -224,13 +231,16 @@ def loadOpenWorld(sceneData):
 
     for entity in visualEntities:
         if entity.name == "CurrentQuestListing":
-            currentQuests = playerData.getCurrentQuests()
-            if (len(playerData.getCurrentQuests()) > 0):
-                listingString = ""
-                for quest in currentQuests:
-                    listingString = listingString + quest.questName
-            else: listingString = "No current quests :/"
-            entity.updateText(listingString)
+                currentQuests = playerData.getCurrentQuests()
+                if (len(playerData.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
 
 
     FRICTION_GRASS = 0.005
@@ -302,6 +312,9 @@ def loadOpenWorld(sceneData):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = exitButton
                         if (entity.func == "combat"): buttonFunc = combatButton
+                        if (entity.func == "inventory"): 
+                            inventoryButton(screen)
+                            break
                         if (entity.func == "textOption"): 
                             textOption(*entity.args, simulatedObjects, buttons)
                             break
