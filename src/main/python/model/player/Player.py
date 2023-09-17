@@ -14,8 +14,10 @@ class Player:
         # This will pull from a file in the future
         self.currentQuests = [Quest(0)]
         self.party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10), Character("lmao", "catgirl.png", 20)]
-        self.inventory = Inventory(28)
+        self.inventory = Inventory()
         self.inventory.addItem(Item("Purveyor of the Nyaight", [ItemSlotType.WEAPON], "This sword looks like it was made by a catgirl trying to be very dramatic", []), 1)
+        self.inventory.addItem(Item("Purveyor of the Nyaight", [ItemSlotType.WEAPON], "This sword looks like it was made by a catgirl trying to be very dramatic", []), 1)
+        self.inventory.addItem(Item("Flower Crown", [ItemSlotType.HEAD], "A pretty circlet of flowers", []), 1)
         inventoryItems = self.inventory.getItems()
         for item in inventoryItems:
             print(item.item.name + ": " + str(item.count))

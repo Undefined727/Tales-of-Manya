@@ -4,11 +4,9 @@ from model.item.InventorySlot import InventorySlot
 from util.IllegalArgumentException import IllegalArgumentException
 
 class Inventory:
-    maxSpace : int
     slots:list[InventorySlot]
 
-    def __init__(self, maximum_slots : int = 64):
-        self.maxSpace = maximum_slots
+    def __init__(self):
         self.slots = []
 
     def getItems(self) -> list[InventorySlot]:
@@ -23,13 +21,6 @@ class Inventory:
                 currentAmount += currentSlot.count
         return currentAmount
 
-    def getMaxSpace(self) -> int:
-        return self.maxSpace
-
-    def setMaxSpace(self, new_value : int):
-        if new_value < len(self.slots): raise IllegalArgumentException(Error.CANNOT_BE_NEGATIVE)
-        self.maxSpace = new_value
-
     def addItem(self, item : Item, count:int) -> bool:
         for i in range(count):
             added = False
@@ -38,9 +29,8 @@ class Inventory:
                     added = currentSlot.addItem(item)
                     if (added): break
             if (not added):
-                if (len(self.slots) < self.maxSpace):
-                    self.slots.append(InventorySlot(item))
-                    added = True
+                self.slots.append(InventorySlot(item))
+                added = True
         return added
 
     def removeItem(self, item : Item, count:int) -> bool:
@@ -51,7 +41,7 @@ class Inventory:
         if (currentAmount < count): return False
 
         amountLeft = count
-        for currentSlot in self.slots[::-1]:
+        for currentSlot in self.slots[:]:
             if (item.equals(currentSlot.item)):
                 if (currentSlot.count > amountLeft): 
                     currentSlot.count -= amountLeft

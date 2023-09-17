@@ -55,5 +55,17 @@
         "spellPowerWidth": 0.33,
         "spellPowerHeight": 0.1,
         "entityType": "InventoryCharacterCoords"
+    },{
+        "name": "returnToMapButton",
+        "isShowing": true,
+        "xPosition": 0.02,
+        "yPosition": 0.83,
+        "width": 0.18,
+        "height": 0.13,
+        "tags": [],
+        "entityType": "ImageButton",
+        "path": "returnToMapButton.png",
+        "func": "returnToMapButton",
+        "args": []
     }
 ]

@@ -10,7 +10,7 @@ class InventorySlot:
         self.count = count
 
     def addItem(self, item:Item):
-        if (item.equals(self.item) and (self.count+1) <= item.stackLimit):
+        if (item.equals(self.item)):
             self.count += 1
             return True
         else: return False
