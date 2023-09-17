@@ -86,12 +86,15 @@ def loadInventory(screenData):
     currInventory = playerData.inventory.getItems()
     counter = 0
     for slot in currInventory:
-        slotBackground = ImageEntity(f"InventorySlot{counter}", True, 0.02 + counter*0.05, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
-        slotImage = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.05, 0.15, 0.06, 0.06*screenX/screenY, [], f"items/{slot.item.imgPath}")
+        slotBackground = ImageEntity(f"InventorySlot{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
+        slotImage = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"items/{slot.item.imgPath}")
+        slotNumber = TextEntity(f"InventorySlotCount{counter}", True, 0.065 + counter*0.07, 0.24, 0.03, 0.06, [], str(slot.count), "mono", 26)
         slotBackground.scale(screenX, screenY)
         slotImage.scale(screenX, screenY)
+        slotNumber.scale(screenX, screenY)
         visualEntities.append(slotBackground)
         visualEntities.append(slotImage)
+        visualEntities.append(slotNumber)
         counter += 1
 
 

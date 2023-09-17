@@ -1,16 +1,5 @@
 [
     {
-        "name": "AttachedItem",
-        "isShowing": true,
-        "xPosition": 0,
-        "yPosition": 0,
-        "width": 0.08,
-        "height": 0.08,
-        "tags": [],
-        "entityType": "Image",
-        "path": "nekoarc.png"
-
-    },{
         "name": "Background",
         "isShowing": true,
         "xPosition": 0,
@@ -22,16 +11,16 @@
         "path": "inventorybackground.png"
     },{
         "name": "ActiveCharacter",
-        "imgXPosition": 0.6,
-        "imgYPosition": 0.25,
-        "imgWidth": 0.33,
-        "imgHeight": 0.66,
-        "nameXPosition": 0.85,
-        "nameYPosition": 0.125,
+        "imgXPosition": 0.72,
+        "imgYPosition": 0.05,
+        "imgWidth": 0.2,
+        "imgHeight": 0.5,
+        "nameXPosition": 0.95,
+        "nameYPosition": 0.05,
         "nameWidth": 0.33,
         "nameHeight": 0.1,
-        "levelXPosition": 0.65,
-        "levelYPosition": 0.125,
+        "levelXPosition": 0.75,
+        "levelYPosition": 0.05,
         "levelWidth": 0.33,
         "levelHeight": 0.1,
         "HPXPosition": 0.65,
