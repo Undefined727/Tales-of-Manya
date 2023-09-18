@@ -113,10 +113,12 @@ def updateNPCS(renderedEntities):
                 if (npc.NPCID in quest.NPCDialogue.keys()):
                     npc.dialogue = quest.NPCDialogue[npc.NPCID]
 
-def completeQuest(quest, renderedEntities):
+def completeQuest(quest:Quest, renderedEntities):
     global playerData
-
-    quest.questProgress = quest.questGoal
+    
+    for item, count in quest.questItemRewards.items():
+        playerData.inventory.addItem(item, count)
+    
     playerData.currentQuests.remove(quest)
     for npc in renderedEntities:
         if (type(npc) == NPC):
@@ -309,21 +311,22 @@ def loadOpenWorld(sceneData):
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
-                    if entity.mouseInRegion(mouse):
-                        if (entity.func == "exit"): buttonFunc = exitButton
-                        if (entity.func == "combat"): buttonFunc = combatButton
-                        if (entity.func == "inventory"): 
-                            inventoryButton(screen)
+                    if (not ("MenuButton" in entity.tags and visualNovel.isShowing)):
+                        if (entity.isActive and entity.mouseInRegion(mouse)):
+                            if (entity.func == "exit"): buttonFunc = exitButton
+                            if (entity.func == "combat"): buttonFunc = combatButton
+                            if (entity.func == "inventory"): 
+                                inventoryButton(screen)
+                                break
+                            if (entity.func == "textOption"): 
+                                textOption(*entity.args, simulatedObjects, buttons)
+                                break
+                            if (entity.func == "continueText"): 
+                                continueText(simulatedObjects, buttons)
+                                break
+                            if (len(entity.args) == 0): buttonFunc()
+                            else: buttonFunc(*entity.args)
                             break
-                        if (entity.func == "textOption"): 
-                            textOption(*entity.args, simulatedObjects, buttons)
-                            break
-                        if (entity.func == "continueText"): 
-                            continueText(simulatedObjects, buttons)
-                            break
-                        if (len(entity.args) == 0): buttonFunc()
-                        else: buttonFunc(*entity.args)
-                        break
             if (event.type == pygame.MOUSEMOTION):
                 keyboardMode = False
 

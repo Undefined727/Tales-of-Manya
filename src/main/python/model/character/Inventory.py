@@ -21,7 +21,9 @@ class Inventory:
                 currentAmount += currentSlot.count
         return currentAmount
 
-    def addItem(self, item : Item, count:int) -> bool:
+    def addItem(self, item, count:int) -> bool:
+        if (not type(item) == Item): item = Item(item)
+        
         for i in range(count):
             added = False
             for currentSlot in self.slots:

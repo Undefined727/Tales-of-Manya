@@ -13,10 +13,11 @@ class Quest:
     followUpQuests = [1]
 
     questXPReward = 0
-    questItemReward = []
+    questItemRewards = {}
 
     def __init__(self, questID):
-        self.questID = questID
+        if (type(questID) == str): self.questName = questID
+        else: self.questID = questID
         self.questProgress = 0
 
         file = open("src/main/python/quests/quests.json", 'r')
@@ -24,6 +25,7 @@ class Quest:
 
         for questEntry in data:
             if (questEntry['questID'] == questID or questEntry['questName'] == questID):
+                self.questID = questEntry['questID']
                 self.questName = questEntry['questName']
                 self.questType = questEntry['questType']
                 self.questData = questEntry['questData']
@@ -32,10 +34,14 @@ class Quest:
                 NPCDialogue = {}
                 for npc in questEntry['NPCDialogue']:
                     NPCDialogue.update({npc['NPCID']:npc['Dialogue']})
-
                 self.NPCDialogue = NPCDialogue
+
                 self.followUpQuests = questEntry['followUpQuests']
                 self.questXPReward = questEntry['questXPReward']
-                self.questItemReward = questEntry['questItemReward']
+
+                itemRewards = {}
+                for item in questEntry['questItemRewards']:
+                    itemRewards.update({item['itemID']:item['count']})
+                self.questItemRewards = itemRewards
                 break
     

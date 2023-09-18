@@ -11,17 +11,17 @@
         "path": "inventorybackground.png"
     },{
         "name": "ActiveCharacter",
-        "imgXPosition": 0.72,
+        "imgXPosition": 0.75,
         "imgYPosition": 0.05,
-        "imgWidth": 0.2,
-        "imgHeight": 0.5,
-        "nameXPosition": 0.95,
+        "imgWidth": 0.15,
+        "imgHeight": 0.375,
+        "nameXPosition": 0.735,
         "nameYPosition": 0.05,
-        "nameWidth": 0.33,
+        "nameWidth": 0.2,
         "nameHeight": 0.1,
-        "levelXPosition": 0.75,
+        "levelXPosition": 0.94,
         "levelYPosition": 0.05,
-        "levelWidth": 0.33,
+        "levelWidth": 0.2,
         "levelHeight": 0.1,
         "HPXPosition": 0.65,
         "HPYPosition": 0.3,
@@ -47,7 +47,7 @@
     },{
         "name": "returnToMapButton",
         "isShowing": true,
-        "xPosition": 0.02,
+        "xPosition": 0.8,
         "yPosition": 0.83,
         "width": 0.18,
         "height": 0.13,
@@ -56,5 +56,15 @@
         "path": "returnToMapButton.png",
         "func": "returnToMapButton",
         "args": []
+    },{
+        "name": "DisplayedItemImage",
+        "isShowing": true,
+        "xPosition": 0.015,
+        "yPosition": 0.85,
+        "width": 0.08,
+        "height": 0.12,
+        "tags": [],
+        "entityType": "Image",
+        "path": "items/iron_helm.png"
     }
 ]
