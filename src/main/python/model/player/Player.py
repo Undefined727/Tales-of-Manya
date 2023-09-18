@@ -18,15 +18,14 @@ class Player:
         self.inventory.addItem(Item(0),1)
         self.inventory.addItem(Item("Purveyor of the Nyaight"),2)
         self.inventory.addItem(Item("Flower Crown"),1)
-        inventoryItems = self.inventory.getItems()
-        for item in inventoryItems:
-            print(item.item.itemName + ": " + str(item.count))
 
 
     def getCurrentQuests(self):
         return self.currentQuests
     
     def addQuest(self, addedQuest):
+        duplicateFound = False
         for quest in self.currentQuests:
-            if (not (quest.questName == addedQuest or quest.questID == addedQuest)):
-                self.currentQuests.append(Quest(addedQuest))
+            if ((quest.questName == addedQuest or quest.questID == addedQuest)):
+                duplicateFound = True
+        if (not duplicateFound): self.currentQuests.append(Quest(addedQuest))

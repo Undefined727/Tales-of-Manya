@@ -99,19 +99,34 @@ def textOption(optionType, data, renderedEntities, buttons):
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
-        updateNPCS(renderedEntities)
+
+        updateNPCData(playerData.getCurrentQuests())
+        refreshCurrentNPCDialogue(renderedEntities)
     elif (optionType == "Dialogue"):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
 
 
-def updateNPCS(renderedEntities):
-    global playerData
-    for quest in playerData.getCurrentQuests():
-        for npc in renderedEntities:
-            if (type(npc) == NPC):
-                if (npc.NPCID in quest.NPCDialogue.keys()):
-                    npc.dialogue = quest.NPCDialogue[npc.NPCID]
+def refreshCurrentNPCDialogue(renderedEntities):
+    for npc in renderedEntities:
+        if (type(npc) == NPC):
+            npc.updateDialogue()
+
+def updateNPCData(quests):
+    file = open("src/main/python/npcs/NPCList.json", 'r')
+    npcData = json.load(file)
+    file.close()
+
+    for npc in npcData:
+        npc["currentDialogue"] = npc["defaultDialogue"]
+
+    for npc in npcData:
+        for quest in quests:
+            if (npc['NPCID'] in quest.NPCDialogue.keys()):
+                npc["currentDialogue"] = quest.NPCDialogue[npc['NPCID']]
+
+    file = open("src/main/python/npcs/NPCList.json", 'w')
+    json.dump(npcData, file, indent=4)
 
 def completeQuest(quest:Quest, renderedEntities):
     global playerData
@@ -120,14 +135,14 @@ def completeQuest(quest:Quest, renderedEntities):
         playerData.inventory.addItem(item, count)
     
     playerData.currentQuests.remove(quest)
-    for npc in renderedEntities:
-        if (type(npc) == NPC):
-            if (npc.NPCID in quest.NPCDialogue.keys()):
-                npc.dialogue = npc.defaultDialogue
-
+    
     for id in quest.followUpQuests: 
         playerData.addQuest(id)
-    updateNPCS(renderedEntities)
+
+    updateNPCData(playerData.getCurrentQuests())
+    refreshCurrentNPCDialogue(renderedEntities)
+
+    
 
     for entity in visualEntities:
             if entity.name == "CurrentQuestListing":
@@ -166,15 +181,14 @@ def loadOpenWorld(sceneData):
     TILE_SIZE = 48
 
     pygame.mixer.init()
-    randInt = random.randint(1, 300)
+    randInt = random.randint(1, 200)
     if (randInt == 69): 
-        song = "ram_ranch_bass_boosted.mp3"
-        volume = 1
+        song = "nyan_cat.mp3"
     else: 
         song = "zelda_lost_woods.mp3"
-        volume = 0.2
     pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
-    pygame.mixer.music.set_volume(volume)
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(-1)
 
     file =  open(f'src/main/python/maps/{sceneData[2]}/entityData.json', 'r')
     entitydata = json.load(file)
@@ -192,9 +206,12 @@ def loadOpenWorld(sceneData):
             allEntities.append(enemy)
             simulatedObjects.append(enemy)
         elif(entity['type'] == "npc"):
-            npc = NPC(entity['defaultDialogue'], f"entities/{entity['image']}", entity['position'], entity['NPCID'], playerData.currentQuests)
+            npc = NPC(entity['NPCID'], entity['position'])
             allEntities.append(npc)
             simulatedObjects.append(npc)
+
+    updateNPCData(playerData.getCurrentQuests())
+    refreshCurrentNPCDialogue(simulatedObjects)
 
     file = open("src/main/python/maps/tileIndex.json", 'r')
     tiledata = json.load(file)
@@ -553,7 +570,7 @@ def loadOpenWorld(sceneData):
                             if (type(entity) == PlayerObject):
                                 combatButton(screen, [trigger.enemyStats])
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.dialogue)
+                                visualNovel.updateDialogue(entity.currentDialogue)
                                 visualNovel.isShowing = True
                                 currentNPC = entity.NPCID
                                  

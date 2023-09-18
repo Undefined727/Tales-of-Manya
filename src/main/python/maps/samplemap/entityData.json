@@ -22,12 +22,10 @@
     {
         "name": "Trapped NPC",
         "type": "npc",
-        "image": "trapped_npc.png",
+        "NPCID": "Trapped_NPC",
         "position": [
             29,
             32
-        ],
-        "defaultDialogue": 2,
-        "NPCID": "Trapped_NPC"
+        ]
     }
 ]

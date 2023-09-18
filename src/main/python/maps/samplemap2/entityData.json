@@ -20,14 +20,12 @@
         "level": 10
     },
     {
-        "name": "Trapped NPC",
+        "name": "NPC",
         "type": "npc",
-        "image": "trapped_npc.png",
+        "NPCID": "Trapped_NPC",
         "position": [
             36,
             39
-        ],
-        "defaultDialogue": 2,
-        "NPCID": "Trapped_NPC"
+        ]
     }
 ]
