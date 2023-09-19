@@ -2,7 +2,6 @@
     {
         "name": "Player Spawn",
         "type": "spawnPoint",
-        "image": "spawn.png",
         "position": [
             21,
             27
@@ -25,7 +24,7 @@
         "NPCID": "Trapped_NPC",
         "position": [
             29,
-            32
+            24
         ]
     }
 ]

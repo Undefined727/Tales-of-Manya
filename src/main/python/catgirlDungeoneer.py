@@ -37,6 +37,10 @@ tileSize = 48
 
 file =  open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'r')
 entitydata = json.load(file)
+file.close()
+file = open("src/main/python/npcs/NPCList.json", 'r')
+npcdata = json.load(file)
+file.close()
 entityImages = {}
 entityImagesDisplayed = {}
 mappedEntities = {}
@@ -44,15 +48,26 @@ mappedEntities = {}
 spawnX = 0
 spawnY = 0
 for entity in entitydata:
-    img = pygame.image.load(f"src/main/python/sprites/entities/{entity['image']}")
+    if (entity['type'] == "spawnPoint"):
+        spawnX = entity['position'][0]
+        spawnY = entity['position'][1]
+        img = pygame.image.load(f"src/main/python/sprites/entities/spawn.png")
+    elif (entity['type'] == "npc"):
+        npcID = entity['NPCID']
+        for npc in npcdata:
+            if (npc['NPCID'] == npcID):
+                img = npc["imgPath"]
+        img = pygame.image.load(f"src/main/python/sprites/entities/{img}")
+    elif (entity['type'] == "enemy"):
+        img = pygame.image.load(f"src/main/python/sprites/entities/{entity['image']}")
+    
     entityImages.update({entity['name']:img})
     img2 = pygame.transform.scale(img, (tileSize, tileSize))
     entityImagesDisplayed.update({entity['name']:img2})
     mappedEntities.update({entity['name']:(entity['position'][0], entity['position'][1])})
 
-    if (entity['type'] == "spawnPoint"):
-        spawnX = entity['position'][0]
-        spawnY = entity['position'][1]
+    
+
 
 
 file = open("src/main/python/maps/tileIndex.json", 'r')
@@ -93,8 +108,8 @@ cameraY = spawnY
 
 
 ## Equipped Tile/Entity/Elevation ##
-equippedEntityName = None
-equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/{entitydata[0]['image']}")
+equippedEntityData = None
+equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/spawn.png")
 equippedEntityImage.scale(screenX, screenY)
 visualEntities.append(equippedEntityImage)
 
@@ -140,6 +155,28 @@ visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.1
 for entity in visualEntities:
     if (Tag.EDITOR_TILE_SELECTION in entity.tags):
         entity.scale(screenX, screenY)
+
+
+
+## Entity Selection Menu ##
+menuHeight = (1+len(npcdata))*0.05
+visualEntities.append(ShapeEntity("NPC_Selection_Background", False, 0.155, 0.09, 0.12, menuHeight, [Tag.EDITOR_NPC_SELECTION], "White", False, "rectangle"))
+counter = 0
+for npc in npcdata:
+    button = HoverShapeButton(f"NPC_Selection_Button_Entry{counter}", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", [npc])
+    visualEntities.append(button)
+    buttons.append(button)
+    visualEntities.append(TextEntity(f"NPC_Selection_Text_Entry{counter}", False, 0.1925, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_NPC_SELECTION], npc['NPCName'], "mono", 20))
+    visualEntities.append(ImageEntity(f"NPC_Selection_Image_Entry{counter}", False, 0.24, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_NPC_SELECTION], f"entities/{npc['imgPath']}"))
+    counter += 1
+button = HoverShapeButton(f"Add_NPC_Selection_Button", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", ["npcNotFound"])
+visualEntities.append(button)
+buttons.append(button)
+visualEntities.append(TextEntity(f"Add_NPC_Selection_Text", False, 0.215, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "Add NPC", "mono", 20))
+for entity in visualEntities:
+    if (Tag.EDITOR_NPC_SELECTION in entity.tags):
+        entity.scale(screenX, screenY)
+
 
 
 
@@ -194,6 +231,36 @@ def equipTile(tileName):
             equippedTileImage.updateImg(f"tiles/{tile['image']}")
             break
 
+def equipNPC(selectedNPCData):
+    global equippedEntityData
+    global equippedEntityImage
+    global entitydata
+
+    equippedEntityImage.updateImg(f"entities/{selectedNPCData['imgPath']}")
+    equippedEntityImage.isShowing = True
+    foundEntity = False
+    for entityDataEntry in entitydata:
+        if (entityDataEntry['type'] == 'npc'):
+            if (entityDataEntry['NPCID'] == selectedNPCData['NPCID']):
+                equippedEntityData = entityDataEntry
+                foundEntity = True
+    if (not foundEntity):
+        jsonAddition = {
+        "name": selectedNPCData['NPCName'],
+        "type": "npc",
+        "NPCID": selectedNPCData['NPCID'],
+        "position": [0,0]
+        }
+        entitydata.append(jsonAddition)
+
+        img = pygame.image.load(f"src/main/python/sprites/entities/{selectedNPCData['imgPath']}")
+        entityImages.update({jsonAddition['name']:img})
+        img2 = pygame.transform.scale(img, (tileSize, tileSize))
+        entityImagesDisplayed.update({jsonAddition['name']:img2})
+        mappedEntities.update({jsonAddition['name']:(jsonAddition['position'][0], jsonAddition['position'][1])})
+        equippedEntityData = jsonAddition
+
+
 def elevationToggle():
     global elevationOffsetMode
     global currentElevationLabel
@@ -225,6 +292,11 @@ def tileSelectionMenuButton():
         if (Tag.EDITOR_TILE_SELECTION in entity.tags):
             entity.isShowing = not entity.isShowing
 
+def npcSelectionMenuButton():
+    for entity in visualEntities:
+        if (Tag.EDITOR_NPC_SELECTION in entity.tags):
+            entity.isShowing = not entity.isShowing
+
 
 
 
@@ -243,9 +315,11 @@ while True:
                 if button.isShowing:
                     if button.mouseInRegion(mouse):
                         if (button.func == "exit"): buttonFunc = exitButton
-                        if (button.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
-                        if (button.func == "equipTile"): buttonFunc = equipTile
-                        if (button.func == "elevationToggle"): buttonFunc = elevationToggle
+                        elif (button.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
+                        elif (button.func == "npcSelection"): buttonFunc = npcSelectionMenuButton
+                        elif (button.func == "equipTile"): buttonFunc = equipTile
+                        elif (button.func == "equipNPC"): buttonFunc = equipNPC
+                        elif (button.func == "elevationToggle"): buttonFunc = elevationToggle
                         if (len(button.args) == 0): buttonFunc()
                         else: buttonFunc(*button.args)
                         buttonPressed = True
@@ -254,15 +328,25 @@ while True:
                 mouseX, mouseY = convertToMap(mouse[0], mouse[1])
                 mouseX = math.floor(mouseX)
                 mouseY = math.floor(mouseY)
-                for entity, position in mappedEntities.items():
+                for entityName, position in mappedEntities.items():
                     if (position == (mouseX, mouseY)):
-                        equippedEntityImage.isShowing = True
-                        equippedEntityName = entity
-                        buttonPressed = True
-                        for entityDataEntry in entitydata:
-                            if (entityDataEntry['name'] == entity):
-                                equippedEntityImage.updateImg(f"entities/{entityDataEntry['image']}")
-                                break
+                        for entity in entitydata:
+                            if entity['name'] == entityName:
+                                equippedEntityData = entity
+                                equippedEntityImage.isShowing = True
+                                buttonPressed = True
+                                if (equippedEntityData['type'] == "npc"):
+                                    equippedEntityType = "npc"
+                                    npcID = equippedEntityData['NPCID']
+                                    for npc in npcdata:
+                                        if (npc['NPCID'] == npcID):
+                                            img = npc["imgPath"]
+                                            equippedEntityImage.updateImg(f"entities/{img}")
+                                            break
+                                elif (equippedEntityData['type'] == "spawnPoint"):
+                                    equippedEntityImage.updateImg("entities/spawn.png")
+                                else: equippedEntityImage.updateImg(f"entities/{entity['image']}")
+
         if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 3):
             equippedTileName = None
             equippedTileImage.isShowing = False
@@ -273,14 +357,22 @@ while True:
             buttonPressed = False
             for tile in tiles:
                 tile.justChanged = False
-            if (not equippedEntityName == None):
+            if (not equippedEntityData == None):
+                print("test")
                 mouseX, mouseY = convertToMap(mouse[0], mouse[1])
                 mouseX = math.floor(mouseX)
                 mouseY = math.floor(mouseY)
                 equippedEntityImage.isShowing = False
+
+                foundEntityMapped = False
                 for entity in mappedEntities:
-                    if (entity == equippedEntityName): mappedEntities[entity] = (mouseX, mouseY)
-                equippedEntityName = None
+                    if (entity == equippedEntityData['name']): 
+                        mappedEntities[entity] = (mouseX, mouseY)
+                        foundEntityMapped = True
+                if (not foundEntityMapped): 
+                    print("test")
+                    mappedEntities.update({equippedEntityData['name']:(mouseX, mouseY)})
+                equippedEntityData = None
         if event.type == pygame.MOUSEWHEEL:
             if (elevationToggleButton.mouseInRegion(mouse)):
                 if (elevationOffsetMode): 
