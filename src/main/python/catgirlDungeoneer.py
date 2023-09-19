@@ -43,7 +43,6 @@ npcdata = json.load(file)
 file.close()
 entityImages = {}
 entityImagesDisplayed = {}
-mappedEntities = {}
 
 spawnX = 0
 spawnY = 0
@@ -64,7 +63,6 @@ for entity in entitydata:
     entityImages.update({entity['name']:img})
     img2 = pygame.transform.scale(img, (tileSize, tileSize))
     entityImagesDisplayed.update({entity['name']:img2})
-    mappedEntities.update({entity['name']:(entity['position'][0], entity['position'][1])})
 
     
 
@@ -205,11 +203,8 @@ def convertToMap(xValue, yValue):
 
 def save():
     global displayedMap
-    global mappedEntities
     im = Image.fromarray(displayedMap)
     im.save(f"src/main/python/maps/{OPENED_MAP}/map.png")
-    for entity in entitydata:
-        entity['position'] = mappedEntities[entity['name']]
     file = open(f"src/main/python/maps/{OPENED_MAP}/entityData.json", 'w')
     json.dump(entitydata, file, indent=4)
 
@@ -257,7 +252,6 @@ def equipNPC(selectedNPCData):
         entityImages.update({jsonAddition['name']:img})
         img2 = pygame.transform.scale(img, (tileSize, tileSize))
         entityImagesDisplayed.update({jsonAddition['name']:img2})
-        mappedEntities.update({jsonAddition['name']:(jsonAddition['position'][0], jsonAddition['position'][1])})
         equippedEntityData = jsonAddition
 
 
@@ -328,50 +322,51 @@ while True:
                 mouseX, mouseY = convertToMap(mouse[0], mouse[1])
                 mouseX = math.floor(mouseX)
                 mouseY = math.floor(mouseY)
-                for entityName, position in mappedEntities.items():
-                    if (position == (mouseX, mouseY)):
-                        for entity in entitydata:
-                            if entity['name'] == entityName:
-                                equippedEntityData = entity
-                                equippedEntityImage.isShowing = True
-                                buttonPressed = True
-                                if (equippedEntityData['type'] == "npc"):
-                                    equippedEntityType = "npc"
-                                    npcID = equippedEntityData['NPCID']
-                                    for npc in npcdata:
-                                        if (npc['NPCID'] == npcID):
-                                            img = npc["imgPath"]
-                                            equippedEntityImage.updateImg(f"entities/{img}")
-                                            break
-                                elif (equippedEntityData['type'] == "spawnPoint"):
-                                    equippedEntityImage.updateImg("entities/spawn.png")
-                                else: equippedEntityImage.updateImg(f"entities/{entity['image']}")
+                for entity in entitydata:
+                    if (entity['position'] == [mouseX, mouseY]):
+                        equippedEntityData = entity
+                        equippedEntityImage.isShowing = True
+                        buttonPressed = True
+
+                        if (entity['type'] == "npc"):
+                            for npc in npcdata:
+                                if (npc['NPCID'] == entity['NPCID']):
+                                    equippedEntityImage.updateImg(f"entities/{npc['imgPath']}")
+                                    break
+                        elif (equippedEntityData['type'] == "spawnPoint"):
+                            equippedEntityImage.updateImg("entities/spawn.png")
+                        else: equippedEntityImage.updateImg(f"entities/{entity['image']}")
 
         if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 3):
-            equippedTileName = None
-            equippedTileImage.isShowing = False
-            elevationOffsetMode = False
-            elevationOffset = 0
-            elevationToggle()
+            deletedObject = False
+            mouseX, mouseY = convertToMap(mouse[0], mouse[1])
+            mouseX = math.floor(mouseX)
+            mouseY = math.floor(mouseY)
+            for entity in entitydata:
+                if (entity['position'] == [mouseX, mouseY]):
+                    if (not entity['name'] == "Player Spawn"):
+                        entitydata.remove(entity)
+                    deletedObject = True
+                    break
+
+            if (not deletedObject):
+                equippedTileName = None
+                equippedTileImage.isShowing = False
+                elevationOffsetMode = False
+                elevationOffset = 0
+                elevationToggle()
         if event.type == pygame.MOUSEBUTTONUP:
             buttonPressed = False
             for tile in tiles:
                 tile.justChanged = False
             if (not equippedEntityData == None):
-                print("test")
                 mouseX, mouseY = convertToMap(mouse[0], mouse[1])
                 mouseX = math.floor(mouseX)
                 mouseY = math.floor(mouseY)
                 equippedEntityImage.isShowing = False
-
-                foundEntityMapped = False
-                for entity in mappedEntities:
-                    if (entity == equippedEntityData['name']): 
-                        mappedEntities[entity] = (mouseX, mouseY)
-                        foundEntityMapped = True
-                if (not foundEntityMapped): 
-                    print("test")
-                    mappedEntities.update({equippedEntityData['name']:(mouseX, mouseY)})
+                for entity in entitydata:
+                    if (entity['name'] == equippedEntityData['name']): 
+                        entity['position'] = [mouseX, mouseY]
                 equippedEntityData = None
         if event.type == pygame.MOUSEWHEEL:
             if (elevationToggleButton.mouseInRegion(mouse)):
@@ -472,8 +467,8 @@ while True:
             screen.blit(tileImagesDisplayed[tiles[width*y + x].name], (convertToScreen(x, y)))
 
     ## Show Entities ##
-    for entity, position in mappedEntities.items():
-        screen.blit(entityImagesDisplayed[entity], (convertToScreen(*position)))
+    for entity in entitydata:
+        screen.blit(entityImagesDisplayed[entity['name']], (convertToScreen(*entity['position'])))
             
         
     LINE_THICKNESS = 1

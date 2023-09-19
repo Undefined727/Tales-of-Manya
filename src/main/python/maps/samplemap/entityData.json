@@ -3,8 +3,8 @@
         "name": "Player Spawn",
         "type": "spawnPoint",
         "position": [
-            21,
-            27
+            30,
+            23
         ]
     },
     {
@@ -23,8 +23,8 @@
         "type": "npc",
         "NPCID": "Trapped_NPC",
         "position": [
-            29,
-            24
+            23,
+            27
         ]
     }
 ]
