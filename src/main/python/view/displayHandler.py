@@ -5,6 +5,7 @@ from view.visualentity.Paragraph import Paragraph
 from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
+from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
 import pygame
@@ -35,6 +36,9 @@ def displayEntity(entity, screen):
         displayEntity(entity.buttonVisual(), screen)
     elif (type(entity) == HoverShapeButton):
         displayEntity(entity.buttonVisual(), screen)
+    elif (type(entity) == ScrollBar):
+        displayEntity(entity.button, screen)
+        # If more is added to the scroll bar that can be added here :thumbeline:
     elif (type(entity) == ImageButton):
         displayEntity(entity.buttonVisual(), screen)
     elif (type(entity) == TextEntity):

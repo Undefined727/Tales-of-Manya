@@ -29,15 +29,19 @@ class ShapeButton(VisualEntity):
     def resize(self, width, height):
         self.width = width
         self.height = height
+        self.shapeEntity.resize(width, height)
 
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition
         self.yPosition = yPosition
+        self.shapeEntity.reposition(xPosition, yPosition)
 
     def scale(self, screenX, screenY):
+        self.reposition(self.xPosition, self.yPosition)
+        self.resize(self.width, self.height)
+        self.shapeEntity.scale(screenX, screenY)
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.resize(self.width*screenX, self.height*screenY)
-        self.shapeEntity.scale(screenX, screenY)
     
     def buttonVisual(self):
         return self.shapeEntity

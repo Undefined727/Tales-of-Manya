@@ -7,6 +7,7 @@ from model.openworld.Tile import Tile
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.Tag import Tag
 
 from view.visualentity.HoverShapeButton import HoverShapeButton
@@ -137,6 +138,7 @@ for entity in buttons:
 ## Tile Selection Menu ##
 menuHeight = len(tiledata)*0.05
 visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
+
 counter = 0
 for tile in tiledata:
     if (tile['name'] == "tileNotFound"): break
@@ -150,6 +152,12 @@ button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0
 visualEntities.append(button)
 buttons.append(button)
 visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
+
+scrollBarRatio = 0.5
+scrollBar = ScrollBar("Tile_Selection_ScrollBar", False, 0.135, 0.09, 0.01, menuHeight-0.05, [Tag.EDITOR_TILE_SELECTION], scrollBarRatio)
+buttons.insert(0, scrollBar.button)
+visualEntities.append(scrollBar)
+
 for entity in visualEntities:
     if (Tag.EDITOR_TILE_SELECTION in entity.tags):
         entity.scale(screenX, screenY)
@@ -292,6 +300,24 @@ def npcSelectionMenuButton():
             entity.isShowing = not entity.isShowing
 
 
+currentlyScrolling = None
+scrollDiff = 0
+def scroll(mouse, buttonName):
+    global currentlyScrolling
+    global scrollDiff
+
+    currentlyScrolling = buttonName
+    for entity in visualEntities:
+        if (entity.name == currentlyScrolling):
+            if (entity.isVertical):
+                scrollDiff = mouse[1] - entity.button.yPosition
+            else: 
+                scrollDiff = mouse[0] - entity.button.xPosition
+            break
+
+
+
+
 
 
 frameCounter = 0
@@ -314,6 +340,10 @@ while True:
                         elif (button.func == "equipTile"): buttonFunc = equipTile
                         elif (button.func == "equipNPC"): buttonFunc = equipNPC
                         elif (button.func == "elevationToggle"): buttonFunc = elevationToggle
+                        elif (button.func == "scroll"): 
+                            scroll(mouse, *button.args)
+                            button.shapeEntity.color = button.secondaryColor
+                            break
                         if (len(button.args) == 0): buttonFunc()
                         else: buttonFunc(*button.args)
                         buttonPressed = True
@@ -356,6 +386,13 @@ while True:
                 elevationOffset = 0
                 elevationToggle()
         if event.type == pygame.MOUSEBUTTONUP:
+            if (not currentlyScrolling == None):
+                for entity in visualEntities:
+                    if (entity.name == currentlyScrolling):
+                        entity.button.shapeEntity.color = entity.button.primaryColor
+                        break
+                currentlyScrolling = None
+
             buttonPressed = False
             for tile in tiles:
                 tile.justChanged = False
@@ -392,6 +429,24 @@ while True:
             equippedTileImage.yPosition = mouse[1]
             equippedEntityImage.xPosition = mouse[0]-tileSize/2
             equippedEntityImage.yPosition = mouse[1]-tileSize/2
+
+            if (not currentlyScrolling == None):
+                for entity in visualEntities:
+                    if (entity.name == currentlyScrolling):
+                        if (entity.isVertical):
+                            newPos = mouse[1] - scrollDiff
+                            if (newPos < entity.yPosition): entity.button.reposition(entity.button.xPosition, entity.yPosition)
+                            elif (newPos > (entity.yPosition + entity.height*(1-entity.ratio))):
+                                entity.button.reposition(entity.button.xPosition, entity.yPosition + entity.height*(1-entity.ratio))
+                            else:
+                                entity.button.reposition(entity.button.xPosition, mouse[1] - scrollDiff)
+                        else:
+                            newPos = mouse[0] - scrollDiff
+                            if (newPos < entity.xPosition): entity.button.reposition(entity.button.xPosition, entity.yPosition)
+                            elif (newPos > (entity.xPosition + entity.width*(1-entity.ratio))):
+                                entity.button.reposition(entity.button.xPosition + entity.width*(1-entity.ratio), entity.yPosition)
+                            else:
+                                entity.button.reposition(mouse[0] - scrollDiff, entity.yPosition)
 
 
 
