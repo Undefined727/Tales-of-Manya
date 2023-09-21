@@ -9,3 +9,4 @@ class Tag(Enum):
     LOADING = 4
     EDITOR_TILE_SELECTION = 5
     EDITOR_NPC_SELECTION = 6
+    EDITOR_MENU_ENTRY = 7

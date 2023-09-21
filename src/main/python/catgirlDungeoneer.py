@@ -136,27 +136,26 @@ for entity in buttons:
 
 
 ## Tile Selection Menu ##
-menuHeight = len(tiledata)*0.05
+menuHeight = 0.3
 visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
 
+tileSelectionImages = []
 counter = 0
 for tile in tiledata:
     if (tile['name'] == "tileNotFound"): break
-    button = HoverShapeButton(f"Tile_Selection_Button_Entry{counter}", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", [tile['name']])
-    visualEntities.append(button)
-    buttons.append(button)
-    visualEntities.append(TextEntity(f"Tile_Selection_Text_Entry{counter}", False, 0.0625, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_TILE_SELECTION], tile['name'], "mono", 20))
-    visualEntities.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", False, 0.11, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION], f"tiles/{tile['image']}"))
+    tileSelectionImages.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", True, 0.11, 0.095, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION, Tag.EDITOR_MENU_ENTRY], f"tiles/{tile['image']}"))
+    tileSelectionImages[counter].scale(screenX, screenY)
     counter += 1
-button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
+
+button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
 visualEntities.append(button)
 buttons.append(button)
-visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
+visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
 
 scrollBarRatio = 0.5
-scrollBar = ScrollBar("Tile_Selection_ScrollBar", False, 0.135, 0.09, 0.01, menuHeight-0.05, [Tag.EDITOR_TILE_SELECTION], scrollBarRatio)
-buttons.insert(0, scrollBar.button)
-visualEntities.append(scrollBar)
+tileScrollBar = ScrollBar("Tile_Selection_ScrollBar", False, 0.135, 0.09, 0.01, menuHeight-0.05, [Tag.EDITOR_TILE_SELECTION], scrollBarRatio)
+buttons.insert(0, tileScrollBar)
+visualEntities.append(tileScrollBar)
 
 for entity in visualEntities:
     if (Tag.EDITOR_TILE_SELECTION in entity.tags):
@@ -275,6 +274,47 @@ def elevationToggle():
     else:
         currentElevationLabel.updateText(f"Current Elevation: {equippedTileElevation}")
 
+currentScrolledTile = 0
+def updateDisplayedTiles(newFirstScrolledTile):
+    global tiledata
+    global visualEntities
+    global buttons
+    global tileScrollBar
+    global currentScrolledTile
+    global tileSelectionImages
+
+    if (currentScrolledTile == newFirstScrolledTile and not (newFirstScrolledTile == 0)): return
+    currentScrolledTile = newFirstScrolledTile
+
+    counter = 0
+    for entity in visualEntities[:]:
+        if (Tag.EDITOR_TILE_SELECTION in entity.tags and Tag.EDITOR_MENU_ENTRY in entity.tags):
+            if (type(entity) == HoverShapeButton): buttons.remove(entity)
+            visualEntities.remove(entity)
+    
+
+    counter = 0
+    for index in range(currentScrolledTile, currentScrolledTile+5):
+        if (index > len(tiledata)): break
+        if (tiledata[index]['name'] == "tileNotFound"): break
+        tile = tiledata[index]
+        button = HoverShapeButton(f"Tile_Selection_Button_Entry{counter}", True, 0.025, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION, Tag.EDITOR_MENU_ENTRY], "white", "cyan", "rectangle", "equipTile", [tile['name']])
+        visualEntities.append(button)
+        buttons.append(button)
+        visualEntities.append(TextEntity(f"Tile_Selection_Text_Entry{counter}", True, 0.0625, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_TILE_SELECTION, Tag.EDITOR_MENU_ENTRY], tile['name'], "mono", 20))
+        tileSelectionImages[index].reposition(0.11*screenX, (0.095+0.05*counter)*screenY)
+        visualEntities.append(tileSelectionImages[index])
+        counter += 1
+
+    for entity in visualEntities:
+        if (Tag.EDITOR_TILE_SELECTION in entity.tags and Tag.EDITOR_MENU_ENTRY in entity.tags):
+            if (not type(entity) == ImageEntity):
+                entity.scale(screenX, screenY)
+    buttons.insert(0, buttons.pop(buttons.index(tileScrollBar)))
+    visualEntities.append(visualEntities.pop(visualEntities.index(tileScrollBar)))
+
+
+
 def fill(location, tile):
     global width
     global height
@@ -290,9 +330,15 @@ def exitButton():
     pygame.quit()
 
 def tileSelectionMenuButton():
+    global currentScrolledTile
+    displayed = False
     for entity in visualEntities:
         if (Tag.EDITOR_TILE_SELECTION in entity.tags):
             entity.isShowing = not entity.isShowing
+            if (entity.isShowing): displayed = True
+    if (displayed): 
+        print("test")
+        updateDisplayedTiles(currentScrolledTile)
 
 def npcSelectionMenuButton():
     for entity in visualEntities:
@@ -319,7 +365,6 @@ def scroll(mouse, buttonName):
 
 
 
-
 frameCounter = 0
 buttonPressed = False
 
@@ -333,7 +378,9 @@ while True:
             buttonPressed = False
             for button in buttons:
                 if button.isShowing:
+                    if (type(button) == ScrollBar): button = button.button
                     if button.mouseInRegion(mouse):
+                        buttonPressed = True
                         if (button.func == "exit"): buttonFunc = exitButton
                         elif (button.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
                         elif (button.func == "npcSelection"): buttonFunc = npcSelectionMenuButton
@@ -346,7 +393,6 @@ while True:
                             break
                         if (len(button.args) == 0): buttonFunc()
                         else: buttonFunc(*button.args)
-                        buttonPressed = True
                         break
             if (not buttonPressed):
                 mouseX, mouseY = convertToMap(mouse[0], mouse[1])
@@ -437,7 +483,7 @@ while True:
                             newPos = mouse[1] - scrollDiff
                             if (newPos < entity.yPosition): entity.button.reposition(entity.button.xPosition, entity.yPosition)
                             elif (newPos > (entity.yPosition + entity.height*(1-entity.ratio))):
-                                entity.button.reposition(entity.button.xPosition, entity.yPosition + entity.height*(1-entity.ratio))
+                                entity.button.reposition(entity.xPosition, entity.yPosition + entity.height*(1-entity.ratio))
                             else:
                                 entity.button.reposition(entity.button.xPosition, mouse[1] - scrollDiff)
                         else:
@@ -447,6 +493,12 @@ while True:
                                 entity.button.reposition(entity.button.xPosition + entity.width*(1-entity.ratio), entity.yPosition)
                             else:
                                 entity.button.reposition(mouse[0] - scrollDiff, entity.yPosition)
+
+                if (currentlyScrolling == "Tile_Selection_ScrollBar"): 
+                    currDraggedRatio = (tileScrollBar.button.yPosition - tileScrollBar.yPosition)/(tileScrollBar.height - tileScrollBar.height*ratio)
+                    currTile = round(currDraggedRatio*(len(tiledata)-1))
+                    updateDisplayedTiles(currTile)
+
 
 
 
@@ -464,11 +516,14 @@ while True:
         if (mouseX >= width): mouseX = width-1
         if (mouseY >= height): mouseY = height-1
         if (not equippedTileName == None): displayedMap[mouseY, mouseX][:3] = equippedTileColor
-        displayedMap[mouseY, mouseX][3] = equippedTileElevation
         if (not tiles[width*mouseY + mouseX].justChanged):
             if (not equippedTileName == None): tiles[width*mouseY + mouseX].name = equippedTileName
-            if (elevationOffsetMode): tiles[width*mouseY + mouseX].height = tiles[width*mouseY + mouseX].height + elevationOffset
-            else: tiles[width*mouseY + mouseX].height = equippedTileElevation
+            if (elevationOffsetMode): 
+                tiles[width*mouseY + mouseX].height = displayedMap[mouseY, mouseX][3] + elevationOffset
+                displayedMap[mouseY, mouseX][3] = displayedMap[mouseY, mouseX][3] + elevationOffset
+            else: 
+                tiles[width*mouseY + mouseX].height = equippedTileElevation
+                displayedMap[mouseY, mouseX][3] = equippedTileElevation
             if (not equippedTileName == None): tiles[width*mouseY + mouseX].solid = equippedTileSolid
             tiles[width*mouseY + mouseX].justChanged = True
 
