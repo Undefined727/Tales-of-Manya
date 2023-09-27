@@ -6,7 +6,8 @@ from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
-from view.visualentity.CombatCharacterEntity import CharacterEntities
+from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
+from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.player.Player import Player
@@ -103,6 +104,7 @@ def loadCombat(sceneData):
     global playerData
     global screen
     global currentSceneData
+    global buttons
     currentSceneData = sceneData
     screen = sceneData[0]
     screenX, screenY = screen.get_size()
@@ -116,8 +118,10 @@ def loadCombat(sceneData):
 
     
     visualEntities = []
-    partyVisuals = [CharacterEntities(party[0]), CharacterEntities(party[1]), CharacterEntities(party[2])]
+    partyVisuals = [CombatCharacterEntity(party[0]), CombatCharacterEntity(party[1]), CombatCharacterEntity(party[2])]
     loadJson("combatScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
+    for item in partyVisuals:
+        buttons.append(item.selectionButton)
 
     pygame.mixer.init()
     randInt = random.randint(1, 200)
@@ -226,7 +230,10 @@ def loadCombat(sceneData):
 
     def updateEnemies():
         nonlocal enemies
-        enemySpacing = 1/(1+len(enemies)*2)
+        enemyLeftPadding = 0.4
+        enemyRightPadding = 0.1
+        enemiesWidth = 1-(enemyLeftPadding+enemyRightPadding)
+        enemySpacing = enemiesWidth/(1+len(enemies)*2)
         
         for entity in visualEntities[:]:
             if (Tag.ENEMY in entity.tags):
@@ -237,7 +244,7 @@ def loadCombat(sceneData):
 
         count = 0
         for enemy in enemies:
-            currEnemyX = enemySpacing*(2*count+1)
+            currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
             displayedEnemy = CombatEnemyEntity(currEnemyX, 1/10, enemySpacing, 1/3, enemy)
             displayedEnemy.scale(screenX, screenY)
             visualEntities.append(displayedEnemy.enemyImg)
@@ -272,6 +279,11 @@ def loadCombat(sceneData):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+            
+        ### Make Hover Buttons shine funny color
+        for button in buttons:
+            if (type(button) == HoverShapeButton):
+                button.mouseInRegion(mouse)
 
         isEnemyTurn = True
         for character in party:

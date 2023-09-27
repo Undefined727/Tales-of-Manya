@@ -6,7 +6,7 @@ from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
-from view.visualentity.CombatCharacterEntity import CharacterEntities
+from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.item.Item import Item
@@ -77,7 +77,7 @@ def loadInventory(screenData):
     attachedItemEquipped = None
     
     visualEntities = []
-    partyVisuals = [CharacterEntities(playerData.party[0])]
+    partyVisuals = [CombatCharacterEntity(playerData.party[0])]
     buttons = []
     loadJson("inventoryScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, playerData.party])
 
