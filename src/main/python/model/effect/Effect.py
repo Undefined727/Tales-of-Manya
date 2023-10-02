@@ -1,6 +1,7 @@
-from model.effect.EffectTag import EffectTag
-from model.effect.EffectType import EffectType
-from util.IllegalArgumentException import IllegalArgumentException
+from src.main.python.model.effect.EffectTag import EffectTag
+from src.main.python.model.effect.EffectType import EffectType
+from src.main.python.util.IDHandler import IDHandler
+from src.main.python.util.IllegalArgumentException import IllegalArgumentException
 
 class Effect:
     id: str
@@ -10,7 +11,9 @@ class Effect:
     duration : int
     tags : list[ EffectTag ]
 
-    def __init__(self, name = "Placeholder Name", eff_type = EffectType.NONE, value = 0, duration = -1, tags = []):
+    def __init__(self, name = "Placeholder Name", eff_type : EffectType = EffectType.NONE, value : int = 0, duration : int = -1, tags : list[ EffectTag ] = [], id : str = None):
+        if id is None: self.setID(IDHandler.generateID(Effect))
+        else: self.setID(id)
         self.setName(name)
         self.setType(eff_type)
         self.setValue(value)
@@ -32,7 +35,10 @@ class Effect:
     def getValue(self) -> int:
         return self.value
 
-    def setDuration(self, new_duration:float):
+    def getID(self) -> str:
+        return self.id
+
+    def setDuration(self, new_duration : int):
         if (new_duration < 0 and new_duration != -1):
             raise IllegalArgumentException("Invalid duration for an effect")
         self.duration_current = new_duration
@@ -48,6 +54,9 @@ class Effect:
 
     def setValue(self, new_value : int):
         self.value = new_value
+
+    def setID(self, new_id : str):
+        self.id = new_id
 
     def addTag(self, tag : EffectTag):
         self.tags.append(tag)

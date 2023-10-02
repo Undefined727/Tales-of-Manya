@@ -19,10 +19,9 @@ class Player:
         self.inventory.addItem(Item("Purveyor of the Nyaight"),2)
         self.inventory.addItem(Item("Flower Crown"),1)
 
-
     def getCurrentQuests(self):
         return self.currentQuests
-    
+
     def addQuest(self, addedQuest):
         duplicateFound = False
         for quest in self.currentQuests:

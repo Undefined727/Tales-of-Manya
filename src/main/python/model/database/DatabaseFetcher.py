@@ -5,9 +5,8 @@ from sqlalchemy.engine.base import Connection, Engine
 from sqlalchemy.engine.row import Row
 sys.path.append(os.path.abspath("."))
 from src.main.python.model.item.Item import Item
-from src.main.python.model.database.item.DatabaseModels import DBItem
 
-# TODO Working fine, but incomplete
+# TODO Deprecated
 class DatabaseFetcher:
     database:Engine
     connection:Connection
