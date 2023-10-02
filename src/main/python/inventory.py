@@ -14,6 +14,7 @@ from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from model.player.Player import Player
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
+from model.database.DBElementFactory import DBElementFactory
 
 
 visualEntities = []
@@ -21,6 +22,8 @@ partyVisuals = []
 buttons = []
 quit = False
 newSceneData = []
+
+databaseFactory = DBElementFactory()
 
 currentSceneData:list
 playerData:Player
@@ -87,7 +90,7 @@ def loadInventory(screenData):
     counter = 0
     for slot in currInventory:
         slotBackground = ImageEntity(f"InventorySlot{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
-        slotImage = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"items/{slot.item.imgPath}")
+        slotImage = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"items/{slot.item.getPath()}")
         slotNumber = TextEntity(f"InventorySlotCount{counter}", True, 0.065 + counter*0.07, 0.24, 0.03, 0.06, [], str(slot.count), "mono", 26)
         slotBackground.scale(screenX, screenY)
         slotImage.scale(screenX, screenY)

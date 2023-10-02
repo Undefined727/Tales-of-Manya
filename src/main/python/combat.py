@@ -35,11 +35,7 @@ party[0].skills[0] = Skill(1)
 party[0].skills[1] = Skill(2)
 party[0].skills[2] = Skill(3)
 
-inventory.append(Item(9))
-inventory.append(Item(9))
-inventory.append(Item(7))
 
-party[0].helmet = Item(2)
 
 def openWorld(map):
     global quit

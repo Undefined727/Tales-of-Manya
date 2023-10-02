@@ -85,7 +85,7 @@ class DBElementFactory:
         dbItem = DBItem(
             id = item.getID(),
             name = item.getName(),
-            type = str(item.getType()),
+            type = item.getType().name,
             image_path = item.getPath(),
             description = item.getDescription()
         )
@@ -169,16 +169,16 @@ class DBElementFactory:
         return new_id
 
 # ## SETUP ###
-# factory = DBElementFactory()
+factory = DBElementFactory()
 
-# ## Storing on the database ###
-# example_item = Item("The Ashbringer", ItemSlotType.WEAPON,"aaaa", "src/main/python/sprites/sulfuras.jpg")
-# example_effect = Effect("Burning", EffectType.DAMAGE_OVER_TIME_FLAT, 5, -1)
-# example_skill = Skill("Breathe Fire", 100)
-# factory.store(example_item)
-# factory.store(example_effect)
-# factory.store(example_skill)
+## Storing on the database ###
+example_item = Item("Slimy Helmet", ItemSlotType.HEAD, "A helmet covered in slime, it's pretty nasty but wearable", "slimy_helmet.png")
+#example_effect = Effect("Burning", EffectType.DAMAGE_OVER_TIME_FLAT, 5, -1)
+#example_skill = Skill("Breathe Fire", 100)
+factory.store(example_item)
+#factory.store(example_effect)
+#factory.store(example_skill)
 
 # ## Fetching from the database ###
-# item = factory.fetchItem("Sword of the Bear")
-# print(item.toString())
+item = factory.fetchItem("Flower Crown")
+print(item.toString())

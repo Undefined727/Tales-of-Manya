@@ -14,10 +14,11 @@ class Player:
         # This will pull from a file in the future
         self.currentQuests = [Quest(0)]
         self.party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10), Character("lmao", "catgirl.png", 20)]
+        
         self.inventory = Inventory()
-        self.inventory.addItem(Item(0),1)
-        self.inventory.addItem(Item("Purveyor of the Nyaight"),2)
-        self.inventory.addItem(Item("Flower Crown"),1)
+        self.inventory.addItem("Purveyor of the Nyaight",1)
+        self.inventory.addItem("Purveyor of the Nyaight",2)
+        self.inventory.addItem("Flower Crown",1)
 
     def getCurrentQuests(self):
         return self.currentQuests

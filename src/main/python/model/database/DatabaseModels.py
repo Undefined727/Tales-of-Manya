@@ -97,24 +97,24 @@ class DBSkill(Base):
         return f"Item(id = {self.id!r}, name = {self.name!r}, manaCost = {self.manaCost!r}, tags = {self.tags!r}, effects = {self.effects!r})"
 
 # ## Initialization ###
-# from sqlalchemy import create_engine
-# engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = True)
+from sqlalchemy import create_engine
+engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = True)
 
 # ## This line resets the whole database ###
-# # Base.metadata.drop_all(engine)
+#Base.metadata.drop_all(engine)
 
 # ## This line creates the database as described in the classes above ###
-# Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)
 
-# ## Example code to add an Item ###
+# # ## Example code to add an Item ###
 # with Session(engine) as session:
 #     item = DBItem(
-#                   id = str(uuid4()),
-#                   name = "Sword of the Bear",
-#                   type = "WEAPON",
-#                   image_path = "path",
-#                   description = "Forged from a special kind of steel tempered with lightning instead of fire"
-#                  )
+#                    id = str(uuid4()),
+#                    name = "Purveyor of the Nyaight",
+#                    type = "WEAPON",
+#                    image_path = "katana.png",
+#                    description = "This sword looks like it was made by a catgirl trying to be very dramatic"
+#                   )
 #     session.add(item)
 #     session.commit()
 #     print("200 - CODE ran without a hitch")

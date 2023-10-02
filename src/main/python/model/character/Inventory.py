@@ -2,6 +2,9 @@ from util.Messages import Error
 from model.item.Item import Item
 from model.item.InventorySlot import InventorySlot
 from util.IllegalArgumentException import IllegalArgumentException
+from model.database.DBElementFactory import DBElementFactory
+
+databaseFactory = DBElementFactory()
 
 class Inventory:
     slots:list[InventorySlot]
@@ -22,7 +25,8 @@ class Inventory:
         return currentAmount
 
     def addItem(self, item, count:int) -> bool:
-        if (not type(item) == Item): item = Item(item)
+        if (not type(item) == Item): 
+            item = databaseFactory.fetchItem(item)
         
         for i in range(count):
             added = False

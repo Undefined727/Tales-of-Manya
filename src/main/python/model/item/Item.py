@@ -1,9 +1,9 @@
 from sqlalchemy.engine.row import Row
 import json
-from src.main.python.model.item.ItemSlotType import ItemSlotType
-from src.main.python.model.item.ItemTag import ItemTag
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.util.IDHandler import IDHandler
+from model.item.ItemSlotType import ItemSlotType
+from model.item.ItemTag import ItemTag
+from model.effect.EffectType import EffectType
+from util.IDHandler import IDHandler
 
 class Item:
     id : str
@@ -47,7 +47,7 @@ class Item:
     def getTags(self) -> list[ ItemTag ]:
         return self.tags
 
-    def getType(self) -> list[ ItemSlotType ]:
+    def getType(self) -> ItemSlotType:
         return self.type
 
     def getBonuses(self) -> dict[ EffectType, int]:
@@ -76,7 +76,7 @@ class Item:
 
     def equals(self, item):
         if (type(item) == Item):
-            if (item.itemName == self.itemName): return True
+            if (item.getName() == self.getName()): return True
         return False
 
     def toString(self):
