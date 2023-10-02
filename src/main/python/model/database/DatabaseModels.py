@@ -61,7 +61,7 @@ class DBEffect(Base):
 class DBItem(Base):
     __tablename__ = "Item"
     id : Mapped[str] = mapped_column(String(36), primary_key=True)
-    name : Mapped[str] = mapped_column(String(120))
+    name : Mapped[str] = mapped_column(String(120), unique=True)
     type : Mapped[str] = mapped_column(String(120))
     image_path : Mapped[Optional[str]] = mapped_column(String(256))
     description : Mapped[Optional[str]] = mapped_column(String(1000))
@@ -104,7 +104,7 @@ engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = Tr
 #Base.metadata.drop_all(engine)
 
 # ## This line creates the database as described in the classes above ###
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
 
 # # ## Example code to add an Item ###
 # with Session(engine) as session:

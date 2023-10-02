@@ -172,10 +172,14 @@ class DBElementFactory:
 factory = DBElementFactory()
 
 ## Storing on the database ###
-example_item = Item("Slimy Helmet", ItemSlotType.HEAD, "A helmet covered in slime, it's pretty nasty but wearable", "slimy_helmet.png")
+#example_item = Item("Slimy Helmet", ItemSlotType.HEAD, "A helmet covered in slime, it's pretty nasty but wearable", "slimy_helmet.png")
+#example_item2 = Item("Purveyor of the Nyaight", ItemSlotType.WEAPON, "This sword looks like it was made by a catgirl trying to be very dramatic", "katana.png")
+#example_item3 = Item("Flower Crown", ItemSlotType.HEAD, "A pretty circlet of flowers", "flower_crown.png")
 #example_effect = Effect("Burning", EffectType.DAMAGE_OVER_TIME_FLAT, 5, -1)
 #example_skill = Skill("Breathe Fire", 100)
-factory.store(example_item)
+#factory.store(example_item)
+#factory.store(example_item2)
+#factory.store(example_item3)
 #factory.store(example_effect)
 #factory.store(example_skill)
 
