@@ -1,16 +1,16 @@
+import json
 
 class Dialogue:
     text = [["Calikka", "Funny Dialogue", "Excited"], ["Generic_NPC", "Ridiculously long text spam blerb thing", "Default"]]
     dialogue_ID = 0
-    options = [["Yes", "Quest", "FreeLoot"], ["No", "End", "None"], ["What", "Dialogue", "0"]]
+    options = [["yes", "Quest", 1], ["Alright", "End", "None"], ["What", "Dialogue", "0"]]
 
     def __init__(self, dialogue_ID):
-        if (dialogue_ID == 0):
-            self.text = [["Calikka", "Help step bro I'm trapped in this slime", "Excited"], ["Generic_NPC", "D:", "Default"]]
-            self.options = [["Yes", "Quest", "FreeLoot"], ["No", "End", None], ["What", "Dialogue", 0]]
-        if (dialogue_ID == 1):
-            self.text = [["Calikka", "I'm still stuck", "Excited"], ["Generic_NPC", "Fuck", "Default"]]
-            self.options = []
-        if (dialogue_ID == 2):
-            self.text = [["Generic_NPC", "default text", "Default"]]
-            self.options = []
+        self.dialogue_ID = dialogue_ID
+        file = open("src/main/python/dialogue/dialogue.json", 'r')
+        data = json.load(file)
+
+        for dialogueEntry in data:
+            if (dialogueEntry['id'] == dialogue_ID):
+                self.text = dialogueEntry['text']
+                self.options = dialogueEntry['options']

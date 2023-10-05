@@ -79,5 +79,33 @@
     "text": "Current Elevation: +0",
     "font": "mono",
     "fontSize": 16
+},
+{
+    "name": "NPCSelectionButton",
+    "isShowing": true,
+    "xPosition": 0.155,
+    "yPosition": 0.03,
+    "width": 0.12,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "HoverShapeButton",
+    "primaryColor": "white",
+    "secondaryColor": "cyan",
+    "shape": "rectangle",
+    "func": "npcSelection",
+    "args": []
+},
+{
+    "name": "NPCSelectionButtonText",
+    "isShowing": true,
+    "xPosition": 0.215,
+    "yPosition": 0.055,
+    "width": 0.12,
+    "height": 0.05,
+    "tags": [],
+    "entityType": "Text",
+    "text": "Select NPC",
+    "font": "mono",
+    "fontSize": 20
 }
 ]

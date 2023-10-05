@@ -1,48 +1,49 @@
 from model.character.Character import Character
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.HoverShapeButton import HoverShapeButton
 
-class CharacterEntities:
+class CombatCharacterEntity:
 
     HPBar:DynamicStatEntity
     ManaBar:DynamicStatEntity
     img:ImageEntity
-    inactiveImg:ImageEntity
     checkmark:ImageEntity
     character:Character
+    selectionButton:HoverShapeButton
 
-    def __init__(self, character):
+    def __init__(self, character:Character):
         self.character = character
         self.HPBar = DynamicStatEntity(character.health, "health")
         self.ManaBar = DynamicStatEntity(character.mana, "mana")
         self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
-        self.inactiveImg = ImageEntity(character.name + "inactiveImg", True, 0, 0, 0, 0, [], character.inactiveImg)
         self.checkmark = ImageEntity(character.name + "checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
+        self.selectionButton = HoverShapeButton("Selection_Button", True, 0, 0, 0,  0, [], "Blue", "cyan", "ellipse", "characterSelection", [character.name], True)
 
     def getItems(self):
-        return [self.img, self.inactiveImg, self.HPBar, self.ManaBar, self.checkmark]
+        return [self.selectionButton, self.img, self.HPBar, self.ManaBar, self.checkmark]
 
     def scale(self, screenX, screenY):
         self.HPBar.scale(screenX, screenY)
         self.ManaBar.scale(screenX, screenY)
         self.img.scale(screenX, screenY)
-        self.inactiveImg.scale(screenX, screenY)
         self.checkmark.scale(screenX, screenY)
+        self.selectionButton.scale(screenX, screenY)
     
-    def changeCharacter(self, character):
+    def changeCharacter(self, character:Character):
         if (character == None):
             self.HPBar.isShowing = False
             self.ManaBar.isShowing = False
             self.img.isShowing = False
-            self.inactiveImg.isShowing = False
             self.checkmark.isShowing = False
+            self.selectionButton.isShowing = False
             return
 
         self.character = character
         self.HPBar.changeStat(character.health, "health")
         self.ManaBar.changeStat(character.mana, "mana")
         self.img.updateImg(character.img)
-        self.inactiveImg.updateImg(character.inactiveImg)
+        self.selectionButton.args = [character.name]
         self.checkmark.isShowing = not character.hasActed
     
     def updateCharacter(self):
@@ -51,8 +52,8 @@ class CharacterEntities:
         self.checkmark.isShowing = not self.character.hasActed
 
     @staticmethod
-    def createFrom(json_object, character):
-        newObject = CharacterEntities(character)
+    def createFrom(json_object, character:Character):
+        newObject = CombatCharacterEntity(character)
         if ("HPXPosition" in json_object):
             newObject.HPBar.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
             newObject.HPBar.resize(json_object["HPWidth"], json_object["HPHeight"])
@@ -64,11 +65,9 @@ class CharacterEntities:
         if ("imgXPosition" in json_object):
             newObject.img.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
             newObject.img.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectionButton.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectionButton.resize(json_object["imgWidth"], json_object["imgHeight"])
         else: newObject.img.isShowing = False
-        if ("headImgXPosition" in json_object):
-            newObject.inactiveImg.reposition(json_object["headImgXPosition"], json_object["headImgYPosition"])
-            newObject.inactiveImg.resize(json_object["headImgWidth"], json_object["headImgHeight"])
-        else: newObject.inactiveImg.isShowing = False
         if ("checkmarkXPosition" in json_object):
             newObject.checkmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
             newObject.checkmark.resize(json_object["checkmarkWidth"], json_object["checkmarkHeight"])

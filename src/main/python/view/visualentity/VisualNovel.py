@@ -35,10 +35,15 @@ class VisualNovel(VisualEntity):
         self.paragraph.align = "Left"
         self.continueButton = ImageButton("continue_button", True, xPosition + 0.85*width, yPosition + 6*height/16, width/10, height/8, tags, "change_active_right.png", "continueText")
         
-
+    def hideOptions(self):
+        self.isShowingOptions = False
+        self.optionParagraphs = []
+        self.optionButtons = []
+        self.reposition(self.xPosition, self.yPosition)
+        self.resize(self.width, self.height)
 
     def updateDialogue(self, dialogueID):
-        if(self.isShowingOptions): return
+        if (self.isShowingOptions): self.hideOptions()
         self.currentTextPosition = 0
         self.dialogue = Dialogue(dialogueID)
         self.text = self.dialogue.text[self.currentTextPosition][1]
@@ -49,9 +54,13 @@ class VisualNovel(VisualEntity):
         self.paragraph.updateText(text, font, fontSize, fontColor, highlightColor)
 
     def continueText(self):
+        if (self.isShowingOptions):
+            return "ShowingOptions"
+        
         self.currentTextPosition += 1
         if (self.currentTextPosition < len(self.dialogue.text)):
             self.updateText(self.dialogue.text[self.currentTextPosition][1])
+            print("test")
             return "Text"
         else:
             if (len(self.dialogue.options) > 0 and not self.isShowingOptions):
@@ -62,6 +71,7 @@ class VisualNovel(VisualEntity):
                 self.backgroundBox.resize(self.width, 6*self.height/4)
                 self.isShowingOptions = True
                 self.optionParagraphs = []
+                self.optionButtons = []
                 counter = -1
                 for option in self.dialogue.options:
                     counter += 1
@@ -74,13 +84,9 @@ class VisualNovel(VisualEntity):
                     optionButton = HoverShapeButton("option_button", True, self.xPosition, height, 0.4*self.width, ((3*self.height/5)/len(self.dialogue.options)), self.tags, (0, 0, 0, 0), (0, 80, 255, 190), "rectangle", "textOption", [option[1], option[2]], True)
                     self.optionButtons.append(optionButton)
                 return "Options"
-            elif (self.isShowingOptions): 
-                self.isShowingOptions = False
-                self.optionParagraphs = []
-                self.reposition(self.xPosition, self.yPosition)
-                self.resize(self.width, self.height)
+            else: 
+                print("test2")
                 return "Finished"
-            else: return "Finished"
 
     
     def resize(self, width, height):

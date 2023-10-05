@@ -1,29 +1,41 @@
 from model.openworld.OpenWorldEntity import OpenWorldEntity
 from model.openworld.Circle import Circle
+import json
 
 class NPC:
     NPCID:int
-    spawnX:int
-    spawnY:int
+    NPCName:str
     worldObject:OpenWorldEntity
 
     defaultDialogue:int
-    dialogue:int
-    name = "Test NPC"
+    currentDialogue:int
 
-    # In the future dialogue/img/name and id will be connected directly using a database and thus dialogue will no longer be required for initialization
-    def __init__(self, defaultDialogue, img, position, NPCID, quests):
-        self.defaultDialogue = defaultDialogue
-        self.dialogue = defaultDialogue
-        self.spawnX, self.spawnY = position
-        self.NPCID = NPCID
-        self.name = "Test NPC"
-        self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "npc", "interact")
+    def __init__(self, NPCID, position):
+        if (type(NPCID) == str): self.NPCName = NPCID
+        else: self.NPCID = NPCID
 
-        for quest in quests:
-            if (self.NPCID in quest.NPCDialogue.keys()):
-                self.dialogue = quest.NPCDialogue[self.NPCID]
+        file = open("src/main/python/npcs/NPCList.json", 'r')
+        data = json.load(file)
+
+        for NPCEntry in data:
+            if (NPCEntry['NPCID'] == NPCID or NPCEntry['NPCName'] == NPCID):
+                self.NPCID = NPCEntry['NPCID']
+                self.NPCName = NPCEntry['NPCName']
+                self.imgPath = f"entities/{NPCEntry['imgPath']}"
+                self.defaultDialogue = NPCEntry['defaultDialogue']
+                self.currentDialogue = NPCEntry['currentDialogue']
+                break
+
+        self.worldObject = OpenWorldEntity(self.imgPath, Circle((position), 0.5), "npc", "interact")
     
+
+    def updateDialogue(self):
+        file = open("src/main/python/npcs/NPCList.json", 'r')
+        data = json.load(file)
+        for NPCEntry in data:
+            if (NPCEntry['NPCID'] == self.NPCID):
+                self.currentDialogue = NPCEntry['currentDialogue']
+
 
     def setCenter(self, point):
         self.worldObject.setCenter(point)

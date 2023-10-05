@@ -1,5 +1,5 @@
 from src.main.python.model.item.Item import Item
-from src.main.python.model.item.ItemSlot import ItemSlot
+from main.python.model.item.ItemSlotType import ItemSlot
 from src.main.python.util.IllegalArgumentException import IllegalArgumentException
 from src.main.python.model.database.DatabaseFetcher import DatabaseFetcher
 
