@@ -21,7 +21,7 @@ visualEntities = []
 partyVisuals = []
 buttons = []
 quit = False
-newSceneData = []
+newSceneData = {}
 
 databaseFactory = DBElementFactory()
 
@@ -41,10 +41,10 @@ def openWorld(map):
     global newSceneData
     global screen
     quit = True
-    newSceneData = [screen, "Open World", map, playerData]
+    newSceneData = {"screenData": screen, "curScreen": "Open World", "map": map, "playerData": playerData, "enemyData": currentSceneData.get("enemies", None)}
 
 def returnToMapButton():
-    openWorld(currentSceneData[3])
+    openWorld(currentSceneData["map"])
 
 
 def refreshScreen(screen):
@@ -73,8 +73,8 @@ def loadInventory(screenData):
     global newSceneData
     quit = False
     currentSceneData = screenData
-    playerData = currentSceneData[2]
-    screen = screenData[0]
+    playerData = currentSceneData["playerData"]
+    screen = currentSceneData["screenData"]
     screenX, screenY = screen.get_size()
     attachedItem = None
     attachedItemEquipped = None

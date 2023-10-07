@@ -36,7 +36,7 @@ def run():
     global buttons
     global visualEntities
     leaveScreen = False
-    newSceneData = None
+    newSceneData = {}
 
     loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
 
@@ -47,7 +47,7 @@ def run():
         nonlocal newSceneData
         nonlocal leaveScreen
         global player
-        newSceneData = [screen, "Open World", "samplemap", player]
+        newSceneData = {"screenData": screen, "curScreen": "Open World", "map": "samplemap", "playerData": player}
         leaveScreen = True
 
     buttonFunc = exit
@@ -81,9 +81,9 @@ def switchScreens(newSceneData):
     loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
     refreshScreen()
 
-    if (newSceneData[1] == "Open World"): newSceneData = loadOpenWorld(newSceneData)
-    elif (newSceneData[1] == "Combat"): newSceneData = loadCombat(newSceneData)
-    elif (newSceneData[1] == "Inventory"): newSceneData = loadInventory(newSceneData)
+    if (newSceneData["curScreen"] == "Open World"): newSceneData = loadOpenWorld(newSceneData)
+    elif (newSceneData["curScreen"] == "Combat"): newSceneData = loadCombat(newSceneData)
+    elif (newSceneData["curScreen"] == "Inventory"): newSceneData = loadInventory(newSceneData)
     switchScreens(newSceneData)
 
 

@@ -1,9 +1,9 @@
 from sqlalchemy.engine.row import Row
 import json
-from src.main.python.model.item.ItemSlotType import ItemSlotType
-from src.main.python.model.item.ItemTag import ItemTag
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.util.IDHandler import IDHandler
+from model.item.ItemSlotType import ItemSlotType
+from model.item.ItemTag import ItemTag
+from model.effect.EffectType import EffectType
+from util.IDHandler import IDHandler
 
 class Item:
     id : str

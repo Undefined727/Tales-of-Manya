@@ -21,7 +21,7 @@ from PIL import Image
 visualEntities = []
 buttons = []
 quit = False
-newSceneData = []
+newSceneData = {}
 currentSceneData:list
 
 visualNovel:VisualNovel
@@ -40,19 +40,19 @@ def exitButton():
     global quit
     quit = True
 
-def combatButton(screen, enemies):
+def combatButton(screen, enemies = None):
     global quit
     global newSceneData
     global currentSceneData
     quit = True
-    newSceneData = [screen, "Combat", enemies, playerData, currentSceneData[2]]
+    newSceneData = {"screenData": screen, "curScreen": "Combat", "enemyData": enemies, "playerData": playerData, "map": currentSceneData.get("map", None)}
 
 def inventoryButton(screen):
     global quit
     global newSceneData
     global currentSceneData
     quit = True
-    newSceneData = [screen, "Inventory", playerData, currentSceneData[2]]
+    newSceneData = {"screenData": screen, "curScreen": "Inventory", "playerData": playerData, "map": currentSceneData.get("map", None), "enemyData": currentSceneData.get("enemies", None)}
 
 def continueText(renderedEntities, buttons):
     global visualNovel
@@ -169,12 +169,12 @@ def loadOpenWorld(sceneData):
     global currentSceneData
     currentSceneData = sceneData
 
-    screen = sceneData[0]
-    playerData = sceneData[3]
+    screen = sceneData["screenData"]
+    playerData = sceneData["playerData"]
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open(f"src/main/python/maps/{sceneData[2]}/map.png")
+    img = Image.open(f"src/main/python/maps/{sceneData['map']}/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
@@ -190,7 +190,7 @@ def loadOpenWorld(sceneData):
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
-    file =  open(f'src/main/python/maps/{sceneData[2]}/entityData.json', 'r')
+    file =  open(f'src/main/python/maps/{sceneData['map']}/entityData.json', 'r')
     entitydata = json.load(file)
 
     spawnX = 0
@@ -341,8 +341,7 @@ def loadOpenWorld(sceneData):
                             if (entity.func == "continueText"): 
                                 continueText(simulatedObjects, buttons)
                                 break
-                            if (len(entity.args) == 0): buttonFunc()
-                            else: buttonFunc(*entity.args)
+                            buttonFunc(entity.args)
                             break
             if (event.type == pygame.MOUSEMOTION):
                 keyboardMode = False

@@ -21,12 +21,12 @@ visualEntities = []
 partyVisuals = []
 buttons = []
 quit = False
-newSceneData = []
+newSceneData = {}
 inventory = []
 
 playerData:Player
 screen:pygame.surface
-currentSceneData:list
+currentSceneData:dict
 
 party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
 party.append(Character("lmao", "catgirl.png", 20))
@@ -42,17 +42,17 @@ def openWorld(map):
     global newSceneData
     global screen
     quit = True
-    newSceneData = [screen, "Open World", map, playerData]
+    newSceneData = {"screenData": screen, "curScreen": "Open World", "map": map, "playerData": playerData, "enemyData": currentSceneData.get("enemies", None)}
 
-def openWorldButton():
-    openWorld(currentSceneData[4])
+def openWorldButton(*args):
+    openWorld(currentSceneData["map"])
 
-def inventoryButton():
+def inventoryButton(*args):
     global quit
     global newSceneData
     global screen
     quit = True
-    newSceneData = [screen, "Open World",  playerData]
+    newSceneData = {"screenData": screen, "curScreen": "Open World", "map": currentSceneData['map'],  "playerData": playerData, "enemyData": currentSceneData.get("enemies", None)}
 
 
 def refreshScreen(screen):
@@ -102,10 +102,10 @@ def loadCombat(sceneData):
     global currentSceneData
     global buttons
     currentSceneData = sceneData
-    screen = sceneData[0]
+    screen = sceneData["screenData"]
     screenX, screenY = screen.get_size()
-    enemies = sceneData[2]
-    playerData = sceneData[3]
+    enemies = sceneData["enemyData"]
+    playerData = sceneData["playerData"]
     party = playerData.party
     activeCharacter = 1
     skillSelected = 0
@@ -129,7 +129,7 @@ def loadCombat(sceneData):
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
-    def buttonExit():
+    def buttonExit(*args):
         pygame.quit()
 
     def bagButtonFunction():
@@ -201,7 +201,7 @@ def loadCombat(sceneData):
             skillsShowing = False
             enemySelectionShowing = False
 
-    def updateCharacters():
+    def updateCharacters(*args):
         global partyVisuals
         global party
         global screenX
@@ -224,7 +224,7 @@ def loadCombat(sceneData):
             if (item.name == "Skill3Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[2].name, "mono", int(screenX*0.5/15), "black", "yellow")
 
 
-    def updateEnemies():
+    def updateEnemies(*args):
         nonlocal enemies
         enemyLeftPadding = 0.4
         enemyRightPadding = 0.1
@@ -271,9 +271,7 @@ def loadCombat(sceneData):
                         elif (entity.func == "openWorld"): buttonFunc = openWorldButton
                         elif (entity.func == "changeCharacter"): buttonFunc = changeCharacter
                         elif (entity.func == "inventory"): buttonFunc = inventoryButton
-                        if (len(entity.args) == 0): buttonFunc()
-                        elif (len(entity.args) == 1): buttonFunc(entity.args[0])
-                        else: buttonFunc(entity.args)
+                        buttonFunc(entity.args)
                         break
             
         ### Make Hover Buttons shine funny color
