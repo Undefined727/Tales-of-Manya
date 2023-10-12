@@ -4,6 +4,6 @@
         "NPCName": "Trapped NPC",
         "imgPath": "trapped_npc.png",
         "defaultDialogue": 2,
-        "currentDialogue": 2
+        "currentDialogue": 0
     }
 ]
