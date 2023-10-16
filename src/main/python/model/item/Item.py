@@ -2,7 +2,7 @@ from sqlalchemy.engine.row import Row
 import json
 from model.item.ItemSlotType import ItemSlotType
 from model.item.ItemTag import ItemTag
-from model.effect.EffectType import EffectType
+from model.item.ItemStatType import ItemStatType
 from util.IDHandler import IDHandler
 
 class Item:
@@ -10,10 +10,10 @@ class Item:
     name : str
     type : ItemSlotType
     tags : list[ ItemTag ]
-    bonuses : dict[ EffectType, int ]
+    stats : dict[ ItemStatType, int ]
+    set : str
     description : str
     image_path: str
-    #Statuses below when implemented
 
     def __init__(self,
                  name : str,
@@ -21,14 +21,18 @@ class Item:
                  description : str,
                  image_path : str,
                  tags : list[ ItemTag ] = None,
-                 bonuses : dict[ EffectType, int ] = None,
+                 stats : dict[ ItemStatType, int ] = None,
+                 set : str = None,
                  id : str = None):
         self.setName(name)
         self.setType(type)
         self.setDescription(description)
         self.setImagePath(image_path)
         self.setTags(tags)
-        self.setBonuses(bonuses)
+        self.setSet(set)
+        self.setStats(stats)
+        if (not (stats == None or len(stats) == 0)): print(f"{name}, {stats}")
+
         if id is None: self.setID(str(IDHandler.generateID(Item)))
         else: self.setID(id)
 
@@ -50,8 +54,11 @@ class Item:
     def getType(self) -> ItemSlotType:
         return self.type
 
-    def getBonuses(self) -> dict[ EffectType, int]:
-        return self.bonuses
+    def getStats(self) -> dict[ ItemStatType, int ]:
+        return self.stats
+    
+    def getSet(self) -> str:
+        return self.set
 
     def setID(self, new_id : str):
         self.id = new_id
@@ -71,8 +78,11 @@ class Item:
     def setTags(self, new_tags : list[ ItemTag ]):
         self.tags = new_tags
 
-    def setBonuses(self, bonuses : dict[ EffectType, int ]):
-        self.bonuses = bonuses
+    def setStats(self, stats : dict[ ItemStatType, int ]):
+        self.stats = stats
+
+    def setSet(self, set : str):
+        self.set = set    
 
     def equals(self, item):
         if (type(item) == Item):
@@ -80,4 +90,4 @@ class Item:
         return False
 
     def toString(self):
-        return f"Name: {self.getName()}; Type: {self.getType()}; Tags: {self.getTags()}; Bonuses: {self.getBonuses()}; Description: {self.getDescription()}; Path: {self.getPath()}"
+        return f"Name: {self.getName()}; Type: {self.getType()}; Tags: {self.getTags()}; Stats: {self.getStats()}; Set: {self.getStats()}; Description: {self.getDescription()}; Path: {self.getPath()}"

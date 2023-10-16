@@ -2,6 +2,7 @@ import os, sys
 sys.path.append(os.path.abspath("."))
 from src.main.python.model.item.Item import Item
 from src.main.python.model.item.ItemSlotType import ItemSlotType
+from src.main.python.model.item.ItemStatType import ItemStatType
 from src.main.python.model.item.ItemTag import ItemTag
 from src.main.python.model.effect.Effect import Effect
 from src.main.python.model.effect.EffectType import EffectType
@@ -39,11 +40,20 @@ class DBElementFactory:
 
     def buildItem(self, row) -> Item:
         # TODO Not handling tags and bonuses yet
+        connection = self.engine.connect()
+        statement = select(DBItemStat).where(DBItemStat.item == row.name)
+        itemStatsData = connection.execute(statement)
+
+        itemStats = {}
+        for itemStat in itemStatsData:
+            itemStats.update({ItemStatType[itemStat.stat]: int(itemStat.value)})
+
         item = Item(row.name,
                     ItemSlotType[row.type],
                     row.description,
                     row.image_path,
                     None,
+                    itemStats,
                     None,
                     row.id)
         return item

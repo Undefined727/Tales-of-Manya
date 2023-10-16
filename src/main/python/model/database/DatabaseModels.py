@@ -78,6 +78,16 @@ class DBItem(Base):
 
     def __repr__(self) -> str:
         return f"Item(id = {self.id!r}, name = {self.name!r}, image_path = {self.image_path!r}, description = {self.description!r})"
+    
+class DBItemStat(Base):
+    __tablename__ = "ItemStat"
+    id : Mapped[str] = mapped_column(String(36), primary_key=True)
+    item : Mapped[str] = mapped_column(String(120))
+    stat : Mapped[str] = mapped_column(String(120))
+    value : Mapped[int] = mapped_column(Integer)
+
+    def __repr__(self) -> str:
+        return f"ItemStat(id = {self.id!r}, item = {self.item!r}, stat = {self.stat!r}, value = {self.value!r})"
 
 class DBSkill(Base):
     __tablename__ = "Skill"
