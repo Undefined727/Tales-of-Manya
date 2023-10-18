@@ -5,6 +5,7 @@ from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.ImageButton import ImageButton
+from view.visualentity.ItemDisplay import ItemDisplay
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from model.skill.Skill import Skill
@@ -86,7 +87,16 @@ def loadInventory(screenData):
 
     activeCharacter = 1
 
+    itemDisplay = None
+    for entity in visualEntities:
+        if type(entity) == ItemDisplay:
+            itemDisplay = entity
+
+    
+
+
     currInventory = playerData.inventory.getItems()
+    itemDisplay.changeItem(currInventory[0].item)
     counter = 0
     for slot in currInventory:
         slotBackground = ImageEntity(f"InventorySlot{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
@@ -176,6 +186,7 @@ def loadInventory(screenData):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+
         '''
             if (event.type == pygame.MOUSEBUTTONUP):
                 for entity in visualEntities:

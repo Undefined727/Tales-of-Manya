@@ -3,6 +3,7 @@ from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
 from view.visualentity.VisualNovel import VisualNovel
+from view.visualentity.ItemDisplay import ItemDisplay
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ScrollBar import ScrollBar
@@ -55,4 +56,7 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
         for option in entity.optionParagraphs:
             displayEntity(option, screen)
+    elif (type(entity) == ItemDisplay):
+        for item in entity.getItems():
+            displayEntity(item, screen)
         

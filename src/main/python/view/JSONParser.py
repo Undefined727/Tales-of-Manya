@@ -10,6 +10,7 @@ from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.InventoryCharacterEntity import InventoryCharacterEntity
+from view.visualentity.ItemDisplay import ItemDisplay
 
 def loadJson(address, screenX, screenY, lists):
     visualEntities = lists[0]
@@ -50,6 +51,9 @@ def loadJson(address, screenX, screenY, lists):
         elif item["entityType"] == "InventoryCharacterCoords":
             index = 0
             entity = InventoryCharacterEntity.createFrom(item, party[index])
+        elif item['entityType'] == "ItemDisplayCoords":
+            entity = ItemDisplay.createFrom(item)
+        
 
 
 
