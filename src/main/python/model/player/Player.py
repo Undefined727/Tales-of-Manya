@@ -19,6 +19,7 @@ class Player:
         self.inventory.addItem("Purveyor of the Nyaight", 1)
         self.inventory.addItem("Purveyor of the Nyaight", 2)
         self.inventory.addItem("Flower Crown", 1)
+        self.inventory.addItem("Slimy Helmet", 1)
 
     def getCurrentQuests(self):
         return self.currentQuests

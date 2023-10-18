@@ -96,7 +96,8 @@ def loadInventory(screenData):
 
 
     currInventory = playerData.inventory.getItems()
-    itemDisplay.changeItem(currInventory[0].item)
+    currInventorySlot = 0
+    itemDisplay.changeItem(currInventory[currInventorySlot].item)
     counter = 0
     for slot in currInventory:
         slotBackground = ImageEntity(f"InventorySlot{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
@@ -173,6 +174,7 @@ def loadInventory(screenData):
 
 
     partyVisuals[0].updateCharacter()
+    invSlotChangeDelay = 10
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -186,6 +188,22 @@ def loadInventory(screenData):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+        
+        ### Inputs ###
+        keys = pygame.key.get_pressed()
+        
+        if (invSlotChangeDelay > 0): invSlotChangeDelay -= 1
+        else: 
+            if (keys[pygame.K_LEFT]):
+                currInventorySlot -=1
+                if (currInventorySlot < 0): currInventorySlot = len(currInventory) - 1
+                itemDisplay.changeItem(currInventory[currInventorySlot].item)
+                invSlotChangeDelay = 10
+            elif (keys[pygame.K_RIGHT]):
+                currInventorySlot +=1
+                if (currInventorySlot >= len(currInventory)): currInventorySlot = 0
+                itemDisplay.changeItem(currInventory[currInventorySlot].item)
+                invSlotChangeDelay = 10
 
         '''
             if (event.type == pygame.MOUSEBUTTONUP):
