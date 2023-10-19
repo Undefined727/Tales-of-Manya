@@ -31,7 +31,6 @@ class Item:
         self.setTags(tags)
         self.setSet(set)
         self.setStats(stats)
-        if (not (stats == None or len(stats) == 0)): print(f"{name}, {stats}")
 
         if id is None: self.setID(str(IDHandler.generateID(Item)))
         else: self.setID(id)

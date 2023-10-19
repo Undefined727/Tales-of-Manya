@@ -175,6 +175,7 @@ def loadInventory(screenData):
 
     partyVisuals[0].updateCharacter()
     invSlotChangeDelay = 10
+    equipItemDelay = 20
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -204,6 +205,14 @@ def loadInventory(screenData):
                 if (currInventorySlot >= len(currInventory)): currInventorySlot = 0
                 itemDisplay.changeItem(currInventory[currInventorySlot].item)
                 invSlotChangeDelay = 10
+        
+        if (equipItemDelay > 0): equipItemDelay -= 1
+        else:
+            if (keys[pygame.K_SPACE]):
+                playerData.party[activeCharacter-1].loadout.equip(currInventory[currInventorySlot].item)
+                playerData.party[activeCharacter-1].update()
+                partyVisuals[activeCharacter-1].updateCharacter()
+
 
         '''
             if (event.type == pygame.MOUSEBUTTONUP):

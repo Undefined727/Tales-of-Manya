@@ -4,6 +4,7 @@ from model.character.DynamicStat import DynamicStat
 from model.effect.EffectsList import EffectsList
 from model.character.Inventory import Inventory
 from model.effect.EffectType import EffectType
+from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
 from model.item.Item import Item
 from uuid import uuid4
@@ -13,9 +14,12 @@ class Character:
     ### Base Stats ###
     id : str
     name : str
-    attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    #attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    #defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    #spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
+    attack:int
+    defense:int
+    spellpower:int
 
     ### Dynamic Stats ###
     health : DynamicStat
@@ -31,7 +35,7 @@ class Character:
     # spells:list[Spell] TODO #16 Implement
 
     ### Listeners ###
-    loadout_bonuses : dict[ EffectType, int ]
+    loadout_bonuses : dict[ int, int ]
     buff_bonuses : dict[ EffectType, int ]
 
 
@@ -61,6 +65,7 @@ class Character:
         self.loadout_bonuses    = dict()
         self.buff_bonuses       = dict()
         self.hasActed           = False
+        self.update()
 
     ### Getters ###
 
@@ -126,22 +131,47 @@ class Character:
         # This is what should be used to update a character's stats at the end
         # of a turn
 
-        # Calculating maximum health
+        # Set base values from level
         base_health = (self.level * 100)
-        extra_health_flat = self.getBonuses(EffectType.HEALTH_FLAT)
-        extra_health_pct = 1 + self.getBonuses(EffectType.HEALTH_PCT)
-        new_max_health = (base_health + extra_health_flat) * extra_health_pct
-
-        # Calculating maximum mana
         base_mana = 1000 + (self.level * 10)
-        extra_mana_flat = self.getBonuses(EffectType.MANA_FLAT)
-        extra_mana_pct = 1 + self.getBonuses(EffectType.MANA_PCT)
-        new_max_mana = (base_mana + extra_mana_flat) * extra_mana_pct
+        base_attack = (self.level * 10)
+        base_defense = (self.level * 10)
+        base_spellpower = (self.level * 10)
 
-        self.health.setMaxValue(new_max_health)
-        self.mana.setMaxValue(new_max_mana)
+        # Add Item stats
+        for stat, value in self.loadout.getStats().items():
+            if (stat == ItemStatType.ATTACK.value): base_attack += value
+            elif (stat == ItemStatType.DEFENSE.value): base_defense += value
+            elif (stat == ItemStatType.SPELLPOWER.value): base_spellpower += value
+            elif (stat == ItemStatType.HEALTH.value): base_health += value
+            elif (stat == ItemStatType.MANA.value): base_mana += value
+       
 
-        self.loadout_bonuses = self.loadout.getBonuses()
-        self.buff_bonuses = self.buffs.calculate().update(self.debuffs.calculate())
-        self.buffs.update()
-        self.debuffs.update()
+
+        # Augment base stats with buffs
+        # extra_health_flat = self.getBonuses(EffectType.HEALTH_FLAT)
+        # extra_health_pct = 1 + self.getBonuses(EffectType.HEALTH_PCT)
+        # new_max_health = (base_health + extra_health_flat) * extra_health_pct
+
+        # extra_mana_flat = self.getBonuses(EffectType.MANA_FLAT)
+        # extra_mana_pct = 1 + self.getBonuses(EffectType.MANA_PCT)
+        # new_max_mana = (base_mana + extra_mana_flat) * extra_mana_pct
+
+        # Manage buff status
+        #self.buff_bonuses = self.buffs.calculate().update(self.debuffs.calculate())
+        #self.buffs.update()
+        #self.debuffs.update()
+
+        # Set Values
+        self.health.setMaxValue(base_health)
+        self.mana.setMaxValue(base_mana)
+        self.attack = base_attack
+        self.defense = base_defense
+        self.spellpower = base_spellpower
+
+
+
+       
+
+
+        

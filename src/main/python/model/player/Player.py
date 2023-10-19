@@ -16,8 +16,7 @@ class Player:
         self.party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10), Character("lmao", "catgirl.png", 20)]
         
         self.inventory = Inventory()
-        self.inventory.addItem("Purveyor of the Nyaight", 1)
-        self.inventory.addItem("Purveyor of the Nyaight", 2)
+        self.inventory.addItem("Purrveyor of the Nyaight", 5)
         self.inventory.addItem("Flower Crown", 1)
         self.inventory.addItem("Slimy Helmet", 1)
 
