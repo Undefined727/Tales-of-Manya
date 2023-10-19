@@ -2,6 +2,7 @@ from model.character.Character import Character
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.TextEntity import TextEntity
+from model.item.ItemSlotType import ItemSlotType
 
 class InventoryCharacterEntity:
 
@@ -15,9 +16,17 @@ class InventoryCharacterEntity:
     defense:TextEntity
     spellpower:TextEntity
     character:Character
+
+    headImg:ImageEntity
+    chestImg:ImageEntity
+    waistImg:ImageEntity
+    legsImg:ImageEntity
+    weaponImg:ImageEntity
+    accessory1Img:ImageEntity
+    accessory2Img:ImageEntity
     isShowing = True
 
-    def __init__(self, character):
+    def __init__(self, character:Character):
         self.character = character
         self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
         self.level = TextEntity("text", True, 0, 0, 0, 0, [], str(character.level), "mono", 10, "black", None)
@@ -27,11 +36,28 @@ class InventoryCharacterEntity:
         self.atk = TextEntity("text", True, 0, 0, 0, 0, [], str(character.attack()), "mono", 10, "black", None)
         self.defense = TextEntity("text", True, 0, 0, 0, 0, [], str(character.defense()), "mono", 10, "black", None)
         self.spellPower = TextEntity("text", True, 0, 0, 0, 0, [], str(character.spellpower()), "mono", 10, "black", None)
+        if (character.loadout.slots[ItemSlotType.HEAD] == None): self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/helmet_transparent.png")
+        else: self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.HEAD].image_path)
+        if (character.loadout.slots[ItemSlotType.CHEST] == None): self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/chestplate_transparent.png")
+        else: self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.CHEST].image_path)
+        if (character.loadout.slots[ItemSlotType.LEGS] == None): self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png")
+        else: self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.LEGS].image_path)
+        if (character.loadout.slots[ItemSlotType.WAIST] == None): self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png")
+        else: self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.WAIST].image_path)
+        if (character.loadout.slots[ItemSlotType.WEAPON] == None): self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png")
+        else: self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.WEAPON].image_path)
+        if (character.loadout.slots[ItemSlotType.ACCESSORY1] == None): self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png")
+        else: self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.ACCESSORY1].image_path)
+        if (character.loadout.slots[ItemSlotType.ACCESSORY2] == None): self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png")
+        else: self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.ACCESSORY2].image_path)
         self.isShowing = True
         
 
     def getItems(self):
-        return [self.img, self.level, self.name, self.maxHealth, self.maxMana, self.atk, self.defense, self.spellPower]
+        gearList = [self.headImg, self.chestImg, self.waistImg, self.legsImg, self.weaponImg, self.accessory1Img, self.accessory2Img]
+        statList = [self.maxHealth, self.maxMana, self.atk, self.defense, self.spellPower]
+        charInfoList = [self.img, self.level, self.name]
+        return charInfoList + gearList + statList
 
     def scale(self, screenX, screenY):
         self.level.scale(screenX, screenY)
@@ -42,8 +68,15 @@ class InventoryCharacterEntity:
         self.atk.scale(screenX, screenY)
         self.defense.scale(screenX, screenY)
         self.spellPower.scale(screenX, screenY)
+        self.headImg.scale(screenX, screenY)
+        self.chestImg.scale(screenX, screenY)
+        self.waistImg.scale(screenX, screenY)
+        self.legsImg.scale(screenX, screenY)
+        self.weaponImg.scale(screenX, screenY)
+        self.accessory1Img.scale(screenX, screenY)
+        self.accessory2Img.scale(screenX, screenY)
     
-    def changeCharacter(self, character):
+    def changeCharacter(self, character:Character):
         if (character == None):
             self.level.isShowing = False
             self.name.isShowing = False
@@ -53,6 +86,13 @@ class InventoryCharacterEntity:
             self.atk.isShowing = False
             self.defense.isShowing = False
             self.spellPower.isShowing = False
+            self.headImg.isShowing = False
+            self.chestImg.isShowing = False
+            self.waistImg.isShowing = False
+            self.legsImg.isShowing = False
+            self.weaponImg.isShowing = False
+            self.accessory1Img.isShowing = False
+            self.accessory2Img.isShowing = False
             return
 
         self.character = character
@@ -69,9 +109,24 @@ class InventoryCharacterEntity:
         self.maxHealth.updateText("HP " + str(character.health.getMaxValue()))
         self.maxMana.updateText("Mana " + str(character.mana.getMaxValue()))
         self.atk.updateText("ATK " + str(character.attack()))
-        print(character.attack())
         self.defense.updateText("DEF " + str(character.defense()))
         self.spellPower.updateText("SP " + str(character.spellpower()))
+
+        if (character.loadout.slots[ItemSlotType.HEAD] == None): self.headImg.updateImg("items/helmet_transparent.png")
+        else: self.headImg.updateImg("items/" + character.loadout.slots[ItemSlotType.HEAD].image_path)
+        if (character.loadout.slots[ItemSlotType.CHEST] == None): self.chestImg.updateImg("items/chestplate_transparent.png")
+        else: self.chestImg.updateImg("items/" + character.loadout.slots[ItemSlotType.CHEST].image_path)
+        if (character.loadout.slots[ItemSlotType.LEGS] == None): self.legsImg.updateImg("items/leggings_transparent.png")
+        else: self.legsImg.updateImg("items/" + character.loadout.slots[ItemSlotType.LEGS].image_path)
+        if (character.loadout.slots[ItemSlotType.WAIST] == None): self.waistImg.updateImg("items/leggings_transparent.png")
+        else: self.waistImg.updateImg("items/" + character.loadout.slots[ItemSlotType.WAIST].image_path)
+        if (character.loadout.slots[ItemSlotType.WEAPON] == None): self.weaponImg.updateImg("items/weapon_transparent.png")
+        else: self.weaponImg.updateImg("items/" + character.loadout.slots[ItemSlotType.WEAPON].image_path)
+        if (character.loadout.slots[ItemSlotType.ACCESSORY1] == None): self.accessory1Img.updateImg("items/accessory_transparent.png")
+        else: self.accessory1Img.updateImg("items/" + character.loadout.slots[ItemSlotType.ACCESSORY1].image_path)
+        if (character.loadout.slots[ItemSlotType.ACCESSORY2] == None): self.accessory2Img.updateImg("items/accessory2_transparent.png")
+        else: self.accessory2Img.updateImg("items/" + character.loadout.slots[ItemSlotType.ACCESSORY2].image_path)
+
     
     def updateCharacter(self):
         self.changeCharacter(self.character)
@@ -95,5 +150,19 @@ class InventoryCharacterEntity:
         newObject.atk.resize(json_object["ATKWidth"], json_object["ATKHeight"])
         newObject.spellPower.reposition(json_object["spellPowerXPosition"], json_object["spellPowerYPosition"])
         newObject.spellPower.resize(json_object["spellPowerWidth"], json_object["spellPowerHeight"])
+        newObject.headImg.reposition(json_object["headSlotXPosition"], json_object["headSlotYPosition"])
+        newObject.headImg.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.chestImg.reposition(json_object["chestSlotXPosition"], json_object["chestSlotYPosition"])
+        newObject.chestImg.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.waistImg.reposition(json_object["waistSlotXPosition"], json_object["waistSlotYPosition"])
+        newObject.waistImg.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.legsImg.reposition(json_object["legsSlotXPosition"], json_object["legsSlotYPosition"])
+        newObject.legsImg.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.weaponImg.reposition(json_object["weaponSlotXPosition"], json_object["weaponSlotYPosition"])
+        newObject.weaponImg.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.accessory1Img.reposition(json_object["accessory1SlotXPosition"], json_object["accessory1SlotYPosition"])
+        newObject.accessory1Img.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
+        newObject.accessory2Img.reposition(json_object["accessory2SlotXPosition"], json_object["accessory2SlotYPosition"])
+        newObject.accessory2Img.resize(json_object["gearSlotWidth"], json_object["gearSlotHeight"])
         return newObject
     
