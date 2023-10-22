@@ -13,6 +13,7 @@ from model.character.Character import Character
 from model.item.Item import Item
 from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from model.player.Player import Player
+from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 from model.database.DBElementFactory import DBElementFactory
@@ -26,26 +27,25 @@ newSceneData = []
 
 databaseFactory = DBElementFactory()
 
-currentSceneData:list
+gameData:Singleton
 playerData:Player
 screen:pygame.surface
 
 
 def combatButton():
     global quit
-    global nextScreen
+    global gameData
     quit = True
-    nextScreen = "Combat"
+    gameData.screenOpen = "Combat"
 
-def openWorld(map):
+def openWorld():
     global quit
-    global newSceneData
-    global screen
+    global gameData
     quit = True
-    newSceneData = [screen, "Open World", map, playerData]
+    gameData.screenOpen = "Open World"
 
 def returnToMapButton():
-    openWorld(currentSceneData[3])
+    openWorld()
 
 
 def refreshScreen(screen):
@@ -64,18 +64,17 @@ def refreshScreen(screen):
 
 
 
-def loadInventory(screenData):
+def loadInventory(transferredData):
     global visualEntities
     global partyVisuals
-    global currentSceneData
     global playerData
     global screen
     global quit
-    global newSceneData
+    global gameData
     quit = False
-    currentSceneData = screenData
-    playerData = currentSceneData[2]
-    screen = screenData[0]
+    gameData = transferredData
+    playerData = gameData.player
+    screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
     attachedItem = None
     attachedItemEquipped = None
@@ -314,5 +313,7 @@ def loadInventory(screenData):
             attachedItemVisual.yPosition = mouse[1] - attachedItemVisual.length/2
         '''
         refreshScreen(screen)
-        if (quit): break
-    return newSceneData
+        if (quit):
+            quit = False 
+            break
+    return gameData

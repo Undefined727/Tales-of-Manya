@@ -13,6 +13,7 @@ from model.character.Character import Character
 from model.player.Player import Player
 from model.item.Item import Item
 from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
+from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 
@@ -26,7 +27,7 @@ inventory = []
 
 playerData:Player
 screen:pygame.surface
-currentSceneData:list
+gameData:Singleton
 
 party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
 party.append(Character("lmao", "catgirl.png", 20))
@@ -37,22 +38,20 @@ party[0].skills[2] = Skill(3)
 
 
 
-def openWorld(map):
+def openWorld():
     global quit
-    global newSceneData
-    global screen
+    global gameData
     quit = True
-    newSceneData = [screen, "Open World", map, playerData]
+    gameData.screenOpen = "Open World"
 
 def openWorldButton():
-    openWorld(currentSceneData[4])
+    openWorld()
 
 def inventoryButton():
     global quit
-    global newSceneData
-    global screen
+    global gameData
     quit = True
-    newSceneData = [screen, "Open World",  playerData]
+    gameData.screenOpen = "Inventory"
 
 
 def refreshScreen(screen):
@@ -92,20 +91,20 @@ def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
 
     party[activeCharacter].hasActed = True
 
-def loadCombat(sceneData):
+def loadCombat(transferredData):
     global visualEntities
     global party
     global partyVisuals
     global quit
     global playerData
     global screen
-    global currentSceneData
+    global gameData
     global buttons
-    currentSceneData = sceneData
-    screen = sceneData[0]
+    gameData = transferredData
+    screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
-    enemies = sceneData[2]
-    playerData = sceneData[3]
+    enemies = gameData.currentEnemies
+    playerData = gameData.player
     party = playerData.party
     activeCharacter = 1
     skillSelected = 0
@@ -308,4 +307,4 @@ def loadCombat(sceneData):
         if (quit):
             quit = False 
             break
-    return newSceneData
+    return gameData
