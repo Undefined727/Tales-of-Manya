@@ -36,13 +36,16 @@ def returnToMapButton():
     leaveScreen = True
     gameData.screenOpen = "Open World"
 
+currentCharacter = 0
 def changeCharacterButton():
     global playerData
     global visualEntities
+    global currentCharacter
     for entity in visualEntities:
         if type(entity) == InventoryCharacterEntity:
             characterDisplay = entity
-    activeCharacter = ((activeCharacter-2)%len(playerData.party))+1
+    currentCharacter = (currentCharacter+1)%len(playerData.party)
+    characterDisplay.changeCharacter(playerData.party[currentCharacter])
 
 def loadInventory(transferredData):
     global visualEntities
@@ -51,6 +54,7 @@ def loadInventory(transferredData):
     global playerData
     global screen
     global leaveScreen
+    global currentCharacter
     
     leaveScreen = False
     gameData = transferredData
@@ -68,7 +72,6 @@ def loadInventory(transferredData):
 
     
     currInventory = playerData.inventory.getItems()
-    activeCharacter = 0
     currInventorySlot = 0
     itemDisplay.changeItem(currInventory[currInventorySlot].item)
     counter = 0
@@ -96,7 +99,8 @@ def loadInventory(transferredData):
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
-                        if (entity.func == "returnToMapButton"): buttonFunc = returnToMapButton
+                        if (entity.func == "returnToMap"): buttonFunc = returnToMapButton
+                        elif (entity.func == "changeCharacter"): buttonFunc = changeCharacterButton
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
@@ -120,8 +124,8 @@ def loadInventory(transferredData):
         if (equipItemDelay > 0): equipItemDelay -= 1
         else:
             if (keys[pygame.K_SPACE]):
-                playerData.party[activeCharacter].loadout.equip(currInventory[currInventorySlot].item)
-                playerData.party[activeCharacter].update()
+                playerData.party[currentCharacter].loadout.equip(currInventory[currInventorySlot].item)
+                playerData.party[currentCharacter].update()
                 characterDisplay.updateCharacter()
 
         refreshScreen(screen)

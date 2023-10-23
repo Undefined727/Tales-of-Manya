@@ -7,16 +7,17 @@ from util.IllegalArgumentException import IllegalArgumentException
 class CharacterLoadout:
     slots : dict[ ItemSlotType, Item ]
 
-    def __init__(self, slots : dict[ ItemSlotType, Item ] = {
-        ItemSlotType.HEAD.value : None,
-        ItemSlotType.CHEST.value : None,
-        ItemSlotType.LEGS.value : None,
-        ItemSlotType.WAIST.value : None,
-        ItemSlotType.WEAPON.value : None,
-        ItemSlotType.ACCESSORY1.value : None,
-        ItemSlotType.ACCESSORY2.value : None
-    }):
-        self.slots = slots
+    def __init__(self, slots:dict[ ItemSlotType, Item ] = None):
+        if (slots is not None): self.slots = slots
+        else: self.slots = {
+            ItemSlotType.HEAD.value : None,
+            ItemSlotType.CHEST.value : None,
+            ItemSlotType.LEGS.value : None,
+            ItemSlotType.WAIST.value : None,
+            ItemSlotType.WEAPON.value : None,
+            ItemSlotType.ACCESSORY1.value : None,
+            ItemSlotType.ACCESSORY2.value : None
+        }
 
     def isSlotEmpty(self, slot : ItemSlotType) -> bool:
         if slot not in self.slots: raise IllegalArgumentException(Error.INEXISTENT_SLOT)

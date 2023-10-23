@@ -105,6 +105,8 @@ class InventoryCharacterEntity:
         self.defense.updateText("DEF " + str(character.defense))
         self.spellPower.updateText("SP " + str(character.spellpower))
 
+        print(character.loadout.slots)
+        print(character.attack)
         if (character.loadout.slots[ItemSlotType.HEAD.value] == None): self.headImg.updateImg("items/helmet_transparent.png")
         else: self.headImg.updateImg("items/" + character.loadout.slots[ItemSlotType.HEAD.value].image_path)
         if (character.loadout.slots[ItemSlotType.CHEST.value] == None): self.chestImg.updateImg("items/chestplate_transparent.png")
