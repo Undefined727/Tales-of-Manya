@@ -44,9 +44,6 @@ def openWorld():
     quit = True
     gameData.screenOpen = "Open World"
 
-def openWorldButton():
-    openWorld()
-
 def inventoryButton():
     global quit
     global gameData
@@ -131,21 +128,41 @@ def loadCombat(transferredData):
     def buttonExit():
         pygame.quit()
 
-    def bagButtonFunction():
-        global quit
-        global nextScreen
-        nextScreen = "Inventory"
-        leaveScreen = True
 
-    def changeCharacter(*args):
-        nonlocal activeCharacter
-        if (args[0] == "Right"): activeCharacter = ((activeCharacter)%len(party))+1
-        else: activeCharacter = ((activeCharacter-2)%len(party))+1
-
-        partyVisuals[0].changeCharacter(party[(activeCharacter-2) % len(party)])
-        partyVisuals[1].changeCharacter(party[(activeCharacter-1) % len(party)])
-        partyVisuals[2].changeCharacter(party[(activeCharacter) % len(party)])
+    currSelectedChar = None
+    def characterSelection(selectedChar:CombatCharacterEntity):
+        nonlocal currSelectedChar
+        
+        if (currSelectedChar is not None): 
+            currSelectedChar.selectionButton.activatesOnHover = True
+        currSelectedChar = selectedChar
+        print(currSelectedChar.selectionButton.activatesOnHover)
+        currSelectedChar.selectionButton.activatesOnHover = False
         updateCharacters()
+
+    def enemySelection(selectedChar:CombatCharacterEntity):
+        nonlocal skillSelected
+        enemySelected = args[0]
+        global visualEntities
+        nonlocal enemies
+        nonlocal enemySelectionShowing
+        nonlocal skillsShowing
+        nonlocal activeCharacter
+        if enemySelectionShowing:
+            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
+            party[activeCharacter-1].hasActed = True
+            updateEnemies()
+            updateCharacters()
+            for entity in visualEntities:
+                if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
+                    entity.isShowing = False
+            skillsShowing = False
+            enemySelectionShowing = False
+
+    def attack():
+        nonlocal currSelectedChar
+        if (currSelectedChar is not None):
+            print(currSelectedChar.character.attack)
 
     def skillButtonFunction():
         nonlocal skillsShowing
@@ -181,24 +198,7 @@ def loadCombat(transferredData):
                         entity.isShowing = False
                 skillsShowing = False
 
-    def enemySelectionButtonFunction(*args):
-        nonlocal skillSelected
-        enemySelected = args[0]
-        global visualEntities
-        nonlocal enemies
-        nonlocal enemySelectionShowing
-        nonlocal skillsShowing
-        nonlocal activeCharacter
-        if enemySelectionShowing:
-            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-            party[activeCharacter-1].hasActed = True
-            updateEnemies()
-            updateCharacters()
-            for entity in visualEntities:
-                if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
-                    entity.isShowing = False
-            skillsShowing = False
-            enemySelectionShowing = False
+    
 
     def updateCharacters():
         global partyVisuals
@@ -267,9 +267,10 @@ def loadCombat(transferredData):
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "exit"): buttonFunc = buttonExit
-                        elif (entity.func == "openWorld"): buttonFunc = openWorldButton
-                        elif (entity.func == "changeCharacter"): buttonFunc = changeCharacter
+                        elif (entity.func == "openWorld"): buttonFunc = openWorld
+                        elif (entity.func == "characterSelection"): buttonFunc = characterSelection
                         elif (entity.func == "inventory"): buttonFunc = inventoryButton
+                        elif (entity.func == "attack"): buttonFunc = attack
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
@@ -305,6 +306,7 @@ def loadCombat(transferredData):
 
         refreshScreen(screen)
         if (quit):
+            currSelectedChar.selectionButton.activesOnHover = True
             quit = False 
             break
     return gameData

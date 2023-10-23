@@ -112,15 +112,17 @@
         "entityType": "Image",
         "path": "SkillButton.png"
     },{
-        "name": "AttackButtonImg",
+        "name": "AttackButton",
         "isShowing": true,
         "xPosition": 0.68,
         "yPosition": 0.67,
         "width": 0.13,
         "height": 0.13,
         "tags": [],
-        "entityType": "Image",
-        "path": "attackButton.png"
+        "entityType": "ImageButton",
+        "path": "attackButton.png",
+        "func": "attack",
+        "args": []
     },{
         "name": "GuardButtonImg",
         "isShowing": true,

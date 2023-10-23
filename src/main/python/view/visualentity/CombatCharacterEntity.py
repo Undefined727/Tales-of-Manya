@@ -18,7 +18,7 @@ class CombatCharacterEntity:
         self.ManaBar = DynamicStatEntity(character.mana, "mana")
         self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
         self.checkmark = ImageEntity(character.name + "checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
-        self.selectionButton = HoverShapeButton("Selection_Button", True, 0, 0, 0,  0, [], "Blue", "cyan", "ellipse", "characterSelection", [character.name], True)
+        self.selectionButton = HoverShapeButton("Selection_Button", True, 0, 0, 0,  0, [], "Blue", "cyan", "ellipse", "characterSelection", [self], True)
 
     def getItems(self):
         return [self.selectionButton, self.img, self.HPBar, self.ManaBar, self.checkmark]

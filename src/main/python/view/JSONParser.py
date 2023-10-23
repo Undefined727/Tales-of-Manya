@@ -49,8 +49,7 @@ def loadJson(address, screenX, screenY, lists):
             else: index = 0
             entity = CombatCharacterEntity.createFrom(item, party[index])
         elif item["entityType"] == "InventoryCharacterCoords":
-            index = 0
-            entity = InventoryCharacterEntity.createFrom(item, party[index])
+            entity = InventoryCharacterEntity.createFrom(item)
         elif item['entityType'] == "ItemDisplayCoords":
             entity = ItemDisplay.createFrom(item)
         
@@ -68,6 +67,6 @@ def loadJson(address, screenX, screenY, lists):
             elif(item["entityType"] == "VisualNovel"):
                 buttons.append(entity.continueButton)
                 visualEntities.append(entity)
-            elif(item["entityType"] == "CharacterEntityCoords" or item["entityType"] == "InventoryCharacterCoords"): 
+            elif(item["entityType"] == "CharacterEntityCoords"): 
                 partyVisuals[index] = entity
             else: visualEntities.append(entity)

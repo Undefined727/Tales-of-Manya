@@ -4,6 +4,7 @@ from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
 from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.ItemDisplay import ItemDisplay
+from view.visualentity.InventoryCharacterEntity import InventoryCharacterEntity
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ScrollBar import ScrollBar
@@ -12,10 +13,6 @@ from view.visualentity.DynamicStatEntity import DynamicStatEntity
 import pygame
 
 def displayEntity(entity, screen):
-    if (type(entity) == DynamicStatEntity):
-        ls = entity.getItems()
-        for item in ls:
-            displayEntity(item, screen)
     if (type(entity) == ImageEntity):
         screen.blit(entity.img, (entity.xPosition, entity.yPosition))
     elif (type(entity) == ShapeEntity):
@@ -33,9 +30,7 @@ def displayEntity(entity, screen):
                 pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height), 2)
             else:
                 pygame.draw.ellipse(screen, entity.color, (entity.xPosition, entity.yPosition, entity.width, entity.height))
-    elif (type(entity) == ShapeButton):
-        displayEntity(entity.buttonVisual(), screen)
-    elif (type(entity) == HoverShapeButton):
+    elif (type(entity) == ShapeButton or type(entity) == HoverShapeButton):
         displayEntity(entity.buttonVisual(), screen)
     elif (type(entity) == ScrollBar):
         displayEntity(entity.button, screen)
@@ -56,7 +51,7 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
         for option in entity.optionParagraphs:
             displayEntity(option, screen)
-    elif (type(entity) == ItemDisplay):
+    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == DynamicStatEntity):
         for item in entity.getItems():
             displayEntity(item, screen)
         

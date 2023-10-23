@@ -26,30 +26,23 @@ class InventoryCharacterEntity:
     accessory2Img:ImageEntity
     isShowing = True
 
-    def __init__(self, character:Character):
-        self.character = character
-        self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
-        self.level = TextEntity("text", True, 0, 0, 0, 0, [], str(character.level), "mono", 10, "black", None)
-        self.name = TextEntity("text", True, 0, 0, 0, 0, [], character.name, "mono", 10, "black", None)
-        self.maxHealth = TextEntity("text", True, 0, 0, 0, 0, [], str(character.health.getMaxValue()), "mono", 10, "black", None)
-        self.maxMana = TextEntity("text", True, 0, 0, 0, 0, [], str(character.mana.getMaxValue()), "mono", 10, "black", None)
-        self.atk = TextEntity("text", True, 0, 0, 0, 0, [], str(character.attack), "mono", 10, "black", None)
-        self.defense = TextEntity("text", True, 0, 0, 0, 0, [], str(character.defense), "mono", 10, "black", None)
-        self.spellPower = TextEntity("text", True, 0, 0, 0, 0, [], str(character.spellpower), "mono", 10, "black", None)
-        if (character.loadout.slots[ItemSlotType.HEAD.value] == None): self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/helmet_transparent.png")
-        else: self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.HEAD.value].image_path)
-        if (character.loadout.slots[ItemSlotType.CHEST.value] == None): self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/chestplate_transparent.png")
-        else: self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.CHEST.value].image_path)
-        if (character.loadout.slots[ItemSlotType.LEGS.value] == None): self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png")
-        else: self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.LEGS.value].image_path)
-        if (character.loadout.slots[ItemSlotType.WAIST.value] == None): self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/waist_transparent.png")
-        else: self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.WAIST.value].image_path)
-        if (character.loadout.slots[ItemSlotType.WEAPON.value] == None): self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png")
-        else: self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.WEAPON.value].image_path)
-        if (character.loadout.slots[ItemSlotType.ACCESSORY1.value] == None): self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png")
-        else: self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.ACCESSORY1.value].image_path)
-        if (character.loadout.slots[ItemSlotType.ACCESSORY2.value] == None): self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png")
-        else: self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/" + character.loadout.slots[ItemSlotType.ACCESSORY2.value].image_path)
+    def __init__(self):
+        self.character = None
+        self.img = ImageEntity("characterImg", True, 0, 0, 0, 0, [], "nekoarc.png")
+        self.level = TextEntity("text", True, 0, 0, 0, 0, [], "lvl", "mono", 10, "black", None)
+        self.name = TextEntity("text", True, 0, 0, 0, 0, [], "name", "mono", 10, "black", None)
+        self.maxHealth = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
+        self.maxMana = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
+        self.atk = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
+        self.defense = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
+        self.spellPower = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
+        self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/helmet_transparent.png")
+        self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/chestplate_transparent.png")
+        self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png")
+        self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/waist_transparent.png")
+        self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png")
+        self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png")
+        self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png")
         self.isShowing = True
         
 
@@ -132,8 +125,8 @@ class InventoryCharacterEntity:
         self.changeCharacter(self.character)
 
     @staticmethod
-    def createFrom(json_object, character):
-        newObject = InventoryCharacterEntity(character)
+    def createFrom(json_object):
+        newObject = InventoryCharacterEntity()
         newObject.level.reposition(json_object["levelXPosition"], json_object["levelYPosition"])
         newObject.level.resize(json_object["levelWidth"], json_object["levelHeight"])
         newObject.name.reposition(json_object["nameXPosition"], json_object["nameYPosition"])
