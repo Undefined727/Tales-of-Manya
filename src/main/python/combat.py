@@ -12,7 +12,6 @@ from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.player.Player import Player
 from model.item.Item import Item
-from view.visualentity.CombatEnemyEntity import CombatEnemyEntity
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
@@ -29,12 +28,7 @@ playerData:Player
 screen:pygame.surface
 gameData:Singleton
 
-party = [Character("Catgirl", "catgirl.png", 10), Character("Catgirl", "catgirl.png", 10)]
-party.append(Character("lmao", "catgirl.png", 20))
-
-party[0].skills[0] = Skill(1)
-party[0].skills[1] = Skill(2)
-party[0].skills[2] = Skill(3)
+party:list
 
 
 
@@ -68,7 +62,8 @@ def refreshScreen(screen):
 # activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
 # Reminder that AoE effects do NOT include the target of an ability
 # This does NOT verify that an ability can/should be used and simply executes the effects
-def useSkill(enemies, selectedEnemy, activeCharacter, party, skill):
+def useSkill(enemies, selectedEnemy, activeCharacter, skill):
+    global party
     if (len(enemies) == 0): return
     party[activeCharacter].mana = party[activeCharacter].mana - skill.manaCost
 
@@ -110,10 +105,14 @@ def loadCombat(transferredData):
 
     
     visualEntities = []
-    partyVisuals = [CombatCharacterEntity(party[0]), CombatCharacterEntity(party[1]), CombatCharacterEntity(party[2])]
-    loadJson("combatScreen.json", screenX, screenY, [visualEntities, buttons, partyVisuals, party])
-    for item in partyVisuals:
-        buttons.append(item.selectionButton)
+    loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)
+    counter = 0
+    for entity in visualEntities:
+        if type(entity) == CombatCharacterEntity:
+            entity.changeCharacter(party[counter])
+            counter += 1
+            if (counter > len(party)): break
+
 
     pygame.mixer.init()
     randInt = random.randint(1, 200)
@@ -240,7 +239,7 @@ def loadCombat(transferredData):
         count = 0
         for enemy in enemies:
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
-            displayedEnemy = CombatEnemyEntity(currEnemyX, 1/10, enemySpacing, 1/3, enemy)
+            displayedEnemy = CombatCharacterEntity(currEnemyX, 1/10, enemySpacing, 1/3, enemy)
             displayedEnemy.scale(screenX, screenY)
             visualEntities.append(displayedEnemy.enemyImg)
             visualEntities.append(displayedEnemy.enemyHPBarBorder)

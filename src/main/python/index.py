@@ -38,7 +38,7 @@ def run():
     global gameData
     leaveScreen = False
 
-    loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("menuScreen.json", screenX, screenY, visualEntities, buttons)
 
     def exit():
         pygame.quit()
@@ -77,7 +77,7 @@ def switchScreens(gameData):
     visualEntities = []
     buttons = []
     screen.fill((0, 0, 0))
-    loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("loadingScreen.json", screenX, screenY, visualEntities, buttons)
     refreshScreen()
 
     if (gameData.screenOpen == "Open World"): gameData = loadOpenWorld(gameData)

@@ -24,10 +24,11 @@ class InventoryCharacterEntity:
     weaponImg:ImageEntity
     accessory1Img:ImageEntity
     accessory2Img:ImageEntity
-    isShowing = True
+    isShowing:bool
 
     def __init__(self):
         self.character = None
+        self.isShowing = True
         self.img = ImageEntity("characterImg", True, 0, 0, 0, 0, [], "nekoarc.png")
         self.level = TextEntity("text", True, 0, 0, 0, 0, [], "lvl", "mono", 10, "black", None)
         self.name = TextEntity("text", True, 0, 0, 0, 0, [], "name", "mono", 10, "black", None)
@@ -43,7 +44,6 @@ class InventoryCharacterEntity:
         self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png")
         self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png")
         self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png")
-        self.isShowing = True
         
 
     def getItems(self):
@@ -105,8 +105,6 @@ class InventoryCharacterEntity:
         self.defense.updateText("DEF " + str(character.defense))
         self.spellPower.updateText("SP " + str(character.spellpower))
 
-        print(character.loadout.slots)
-        print(character.attack)
         if (character.loadout.slots[ItemSlotType.HEAD.value] == None): self.headImg.updateImg("items/helmet_transparent.png")
         else: self.headImg.updateImg("items/" + character.loadout.slots[ItemSlotType.HEAD.value].image_path)
         if (character.loadout.slots[ItemSlotType.CHEST.value] == None): self.chestImg.updateImg("items/chestplate_transparent.png")

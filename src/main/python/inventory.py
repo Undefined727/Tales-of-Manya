@@ -62,7 +62,7 @@ def loadInventory(transferredData):
     screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
     
-    loadJson("inventoryScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("inventoryScreen.json", screenX, screenY, visualEntities, buttons)
 
     for entity in visualEntities:
         if type(entity) == ItemDisplay:

@@ -239,7 +239,7 @@ def loadOpenWorld(transferredData):
     
 
 
-    loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("openWorldScreen.json", screenX, screenY, visualEntities, buttons)
     visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
