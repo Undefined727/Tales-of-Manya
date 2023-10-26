@@ -21,9 +21,15 @@ class TextEntity(VisualEntity):
 
     def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):
         if (font == None): font = self.font
+        else: self.font = font
         if (fontSize == None): fontSize = self.fontSize
+        else: self.fontSize = fontSize
         if (fontColor == None): fontColor = self.fontColor
+        else: self.fontColor = fontColor
         if (highlightColor == None): highlightColor = self.highlightColor
+        else: self.highlightColor = highlightColor
+        self.text = text
+        
 
         textFont = pygame.font.SysFont(font, fontSize)
         if (highlightColor != None):

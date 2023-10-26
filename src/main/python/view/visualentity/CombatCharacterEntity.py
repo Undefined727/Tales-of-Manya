@@ -30,8 +30,8 @@ class CombatCharacterEntity:
         "checkmarkHeight": 0.02,
         "BorderWidth": 0.1,
         "BorderHeight": 0.07,
-        "BarWidth": 0.08,
-        "BarHeight": 0.05,
+        "BarWidth": 0.06,
+        "BarHeight": 0.02,
         "TextWidth": 0.1,
         "TextHeight": 0.07,
     }
@@ -42,22 +42,24 @@ class CombatCharacterEntity:
        self.isEnemy = False
        self.isSelected = False
        self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
-       self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "nekoarc.png")
+       self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
        self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png")
        self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
        self.characterHPBarGreen = ShapeEntity("HPGreen", True, 0, 0, 0, 0, [], "green", False, "rectangle")
-       self.characterHPBarText = TextEntity("HPText", True, 0, 0, 0, 0, [], "0/0", "mono", 10, "black", None)
-       self.characterManaBarBorder = ImageEntity("ManaBorder", True, 0, 0, 0, 0, [], "HPBar.png")
+       self.characterHPBarText = TextEntity("HPText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
+       self.characterManaBarBorder = ImageEntity("ManaBorder", True, 0, 0, 0, 0, [], "ManaBar.png")
        self.characterManaBarRed = ShapeEntity("ManaRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
        self.characterManaBarBlue = ShapeEntity("ManaBlue", True, 0, 0, 0, 0, [], "blue", False, "rectangle")
-       self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 10, "black", None)
+       self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
        self.selectionButton = HoverShapeButton("Selection_Button", True, 0, 0, 0,  0, [], "Blue", "cyan", "ellipse", "characterSelection", [self], True)
 
     def getItems(self):
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
-        characterVisuals = [self.characterImg, self.characterCheckmark]
-        return hpBar + manaBar + characterVisuals
+        characterVisuals = [self.characterImg]
+        characterUI = [self.characterCheckmark]
+        if (self.isEnemy): return hpBar + characterVisuals
+        return hpBar + manaBar + characterVisuals + characterUI
     
     def getButtons(self):
         return None
@@ -75,29 +77,12 @@ class CombatCharacterEntity:
         self.characterManaBarText.scale(screenX, screenY)
 
     def changeCharacter(self, character:Character, isEnemy:bool):
+        if (character == None): return
+
         self.isEnemy = isEnemy
-        if (character == None):
-            self.characterImg.isShowing = False
-            self.characterCheckmark.isShowing = False
-            self.characterHPBarBorder.isShowing = False
-            self.characterHPBarRed.isShowing = False
-            self.characterHPBarGreen.isShowing = False
-            self.characterHPBarText.isShowing = False
-            self.characterManaBarBorder.isShowing = False
-            self.characterManaBarRed.isShowing = False
-            self.characterManaBarBlue.isShowing = False
-            self.characterManaBarText.isShowing = False
-            return
-        if (isEnemy):
-            self.characterCheckmark.isShowing = False
-            self.characterManaBarBorder.isShowing = False
-            self.characterManaBarRed.isShowing = False
-            self.characterManaBarBlue.isShowing = False
-            self.characterManaBarText.isShowing = False
-
-
         self.characterImg.updateImg(character.img)
-        self.characterCheckmark.isShowing = (character.hasActed and not isEnemy)
+        self.characterCheckmark.isShowing = character.hasActed
+        
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)
         self.characterManaBarBlue.width = self.characterManaBarRed.width * (character.mana.current_value/character.mana.max_value)
         self.characterHPBarText.updateText(f"{character.health.current_value}/{character.health.max_value}")
@@ -109,25 +94,29 @@ class CombatCharacterEntity:
     @staticmethod
     def createFrom(json_object):
         newObject = CombatCharacterEntity()
-        newObject.characterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
-        newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
-        newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
-        newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
-        newObject.characterHPBarBorder.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
-        newObject.characterHPBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
-        newObject.characterHPBarRed.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
-        newObject.characterHPBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
-        newObject.characterHPBarGreen.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
-        newObject.characterHPBarGreen.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
-        newObject.characterHPBarText.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
-        newObject.characterHPBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
-        newObject.characterManaBarBorder.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
-        newObject.characterManaBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
-        newObject.characterManaBarRed.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
-        newObject.characterManaBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
-        newObject.characterManaBarBlue.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
-        newObject.characterManaBarBlue.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
-        newObject.characterManaBarText.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
-        newObject.characterManaBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
+        if ("imgXPosition" in json_object):
+            newObject.characterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
+        if ("checkmarkXPosition" in json_object):
+            newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
+            newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
+        if ("HPBorderXPosition" in json_object):
+            newObject.characterHPBarBorder.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
+            newObject.characterHPBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+            newObject.characterHPBarRed.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterHPBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterHPBarGreen.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterHPBarGreen.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterHPBarText.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/2, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/2)
+            newObject.characterHPBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
+        if ("ManaBorderXPosition" in json_object):
+            newObject.characterManaBarBorder.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
+            newObject.characterManaBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+            newObject.characterManaBarRed.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterManaBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterManaBarBlue.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterManaBarBlue.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterManaBarText.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/2, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/2)
+            newObject.characterManaBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
         return newObject
         

@@ -202,7 +202,7 @@ def loadCombat(transferredData):
     def addEnemies():
         nonlocal enemies
         enemyLeftPadding = 0.4
-        enemyRightPadding = 0.1
+        enemyRightPadding = 0.2
         enemiesWidth = 1-(enemyLeftPadding+enemyRightPadding)
         enemySpacing = enemiesWidth/(1+len(enemies)*2)
 
@@ -212,24 +212,20 @@ def loadCombat(transferredData):
 
             entityDetails = {
                 "name": enemy.name,
-                "HPBorderXPosition": 0.02,
+                "HPBorderXPosition": currEnemyX-0.1,
                 "HPBorderYPosition": 0.1,
-                "ManaBorderXPosition": 0.02,
-                "ManaBorderYPosition": 0.1,
                 "imgXPosition": currEnemyX,
                 "imgYPosition": 0.1,
-                "imgWidth": 0.12,
-                "imgHeight": 0.24,
-                "checkmarkXPosition": 0.375,
-                "checkmarkYPosition": 0.05,
+                "imgWidth": enemySpacing,
+                "imgHeight": 0.2
             }
             entityDetails = json.loads(json.dumps(entityDetails))
 
-            print(type(entityDetails))
             displayedEnemy = CombatCharacterEntity.createFrom(entityDetails)
-            displayedEnemy.changeCharacter(enemy, True)
             displayedEnemy.scale(screenX, screenY)
+            displayedEnemy.changeCharacter(enemy, True)
             visualEntities.append(displayedEnemy)
+            visualEntities.append(displayedEnemy.characterImg)
             count = count+1
 
 
@@ -289,7 +285,7 @@ def loadCombat(transferredData):
 
         refreshScreen(screen)
         if (quit):
-            currSelectedChar.selectionButton.activesOnHover = True
+            #currSelectedChar.selectionButton.activesOnHover = True
             quit = False 
             break
     return gameData
