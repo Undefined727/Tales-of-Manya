@@ -5,6 +5,7 @@ from view.visualentity.Paragraph import Paragraph
 from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.ItemDisplay import ItemDisplay
 from view.visualentity.InventoryCharacterEntity import InventoryCharacterEntity
+from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ScrollBar import ScrollBar
@@ -51,7 +52,7 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
         for option in entity.optionParagraphs:
             displayEntity(option, screen)
-    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == DynamicStatEntity):
+    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity):
         for item in entity.getItems():
             displayEntity(item, screen)
         

@@ -7,8 +7,9 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 class CombatCharacterEntity:
 
     character:Character
-    isEnemy:False
-    isSelected:False
+    isEnemy:bool
+    isSelected:bool
+    isShowing:bool
 
     characterImg:ImageEntity
     characterCheckmark:ImageEntity
@@ -24,8 +25,22 @@ class CombatCharacterEntity:
 
     selectionButton:HoverShapeButton
 
+    DEFAULT_VALUES = {
+        "checkmarkWidth": 0.02,
+        "checkmarkHeight": 0.02,
+        "BorderWidth": 0.1,
+        "BorderHeight": 0.07,
+        "BarWidth": 0.08,
+        "BarHeight": 0.05,
+        "TextWidth": 0.1,
+        "TextHeight": 0.07,
+    }
+
     def __init__(self):
        self.character = None
+       self.isShowing = True
+       self.isEnemy = False
+       self.isSelected = False
        self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
        self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "nekoarc.png")
        self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png")
@@ -41,7 +56,7 @@ class CombatCharacterEntity:
     def getItems(self):
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
-        characterVisuals = [self.characterImg + self.characterCheckmark]
+        characterVisuals = [self.characterImg, self.characterCheckmark]
         return hpBar + manaBar + characterVisuals
     
     def getButtons(self):
@@ -73,9 +88,16 @@ class CombatCharacterEntity:
             self.characterManaBarBlue.isShowing = False
             self.characterManaBarText.isShowing = False
             return
+        if (isEnemy):
+            self.characterCheckmark.isShowing = False
+            self.characterManaBarBorder.isShowing = False
+            self.characterManaBarRed.isShowing = False
+            self.characterManaBarBlue.isShowing = False
+            self.characterManaBarText.isShowing = False
+
 
         self.characterImg.updateImg(character.img)
-        self.characterCheckmark.isShowing = character.hasActed
+        self.characterCheckmark.isShowing = (character.hasActed and not isEnemy)
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)
         self.characterManaBarBlue.width = self.characterManaBarRed.width * (character.mana.current_value/character.mana.max_value)
         self.characterHPBarText.updateText(f"{character.health.current_value}/{character.health.max_value}")
@@ -90,22 +112,22 @@ class CombatCharacterEntity:
         newObject.characterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
         newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
         newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
-        newObject.characterCheckmark.resize(json_object["checkmarkWidth"], json_object["checkmarkHeight"])
+        newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
         newObject.characterHPBarBorder.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
-        newObject.characterHPBarBorder.resize(json_object["BorderWidth"], json_object["BorderHeight"])
-        newObject.characterHPBarRed.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
-        newObject.characterHPBarRed.resize(json_object["BarWidth"], json_object["BarHeight"])
-        newObject.characterHPBarGreen.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
-        newObject.characterHPBarGreen.resize(json_object["BarWidth"], json_object["BarHeight"])
-        newObject.characterHPBarText.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
-        newObject.characterHPBarText.resize(json_object["TextWidth"], json_object["TextHeight"])
+        newObject.characterHPBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+        newObject.characterHPBarRed.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
+        newObject.characterHPBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+        newObject.characterHPBarGreen.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
+        newObject.characterHPBarGreen.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+        newObject.characterHPBarText.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
+        newObject.characterHPBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
         newObject.characterManaBarBorder.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
-        newObject.characterManaBarBorder.resize(json_object["BorderWidth"], json_object["BorderHeight"])
-        newObject.characterManaBarRed.reposition(json_object["ManaXPosition"], json_object["ManaYPosition"])
-        newObject.characterManaBarRed.resize(json_object["BarWidth"], json_object["BarHeight"])
-        newObject.characterManaBarBlue.reposition(json_object["ManaXPosition"], json_object["ManaYPosition"])
-        newObject.characterManaBarBlue.resize(json_object["BarWidth"], json_object["BarHeight"])
-        newObject.characterManaBarText.reposition(json_object["ManaXPosition"], json_object["ManaYPosition"])
-        newObject.characterManaBarText.resize(json_object["TextWidth"], json_object["TextHeight"])
+        newObject.characterManaBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+        newObject.characterManaBarRed.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
+        newObject.characterManaBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+        newObject.characterManaBarBlue.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
+        newObject.characterManaBarBlue.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+        newObject.characterManaBarText.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
+        newObject.characterManaBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
         return newObject
         

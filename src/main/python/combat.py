@@ -1,11 +1,4 @@
-import pygame, math, random
-from view.visualentity.Tag import Tag
-from view.visualentity.ImageEntity import ImageEntity
-from view.visualentity.ShapeEntity import ShapeEntity
-from view.visualentity.TextEntity import TextEntity
-from view.visualentity.ShapeButton import ShapeButton
-from view.visualentity.ImageButton import ImageButton
-from view.visualentity.DynamicStatEntity import DynamicStatEntity
+import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.skill.Skill import Skill
@@ -109,7 +102,7 @@ def loadCombat(transferredData):
     counter = 0
     for entity in visualEntities:
         if type(entity) == CombatCharacterEntity:
-            entity.changeCharacter(party[counter])
+            entity.changeCharacter(party[counter], False)
             counter += 1
             if (counter > len(party)): break
 
@@ -150,7 +143,6 @@ def loadCombat(transferredData):
         if enemySelectionShowing:
             useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
             party[activeCharacter-1].hasActed = True
-            updateEnemies()
             updateCharacters()
             for entity in visualEntities:
                 if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
@@ -190,7 +182,6 @@ def loadCombat(transferredData):
                         entity.isShowing = True
             else: 
                 useSkill(enemies, 0, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-                updateEnemies()
                 updateCharacters()
                 for entity in visualEntities:
                     if ("Skill Selection" in entity.tags):
@@ -200,56 +191,49 @@ def loadCombat(transferredData):
     
 
     def updateCharacters():
-        global partyVisuals
-        global party
-        global screenX
-        global screenY
-        nonlocal activeCharacter
-
-        partyVisuals[0].updateCharacter()
-        partyVisuals[1].updateCharacter()
-        partyVisuals[2].updateCharacter()
-
-        if (len(party)<3) : partyVisuals[2].changeCharacter(None)
-        if (len(party)<2) : partyVisuals[0].changeCharacter(None)
-
-        for item in visualEntities:
-            if (item.name == "Skill1"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[0].img)
-            if (item.name == "Skill2"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[1].img)
-            if (item.name == "Skill3"): item.updateImg(party[(activeCharacter-1)%len(party)].skills[2].img)
-            if (item.name == "Skill1Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[0].name, "mono", int(screenX*0.5/15), "black", "yellow")
-            if (item.name == "Skill2Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[1].name, "mono", int(screenX*0.5/15), "black", "yellow")
-            if (item.name == "Skill3Text"): item.updateText(party[(activeCharacter-1)%len(party)].skills[2].name, "mono", int(screenX*0.5/15), "black", "yellow")
+        for entity in visualEntities[:]:
+            if type(entity) == CombatCharacterEntity:
+                if (entity.character is not None and entity.character.health.current_value <= 0):
+                    visualEntities.remove(entity)
+                else:
+                    entity.updateCharacter()
 
 
-    def updateEnemies():
+    def addEnemies():
         nonlocal enemies
         enemyLeftPadding = 0.4
         enemyRightPadding = 0.1
         enemiesWidth = 1-(enemyLeftPadding+enemyRightPadding)
         enemySpacing = enemiesWidth/(1+len(enemies)*2)
-        
-        for entity in visualEntities[:]:
-            if (Tag.ENEMY in entity.tags):
-                visualEntities.remove(entity)
-        for enemy in enemies[:]:
-            if (enemy.getCurrentHP() <= 0):
-                enemies.remove(enemy)
 
         count = 0
         for enemy in enemies:
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
-            displayedEnemy = CombatCharacterEntity(currEnemyX, 1/10, enemySpacing, 1/3, enemy)
+
+            entityDetails = {
+                "name": enemy.name,
+                "HPBorderXPosition": 0.02,
+                "HPBorderYPosition": 0.1,
+                "ManaBorderXPosition": 0.02,
+                "ManaBorderYPosition": 0.1,
+                "imgXPosition": currEnemyX,
+                "imgYPosition": 0.1,
+                "imgWidth": 0.12,
+                "imgHeight": 0.24,
+                "checkmarkXPosition": 0.375,
+                "checkmarkYPosition": 0.05,
+            }
+            entityDetails = json.loads(json.dumps(entityDetails))
+
+            print(type(entityDetails))
+            displayedEnemy = CombatCharacterEntity.createFrom(entityDetails)
+            displayedEnemy.changeCharacter(enemy, True)
             displayedEnemy.scale(screenX, screenY)
-            visualEntities.append(displayedEnemy.enemyImg)
-            visualEntities.append(displayedEnemy.enemyHPBarBorder)
-            visualEntities.append(displayedEnemy.enemyHPBarRed)
-            visualEntities.append(displayedEnemy.enemyHPBarGreen)
-            visualEntities.append(displayedEnemy.enemyHPBarText)
+            visualEntities.append(displayedEnemy)
             count = count+1
 
 
-    updateEnemies()
+    addEnemies()
     updateCharacters()
 
 

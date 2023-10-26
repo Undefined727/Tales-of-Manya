@@ -60,5 +60,5 @@ def loadJson(address, screenX, screenY, visualEntities, buttons):
                 visualEntities.append(entity)
             elif(item["entityType"] == "CharacterEntityCoords"): 
                 visualEntities.append(entity)
-                buttons.append(entity.getButtons())
+                if (entity.getButtons() is not None): buttons.append(entity.getButtons())
             else: visualEntities.append(entity)
