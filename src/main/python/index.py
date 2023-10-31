@@ -17,7 +17,6 @@ pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
 gameData = Singleton(screen, None)
-
 visualEntities = []
 buttons = []
 

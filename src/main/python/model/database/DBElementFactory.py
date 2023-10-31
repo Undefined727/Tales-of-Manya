@@ -195,4 +195,3 @@ factory = DBElementFactory()
 
 # ## Fetching from the database ###
 item = factory.fetchItem("Flower Crown")
-print(item.toString())

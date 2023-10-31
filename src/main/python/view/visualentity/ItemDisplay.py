@@ -14,7 +14,7 @@ class ItemDisplay:
 
     def __init__(self, item:Item):
         self.item = item
-        self.img = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
+        self.img = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
         self.name = TextEntity("text", True, 0, 0, 0, 0, [], "default_name", "mono", 10, "black", None)
         self.stats = Paragraph("stats", True, 0, 0, 0, 0, [], "", "mono", 12, "black", None, "Left")
         self.isShowing = True

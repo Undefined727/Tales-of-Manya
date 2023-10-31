@@ -76,8 +76,8 @@ def loadInventory(transferredData):
     itemDisplay.changeItem(currInventory[currInventorySlot].item)
     counter = 0
     for slot in currInventory:
-        slotBackground = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png")
-        slotImage = ImageEntity(f"InventorySlot{counter}", True, 0.027 + counter*0.07, 0.15+0.007*screenX/screenY, 0.046, 0.046*screenX/screenY, [], f"items/{slot.item.getPath()}")
+        slotBackground = ImageEntity(f"InventorySlotBackground{counter}", True, 0.02 + counter*0.07, 0.15, 0.06, 0.06*screenX/screenY, [], f"inventorySlotBackground.png", True)
+        slotImage = ImageEntity(f"InventorySlot{counter}", True, 0.027 + counter*0.07, 0.15+0.007*screenX/screenY, 0.046, 0.046*screenX/screenY, [], f"items/{slot.item.getPath()}", True)
         slotNumber = TextEntity(f"InventorySlotCount{counter}", True, 0.065 + counter*0.07, 0.24, 0.03, 0.06, [], str(slot.count), "mono", 26)
         slotBackground.scale(screenX, screenY)
         slotImage.scale(screenX, screenY)

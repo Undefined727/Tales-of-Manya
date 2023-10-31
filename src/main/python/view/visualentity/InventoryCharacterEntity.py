@@ -29,7 +29,7 @@ class InventoryCharacterEntity:
     def __init__(self):
         self.character = None
         self.isShowing = True
-        self.img = ImageEntity("characterImg", True, 0, 0, 0, 0, [], "nekoarc.png")
+        self.img = ImageEntity("characterImg", True, 0, 0, 0, 0, [], "nekoarc.png", True)
         self.level = TextEntity("text", True, 0, 0, 0, 0, [], "lvl", "mono", 10, "black", None)
         self.name = TextEntity("text", True, 0, 0, 0, 0, [], "name", "mono", 10, "black", None)
         self.maxHealth = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
@@ -37,13 +37,13 @@ class InventoryCharacterEntity:
         self.atk = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
         self.defense = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
         self.spellPower = TextEntity("text", True, 0, 0, 0, 0, [], "727", "mono", 10, "black", None)
-        self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/helmet_transparent.png")
-        self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/chestplate_transparent.png")
-        self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png")
-        self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/waist_transparent.png")
-        self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png")
-        self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png")
-        self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png")
+        self.headImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/helmet_transparent.png", True)
+        self.chestImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/chestplate_transparent.png", True)
+        self.waistImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/leggings_transparent.png", True)
+        self.legsImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/waist_transparent.png", True)
+        self.weaponImg = ImageEntity("img", True, 0, 0, 0, 0, [], "items/weapon_transparent.png", True)
+        self.accessory1Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory_transparent.png", True)
+        self.accessory2Img = ImageEntity("img", True, 0, 0, 0, 0, [], "items/accessory2_transparent.png", True)
         
 
     def getItems(self):
