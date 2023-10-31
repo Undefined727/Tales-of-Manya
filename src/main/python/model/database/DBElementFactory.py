@@ -25,9 +25,11 @@ class DBElementFactory:
         self.engine = create_engine(f"sqlite:///{path}", echo = echo)
 
     def fetchItem(self, name : str):
+        print(f"Fetching {name} from Database")
         connection = self.engine.connect()
         statement = select(DBItem).where(DBItem.name == name)
         row = connection.execute(statement).first()
+        connection.close()
         if row is None: raise IllegalArgumentException("The item is not in the database")
         return self.buildItem(row)
 
@@ -35,13 +37,17 @@ class DBElementFactory:
         connection = self.engine.connect()
         statement = select(DBItem).where(DBItem.id == item_id)
         row = connection.execute(statement).first()
+        connection.close()
         if row is None: raise IllegalArgumentException("The item is not in the database")
         return self.buildItem(row)
 
     def buildItem(self, row) -> Item:
         # TODO Not handling tags and bonuses yet
+        print("Building Item")
         connection = self.engine.connect()
+        print("Connected to DB")
         statement = select(DBItemStat).where(DBItemStat.item == row.name)
+        print("Made Statement")
         itemStatsData = connection.execute(statement)
 
         itemStats = {}
@@ -56,6 +62,8 @@ class DBElementFactory:
                     itemStats,
                     None,
                     row.id)
+        print("Finished")
+        connection.close()
         return item
 
     def buildSkill(self, row) -> Skill:
@@ -192,6 +200,3 @@ factory = DBElementFactory()
 #factory.store(example_item3)
 #factory.store(example_effect)
 #factory.store(example_skill)
-
-# ## Fetching from the database ###
-item = factory.fetchItem("Flower Crown")

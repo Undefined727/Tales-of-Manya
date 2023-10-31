@@ -25,10 +25,8 @@ class Inventory:
         return currentAmount
 
     def addItem(self, item, count:int) -> bool:
-        print("Loading Item from Database")
         if (not type(item) == Item): 
             item = databaseFactory.fetchItem(item)
-        print("Loaded Item from Database")
         for i in range(count):
             added = False
             for currentSlot in self.slots:

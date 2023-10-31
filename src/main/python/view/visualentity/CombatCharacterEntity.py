@@ -77,6 +77,7 @@ class CombatCharacterEntity:
         self.characterManaBarText.scale(screenX, screenY)
 
     def changeCharacter(self, character:Character, isEnemy:bool):
+        self.character = character
         if (character == None): return
 
         self.isEnemy = isEnemy

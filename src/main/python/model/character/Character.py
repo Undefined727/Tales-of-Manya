@@ -108,9 +108,8 @@ class Character:
         amount *= 1 + self.getBonuses(EffectType.HEALING_PCT)
         self.health.increaseBy(amount)
 
-    def harm(self, amount : int):
-        amount += 1 + self.getBonuses(EffectType.INCOMING_DAMAGE_FLAT)
-        amount *= 1 + self.getBonuses(EffectType.INCOMING_DAMAGE_PCT)
+    def takeDamage(self, amount : int):
+        # Add defense to scale this
         self.health.decreaseBy(amount)
 
     def recoverMana(self, amount : int):

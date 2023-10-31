@@ -117,6 +117,16 @@ def loadCombat(transferredData):
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
+    def updateCharacters():
+        global visualEntities
+        for entity in visualEntities[:]:
+            if type(entity) == CombatCharacterEntity:
+                print(entity.character)
+                if (entity.character is not None and entity.character.health.current_value <= 0):
+                    visualEntities.remove(entity)
+                elif(entity.character is not None):
+                    entity.updateCharacter()
+
     def buttonExit():
         pygame.quit()
 
@@ -150,11 +160,6 @@ def loadCombat(transferredData):
             skillsShowing = False
             enemySelectionShowing = False
 
-    def attack():
-        nonlocal currSelectedChar
-        if (currSelectedChar is not None):
-            print(currSelectedChar.character.attack)
-
     def skillButtonFunction():
         nonlocal skillsShowing
         global visualEntities
@@ -162,41 +167,13 @@ def loadCombat(transferredData):
         for entity in visualEntities:
             if ("Skill Selection" in entity.tags):
                 entity.isShowing = not entity.isShowing
-
-    def individualSkillButtonFunction(*args):
-        global visualEntities
-        global party
-        nonlocal skillsShowing
-        nonlocal skillSelected
-        nonlocal activeCharacter
-        nonlocal enemies
-        nonlocal enemySelectionShowing
-        
-        skillSelected = args[0]
-
-        if (skillsShowing and (not party[activeCharacter-1].hasActed) and (party[activeCharacter-1].skills[skillSelected].manaCost <= party[activeCharacter-1].mana)): 
-            if (party[activeCharacter-1].skills[skillSelected].singleTarget == 1):
-                enemySelectionShowing = True
-                for entity in visualEntities:
-                    if ("Enemy Selection" in entity.tags):
-                        entity.isShowing = True
-            else: 
-                useSkill(enemies, 0, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-                updateCharacters()
-                for entity in visualEntities:
-                    if ("Skill Selection" in entity.tags):
-                        entity.isShowing = False
-                skillsShowing = False
-
     
 
-    def updateCharacters():
-        for entity in visualEntities[:]:
-            if type(entity) == CombatCharacterEntity:
-                if (entity.character is not None and entity.character.health.current_value <= 0):
-                    visualEntities.remove(entity)
-                else:
-                    entity.updateCharacter()
+    def attack():
+        nonlocal enemies
+        global party
+        enemies[0].takeDamage(party[0].attack)
+        updateCharacters()
 
 
     def addEnemies():
