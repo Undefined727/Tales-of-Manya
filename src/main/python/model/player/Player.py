@@ -21,6 +21,9 @@ class Player:
         self.inventory.addItem("Slimy Helmet", 1)
         self.inventory.addItem("Plate Mail Skirt", 1)
         self.inventory.addItem("Shark Tooth Necklace", 1)
+        self.inventory.addItem("Stone Ring", 1)
+        self.inventory.addItem("Leather Boots", 1)
+        self.inventory.addItem("Warrior Helmet", 1)
 
     def getCurrentQuests(self):
         return self.currentQuests

@@ -12,13 +12,13 @@ class ImageEntity(VisualEntity):
     def updateImg(self, path):
         self.path = path
         self.img = pygame.image.load("src/main/python/sprites/" + path)
-        self.img = pygame.transform.scale(self.img, (self.width, self.height))
+        self.img = pygame.transform.smoothscale(self.img, (self.width, self.height))
 
     def resize(self, width, height):
         self.width = width
         self.height = height
         if (width > 1 and height > 1):
-            self.img = pygame.transform.scale(self.img, (self.width, self.height))
+            self.img = pygame.transform.smoothscale(self.img, (self.width, self.height))
 
     def reposition(self, xPosition, yPosition):
         self.xPosition = xPosition
@@ -28,7 +28,7 @@ class ImageEntity(VisualEntity):
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
         self.resize(self.width*screenX, self.height*screenY)
         if (self.width > 1 and self.height > 1):
-            self.img = pygame.transform.scale(self.img, (self.width, self.height))
+            self.img = pygame.transform.smoothscale(self.img, (self.width, self.height))
         
 
 
