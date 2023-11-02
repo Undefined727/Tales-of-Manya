@@ -95,9 +95,11 @@ def loadCombat(transferredData):
     skillSelected = 0
     skillsShowing = False
     enemySelectionShowing = False
+    currSelectedChar = None
 
     
     visualEntities = []
+    buttons = []
     loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)
     counter = 0
     for entity in visualEntities:
@@ -121,7 +123,6 @@ def loadCombat(transferredData):
         global visualEntities
         for entity in visualEntities[:]:
             if type(entity) == CombatCharacterEntity:
-                print(entity.character)
                 if (entity.character is not None and entity.character.health.current_value <= 0):
                     visualEntities.remove(entity)
                 elif(entity.character is not None):
@@ -130,16 +131,11 @@ def loadCombat(transferredData):
     def buttonExit():
         pygame.quit()
 
-
-    currSelectedChar = None
-    def characterSelection(selectedChar:CombatCharacterEntity):
+    def characterSelection(selectedChar):
         nonlocal currSelectedChar
-        
-        if (currSelectedChar is not None): 
-            currSelectedChar.selectionButton.activatesOnHover = True
+        if (currSelectedChar is not None): currSelectedChar.isSelected = False
         currSelectedChar = selectedChar
-        print(currSelectedChar.selectionButton.activatesOnHover)
-        currSelectedChar.selectionButton.activatesOnHover = False
+        currSelectedChar.isSelected = True
         updateCharacters()
 
     def enemySelection(selectedChar:CombatCharacterEntity):
@@ -171,8 +167,9 @@ def loadCombat(transferredData):
 
     def attack():
         nonlocal enemies
-        global party
-        enemies[0].takeDamage(party[0].attack)
+        nonlocal currSelectedChar
+        if(currSelectedChar == None): return
+        enemies[0].takeDamage(currSelectedChar.character.attack)
         updateCharacters()
 
 
@@ -202,7 +199,7 @@ def loadCombat(transferredData):
             displayedEnemy.scale(screenX, screenY)
             displayedEnemy.changeCharacter(enemy, True)
             visualEntities.append(displayedEnemy)
-            visualEntities.append(displayedEnemy.characterImg)
+            if(displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
             count = count+1
 
 

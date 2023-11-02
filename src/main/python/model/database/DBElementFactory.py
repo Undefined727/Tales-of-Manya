@@ -25,7 +25,6 @@ class DBElementFactory:
         self.engine = create_engine(f"sqlite:///{path}", echo = echo)
 
     def fetchItem(self, name : str):
-        print(f"Fetching {name} from Database")
         connection = self.engine.connect()
         statement = select(DBItem).where(DBItem.name == name)
         row = connection.execute(statement).first()
@@ -43,11 +42,8 @@ class DBElementFactory:
 
     def buildItem(self, row) -> Item:
         # TODO Not handling tags and bonuses yet
-        print("Building Item")
         connection = self.engine.connect()
-        print("Connected to DB")
         statement = select(DBItemStat).where(DBItemStat.item == row.name)
-        print("Made Statement")
         itemStatsData = connection.execute(statement)
 
         itemStats = {}
@@ -62,7 +58,6 @@ class DBElementFactory:
                     itemStats,
                     None,
                     row.id)
-        print("Finished")
         connection.close()
         return item
 

@@ -39,19 +39,22 @@ class Character:
     buff_bonuses : dict[ EffectType, int ]
 
 
-    ### Temporary Stuff Until New Class ###
+    ### Combat Visuals ###
     img : str = "nekoarc.png"
-    inactiveImg : str = "nekoarc.png"
+    selectedImg : str = "nekoarc.png"
+    
+    ## Overworld Visuals
     overworldImg : str = "nekoarc.png"
     hasActed : bool = False
 
 
+    # Add Pulling from Database with ID in the future #
     def __init__(self, name : str = "Placeholder Name", img : str = "nekoarc.png", level : int = 1):
         self.id             = uuid4()
         self.name           = name
         self.level          = level
         self.img            = img
-        self.inactiveImg    = img
+        self.selectedImg    = "selectedCatgirl.png"
         self.overworldImg   = img
 
         self.health     = DynamicStat(level * 100)

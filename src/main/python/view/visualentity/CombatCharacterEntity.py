@@ -2,7 +2,7 @@ from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from model.character.Character import Character
-from view.visualentity.HoverShapeButton import HoverShapeButton
+from view.visualentity.ShapeButton import ShapeButton
 
 class CombatCharacterEntity:
 
@@ -12,6 +12,9 @@ class CombatCharacterEntity:
     isShowing:bool
 
     characterImg:ImageEntity
+
+    selectedCharacterImg:ImageEntity
+    selectionButton:ShapeButton
     characterCheckmark:ImageEntity
 
     characterHPBarBorder:ImageEntity
@@ -23,7 +26,6 @@ class CombatCharacterEntity:
     characterManaBarRed:ShapeEntity
     characterManaBarText:TextEntity
 
-    selectionButton:HoverShapeButton
 
     DEFAULT_VALUES = {
         "checkmarkWidth": 0.02,
@@ -42,6 +44,7 @@ class CombatCharacterEntity:
        self.isEnemy = False
        self.isSelected = False
        self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
+       self.selectedCharacterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
        self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
        self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png")
        self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
@@ -51,21 +54,26 @@ class CombatCharacterEntity:
        self.characterManaBarRed = ShapeEntity("ManaRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
        self.characterManaBarBlue = ShapeEntity("ManaBlue", True, 0, 0, 0, 0, [], "blue", False, "rectangle")
        self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
-       self.selectionButton = HoverShapeButton("Selection_Button", True, 0, 0, 0,  0, [], "Blue", "cyan", "ellipse", "characterSelection", [self], True)
+       self.selectionButton = ShapeButton("Selection_Button", True, 0, 0, 0, 0, [], (255, 0, 0, 0), False, "rectangle", "characterSelection", [self], True)
 
     def getItems(self):
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
         characterVisuals = [self.characterImg]
-        characterUI = [self.characterCheckmark]
+        characterUI = [self.characterCheckmark, self.selectionButton]
         if (self.isEnemy): return hpBar + characterVisuals
+        elif (self.isSelected): 
+            characterVisuals = [self.selectedCharacterImg]
         return hpBar + manaBar + characterVisuals + characterUI
     
     def getButtons(self):
+        if (not self.isEnemy): return self.selectionButton
         return None
 
     def scale(self, screenX, screenY):
         self.characterImg.scale(screenX, screenY)
+        self.selectedCharacterImg.scale(screenX, screenY)
+        self.selectionButton.scale(screenX, screenY)
         self.characterCheckmark.scale(screenX, screenY)
         self.characterHPBarBorder.scale(screenX, screenY)
         self.characterHPBarRed.scale(screenX, screenY)
@@ -82,6 +90,7 @@ class CombatCharacterEntity:
 
         self.isEnemy = isEnemy
         self.characterImg.updateImg(character.img)
+        self.selectedCharacterImg.updateImg(character.selectedImg)
         self.characterCheckmark.isShowing = character.hasActed
         
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)
@@ -98,6 +107,10 @@ class CombatCharacterEntity:
         if ("imgXPosition" in json_object):
             newObject.characterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
             newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectionButton.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectionButton.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectedCharacterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectedCharacterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
         if ("checkmarkXPosition" in json_object):
             newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
             newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
