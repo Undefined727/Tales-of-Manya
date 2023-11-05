@@ -107,7 +107,7 @@ for y in range(0, height):
 
 
 ### Pull Menu Structure ###
-loadJson("catgirlDungeoneer.json", screenX, screenY, [visualEntities, buttons])
+loadJson("catgirlDungeoneer.json", screenX, screenY, visualEntities, buttons)
 
 # Add Fog #
 backgroundHeight = 3*screenY

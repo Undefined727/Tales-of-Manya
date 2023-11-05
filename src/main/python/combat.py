@@ -248,7 +248,6 @@ def loadCombat(transferredData):
 
         refreshScreen(screen)
         if (quit):
-            #currSelectedChar.selectionButton.activesOnHover = True
             quit = False 
             break
     return gameData
