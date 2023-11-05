@@ -43,14 +43,14 @@ class CombatCharacterEntity:
        self.isShowing = True
        self.isEnemy = False
        self.isSelected = False
-       self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
-       self.selectedCharacterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png")
-       self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
-       self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png")
+       self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
+       self.selectedCharacterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
+       self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png", True)
+       self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png", True)
        self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
        self.characterHPBarGreen = ShapeEntity("HPGreen", True, 0, 0, 0, 0, [], "green", False, "rectangle")
        self.characterHPBarText = TextEntity("HPText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
-       self.characterManaBarBorder = ImageEntity("ManaBorder", True, 0, 0, 0, 0, [], "ManaBar.png")
+       self.characterManaBarBorder = ImageEntity("ManaBorder", True, 0, 0, 0, 0, [], "ManaBar.png", True)
        self.characterManaBarRed = ShapeEntity("ManaRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
        self.characterManaBarBlue = ShapeEntity("ManaBlue", True, 0, 0, 0, 0, [], "blue", False, "rectangle")
        self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
@@ -63,7 +63,6 @@ class CombatCharacterEntity:
         if (self.isSelected): characterVisuals = [self.selectedCharacterImg]
         if (self.isEnemy): return hpBar + characterVisuals
         characterUI = [self.characterCheckmark, self.selectionButton]
-        print(self.characterCheckmark.isShowing)
         return hpBar + manaBar + characterVisuals + characterUI
     
     def getButtons(self):
@@ -89,8 +88,8 @@ class CombatCharacterEntity:
         if (character == None): return
 
         self.isEnemy = isEnemy
-        self.characterImg.updateImg(character.img)
-        self.selectedCharacterImg.updateImg(character.selectedImg)
+        self.characterImg.updateImg(f"entities/{character.img}")
+        self.selectedCharacterImg.updateImg(f"entities/{character.selectedImg}")
         self.characterCheckmark.isShowing = character.hasActed
         
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)

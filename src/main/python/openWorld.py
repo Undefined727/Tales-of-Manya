@@ -200,7 +200,7 @@ def loadOpenWorld(transferredData):
             spawnX = entity['position'][0]
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
-            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], 30)
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'])
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
             npc = NPC(entity['NPCID'], entity['position'])
@@ -575,10 +575,10 @@ def loadOpenWorld(transferredData):
                                             quest.questProgress += 1
                                             if (quest.questProgress >= quest.questGoal): 
                                                 completeQuest(quest, simulatedObjects)
-                                combatButton([entity.enemyStats])
+                                combatButton(entity.enemyStats)
                                 entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):
-                                combatButton([trigger.enemyStats])
+                                combatButton(trigger.enemyStats)
                                 trigger.respawnTimer = 120
                             if (type(entity) == NPC):
                                 visualNovel.updateDialogue(entity.currentDialogue)

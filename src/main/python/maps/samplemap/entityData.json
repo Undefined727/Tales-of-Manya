@@ -15,8 +15,8 @@
             33,
             25
         ],
-        "enemyType": "Slime",
-        "level": 8
+        "enemyType": ["Slime", "Slime"],
+        "level": [15, 20]
     },
     {
         "name": "Trapped NPC",

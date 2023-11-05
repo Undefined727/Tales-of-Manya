@@ -179,6 +179,7 @@ def loadCombat(transferredData):
 
         count = 0
         for enemy in enemies:
+            print(enemy)
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
 
             entityDetails = {
