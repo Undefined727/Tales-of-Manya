@@ -51,18 +51,6 @@
         "checkmarkYPosition": 0.7,
         "entityType": "CharacterEntityCoords"
     },{
-        "name": "BagButton",
-        "isShowing": true,
-        "xPosition": 0.02,
-        "yPosition": 0.02,
-        "width": 0.13,
-        "height": 0.13,
-        "tags": [],
-        "entityType": "ImageButton",
-        "path": "BagButton.png",
-        "func": "inventory",
-        "args": []
-    },{
         "name": "GlossaryButtonImg",
         "isShowing": true,
         "xPosition": 0.85,

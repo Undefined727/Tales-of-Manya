@@ -31,12 +31,6 @@ def openWorld():
     quit = True
     gameData.screenOpen = "Open World"
 
-def inventoryButton():
-    global quit
-    global gameData
-    quit = True
-    gameData.screenOpen = "Inventory"
-
 
 def refreshScreen(screen):
     # Fill the background
@@ -225,7 +219,6 @@ def loadCombat(transferredData):
                         if (entity.func == "exit"): buttonFunc = buttonExit
                         elif (entity.func == "openWorld"): buttonFunc = openWorld
                         elif (entity.func == "characterSelection"): buttonFunc = characterSelection
-                        elif (entity.func == "inventory"): buttonFunc = inventoryButton
                         elif (entity.func == "attack"): buttonFunc = attack
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
