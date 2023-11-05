@@ -18,7 +18,6 @@ class Player:
         self.inventory = Inventory()
         self.inventory.addItem("Purrveyor of the Nyaight", 5)
         self.inventory.addItem("Flower Crown", 1)
-        self.inventory.addItem("Slimy Helmet", 1)
         self.inventory.addItem("Plate Mail Skirt", 1)
         self.inventory.addItem("Shark Tooth Necklace", 1)
         self.inventory.addItem("Stone Ring", 1)

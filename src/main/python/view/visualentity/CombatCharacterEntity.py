@@ -60,10 +60,10 @@ class CombatCharacterEntity:
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
         characterVisuals = [self.characterImg]
-        characterUI = [self.characterCheckmark, self.selectionButton]
+        if (self.isSelected): characterVisuals = [self.selectedCharacterImg]
         if (self.isEnemy): return hpBar + characterVisuals
-        elif (self.isSelected): 
-            characterVisuals = [self.selectedCharacterImg]
+        characterUI = [self.characterCheckmark, self.selectionButton]
+        print(self.characterCheckmark.isShowing)
         return hpBar + manaBar + characterVisuals + characterUI
     
     def getButtons(self):

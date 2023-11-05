@@ -202,11 +202,33 @@ def loadOpenWorld(transferredData):
         elif(entity['type'] == "enemy"):
             enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], 30)
             allEntities.append(enemy)
-            simulatedObjects.append(enemy)
         elif(entity['type'] == "npc"):
             npc = NPC(entity['NPCID'], entity['position'])
             allEntities.append(npc)
-            simulatedObjects.append(npc)
+
+
+    if (gameData.renderedMapEntities is None):
+        character = PlayerObject((spawnX, spawnY))
+        allEntities.append(character)
+        for entity in allEntities:
+            simulatedObjects.append(entity)
+        testInteractionObject = PlayerInteractionObject((0, 0))
+        testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
+        allEntities.append(testAttack)
+        allEntities.append(testInteractionObject)
+        gameData.renderedMapEntities = allEntities
+    else: 
+        allEntities = gameData.renderedMapEntities
+        for entity in allEntities:
+            if (type(entity) == Enemy and entity.respawnTimer <= 0): simulatedObjects.append(entity)
+            elif (type(entity) == NPC): simulatedObjects.append(entity)
+            elif (type(entity) == PlayerObject): simulatedObjects.append(entity)
+        for entity in allEntities:
+            if (type(entity) == PlayerObject): character = entity
+            if (type(entity) == PlayerInteractionObject): testInteractionObject = entity
+            if (type(entity) == PlayerAttackObject): testAttack = entity
+
+    
 
     updateNPCData(gameData.player.getCurrentQuests())
     refreshCurrentNPCDialogue(simulatedObjects)
@@ -268,16 +290,7 @@ def loadOpenWorld(transferredData):
     cameraX = 0
     cameraY = 0
 
-    if (gameData.coords is None): character = PlayerObject((spawnX, spawnY))
-    else: character = PlayerObject((gameData.coords))
-    testInteractionObject = PlayerInteractionObject((0, 0))
-    testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     
-    allEntities.append(character)
-    allEntities.append(testAttack)
-    allEntities.append(testInteractionObject)
-
-    simulatedObjects.append(character)
 
     
     movementSpeed = 0.1
@@ -563,10 +576,10 @@ def loadOpenWorld(transferredData):
                                             if (quest.questProgress >= quest.questGoal): 
                                                 completeQuest(quest, simulatedObjects)
                                 combatButton([entity.enemyStats])
-                                simulatedObjects.remove(entity)
-                                entity.respawnTimer = 60
+                                entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):
                                 combatButton([trigger.enemyStats])
+                                trigger.respawnTimer = 120
                             if (type(entity) == NPC):
                                 visualNovel.updateDialogue(entity.currentDialogue)
                                 visualNovel.isShowing = True
@@ -611,14 +624,14 @@ def loadOpenWorld(transferredData):
         
 
         ## Respawn Enemies ##
-        # for entity in allEntities:
-        #     if (type(entity) == Enemy):
-        #         if (not entity.respawnTimer == 0):
-        #             entity.respawnTimer -= 1
-        #             if (entity.respawnTimer <= 0):
-        #                 entity.respawnTimer = 0
-        #                 entity.setCenter((entity.spawnX, entity.spawnY))
-        #                 simulatedObjects.append(entity)
+        for entity in allEntities:
+            if (type(entity) == Enemy):
+                if (not entity.respawnTimer == 0):
+                    entity.respawnTimer -= 1
+                    if (entity.respawnTimer <= 0):
+                        entity.respawnTimer = 0
+                        entity.setCenter((entity.spawnX, entity.spawnY))
+                        simulatedObjects.append(entity)
 
 
         currentQuests = gameData.player.getCurrentQuests()
@@ -674,6 +687,6 @@ def loadOpenWorld(transferredData):
         ## Quit ##
         if (quit):
             quit = False 
-            gameData.coords = (character.worldObject.shape.getCenter())
+            gameData.renderedMapEntities = allEntities
             break
     return gameData

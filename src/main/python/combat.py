@@ -121,9 +121,11 @@ def loadCombat(transferredData):
 
     def updateCharacters():
         global visualEntities
+        nonlocal enemies
         for entity in visualEntities[:]:
             if type(entity) == CombatCharacterEntity:
                 if (entity.character is not None and entity.character.health.current_value <= 0):
+                    if (entity.isEnemy): enemies.remove(entity.character)
                     visualEntities.remove(entity)
                 elif(entity.character is not None):
                     entity.updateCharacter()
@@ -170,6 +172,7 @@ def loadCombat(transferredData):
         nonlocal currSelectedChar
         if(currSelectedChar == None): return
         enemies[0].takeDamage(currSelectedChar.character.attack)
+        currSelectedChar.character.hasActed = True
         updateCharacters()
 
 
@@ -239,23 +242,16 @@ def loadCombat(transferredData):
             if not character.hasActed:
                 isEnemyTurn = False
         if (isEnemyTurn):
-            count = 0
             for enemy in enemies:
-                useSkill(party, activeCharacter-1, count, enemies, enemy.skills[0])
-                count += 1
+                party[random.randint(1, len(party))-1].takeDamage(enemy.attack)
             for character in party:
                 character.hasActed = False
-            updateEnemies()
             updateCharacters()
               
-        if (party[activeCharacter-1].getCurrentHP() == 0 or len(enemies) == 0):
-            party[activeCharacter-1].setCurrentHP(party[activeCharacter-1].maxHP)
-            party[activeCharacter-1].mana = party[activeCharacter-1].maxMana
-            enemies = [Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30)), Character("Wizard", "wizard.png", random.randint(5, 30)), Character("Frog", "frog.png", random.randint(5, 30))]
-            updateEnemies()
-            updateCharacters()
-            for entity in visualEntities:
-                if("Skill Point" in entity.tags): entity.isBorder = False
+        if (len(enemies) == 0):
+            for character in party:
+                character.setCurrentHP(character.getMaxHP())
+            openWorld()
 
         refreshScreen(screen)
         if (quit):
