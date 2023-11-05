@@ -5,11 +5,16 @@ class Animation(VisualEntity):
     images:list[ImageEntity]
     paths:list[str]
     currentImage:int
+    delay:int
+    currentDelayPosition:int
     keepQuality:bool
 
-    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], files = [], keepQuality = True):
+    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], files = [], delay = 5, keepQuality = True):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
+        self.keepQuality = keepQuality
+        self.delay = delay
         self.currentImage = 0
+        self.currentDelayPosition = 0
         self.images = []
         counter = 0 
         for file in files:
@@ -28,8 +33,13 @@ class Animation(VisualEntity):
                 counter += 1
 
     def getImage(self):
-        self.currentImage = (self.currentImage+1)%len(self.images)
-        return self.images[self.currentImage]
+        if (self.currentDelayPosition >= 0): 
+            self.currentDelayPosition -= 1
+            return self.images[self.currentImage]
+        else:
+            self.currentImage = (self.currentImage+1)%len(self.images)
+            self.currentDelayPosition = self.delay
+            return self.images[self.currentImage]
 
 
     def resize(self, width, height):

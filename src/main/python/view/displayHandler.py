@@ -1,4 +1,5 @@
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.Animation import Animation
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
@@ -38,6 +39,8 @@ def displayEntity(entity, screen):
         # If more is added to the scroll bar that can be added here :thumbeline:
     elif (type(entity) == ImageButton):
         displayEntity(entity.buttonVisual(), screen)
+    elif (type(entity) == Animation):
+        displayEntity(entity.getImage(), screen)
     elif (type(entity) == TextEntity):
         screen.blit(entity.textLabel, entity.textRect)
     elif (type(entity) == Paragraph):

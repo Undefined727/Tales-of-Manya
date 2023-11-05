@@ -1,4 +1,5 @@
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.Animation import Animation
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from model.character.Character import Character
@@ -13,7 +14,7 @@ class CombatCharacterEntity:
 
     characterImg:ImageEntity
 
-    selectedCharacterImg:ImageEntity
+    selectedCharacterAnimation:Animation
     selectionButton:ShapeButton
     characterCheckmark:ImageEntity
 
@@ -44,7 +45,7 @@ class CombatCharacterEntity:
        self.isEnemy = False
        self.isSelected = False
        self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
-       self.selectedCharacterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
+       self.selectedCharacterAnimation = Animation("Animation",True,0,0,0,0,[],["selectedCatgirlAnimation/catgirl1.png", "selectedCatgirlAnimation/catgirl2.png", "selectedCatgirlAnimation/catgirl3.png", "selectedCatgirlAnimation/catgirl4.png"])
        self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png", True)
        self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png", True)
        self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
@@ -60,7 +61,7 @@ class CombatCharacterEntity:
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
         characterVisuals = [self.characterImg]
-        if (self.isSelected): characterVisuals = [self.selectedCharacterImg]
+        if (self.isSelected): characterVisuals = [self.selectedCharacterAnimation]
         if (self.isEnemy): return hpBar + characterVisuals
         characterUI = [self.characterCheckmark, self.selectionButton]
         return hpBar + manaBar + characterVisuals + characterUI
@@ -71,7 +72,7 @@ class CombatCharacterEntity:
 
     def scale(self, screenX, screenY):
         self.characterImg.scale(screenX, screenY)
-        self.selectedCharacterImg.scale(screenX, screenY)
+        self.selectedCharacterAnimation.scale(screenX, screenY)
         self.selectionButton.scale(screenX, screenY)
         self.characterCheckmark.scale(screenX, screenY)
         self.characterHPBarBorder.scale(screenX, screenY)
@@ -89,7 +90,7 @@ class CombatCharacterEntity:
 
         self.isEnemy = isEnemy
         self.characterImg.updateImg(f"entities/{character.img}")
-        self.selectedCharacterImg.updateImg(f"entities/{character.selectedImg}")
+        #self.selectedCharacterAnimation.updateImg(f"entities/{character.selectedImg}")
         self.characterCheckmark.isShowing = character.hasActed
         
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)
@@ -108,8 +109,8 @@ class CombatCharacterEntity:
             newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
             newObject.selectionButton.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
             newObject.selectionButton.resize(json_object["imgWidth"], json_object["imgHeight"])
-            newObject.selectedCharacterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
-            newObject.selectedCharacterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectedCharacterAnimation.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectedCharacterAnimation.resize(json_object["imgWidth"], json_object["imgHeight"])
         if ("checkmarkXPosition" in json_object):
             newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
             newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
