@@ -98,7 +98,7 @@ class InventoryCharacterEntity:
         self.spellPower.fontSize = (int(self.level.width/10))
         self.level.updateText("Level " + str(character.level))
         self.name.updateText(character.name)
-        self.img.updateImg(character.img)
+        self.img.updateImg(f"entities/{character.img}")
         self.maxHealth.updateText("HP " + str(character.health.getMaxValue()))
         self.maxMana.updateText("Mana " + str(character.mana.getMaxValue()))
         self.atk.updateText("ATK " + str(character.attack))

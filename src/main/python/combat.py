@@ -119,7 +119,6 @@ def loadCombat(transferredData):
         for entity in visualEntities[:]:
             if type(entity) == CombatCharacterEntity:
                 if (entity.character is not None and entity.character.health.current_value <= 0):
-                    if (entity.isEnemy): enemies.remove(entity.character)
                     visualEntities.remove(entity)
                 elif(entity.character is not None):
                     entity.updateCharacter()
@@ -165,7 +164,11 @@ def loadCombat(transferredData):
         nonlocal enemies
         nonlocal currSelectedChar
         if(currSelectedChar == None): return
-        enemies[0].takeDamage(currSelectedChar.character.attack)
+        counter = 0 
+        while (enemies[counter].getCurrentHP() <= 0):
+            if (counter >= len(enemies)): break
+            else: counter += 1
+        enemies[counter].takeDamage(currSelectedChar.character.attack)
         currSelectedChar.character.hasActed = True
         updateCharacters()
 
@@ -241,10 +244,16 @@ def loadCombat(transferredData):
             for character in party:
                 character.hasActed = False
             updateCharacters()
-              
-        if (len(enemies) == 0):
-            for character in party:
-                character.setCurrentHP(character.getMaxHP())
+
+        enemiesDead = True  
+        for enemy in enemies:
+            if (enemy.getCurrentHP() > 0):
+                enemiesDead = False
+                break
+        if (enemiesDead):
+            for enemy in enemies:
+                enemy.setCurrentHP(character.getMaxHP())
+
             openWorld()
 
         refreshScreen(screen)
