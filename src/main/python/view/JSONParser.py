@@ -1,27 +1,27 @@
 import json as JSON
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.Animation import Animation
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
 from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.ShapeButton import ShapeButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
+from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.ImageButton import ImageButton
-from view.visualentity.CombatCharacterEntity import CharacterEntities
+from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.InventoryCharacterEntity import InventoryCharacterEntity
+from view.visualentity.ItemDisplay import ItemDisplay
 
-def loadJson(address, screenX, screenY, lists):
-    visualEntities = lists[0]
-    buttons = lists[1]
-    if (len(lists) > 2): 
-        partyVisuals = lists[2] 
-        party = lists[3]
+def loadJson(address, screenX, screenY, visualEntities, buttons):
     file = open("src/main/python/screens/" + address, 'r')
     data = JSON.load(file)
     for item in data:
         entity = None
         if item["entityType"] == "Image":
             entity = ImageEntity.createFrom(item)
+        if item["entityType"] == "Animation":
+            entity = Animation.createFrom(item)
         elif item["entityType"] == "Shape":
             entity = ShapeEntity.createFrom(item)
         elif item["entityType"] == "Text":
@@ -38,15 +38,15 @@ def loadJson(address, screenX, screenY, lists):
             entity = ShapeButton.createFrom(item)
         elif item["entityType"] == "HoverShapeButton":
             entity = HoverShapeButton.createFrom(item)
+        elif item["entityType"] == "ScrollBar":
+            entity = ScrollBar.createFrom(item)
         elif item["entityType"] == "CharacterEntityCoords":
-            if (item["name"] == "ActiveCharacter"): index = 1
-            elif (item["name"] == "InactiveCharacter1"): index = 0
-            elif (item["name"] == "InactiveCharacter2"): index = 2
-            else: index = 0
-            entity = CharacterEntities.createFrom(item, party[index])
+            entity = CombatCharacterEntity.createFrom(item)
         elif item["entityType"] == "InventoryCharacterCoords":
-            index = 0
-            entity = InventoryCharacterEntity.createFrom(item, party[index])
+            entity = InventoryCharacterEntity.createFrom(item)
+        elif item['entityType'] == "ItemDisplayCoords":
+            entity = ItemDisplay.createFrom(item)
+        
 
 
 
@@ -55,8 +55,13 @@ def loadJson(address, screenX, screenY, lists):
             if (item["entityType"] == "ImageButton" or item["entityType"] == "ShapeButton" or item["entityType"] == "HoverShapeButton"): 
                 buttons.append(entity)
                 visualEntities.append(entity.buttonVisual())
+            elif(item["entityType"] == "ScrollBar"):
+                buttons.append(entity.button)
+                visualEntities.append(entity)
             elif(item["entityType"] == "VisualNovel"):
                 buttons.append(entity.continueButton)
                 visualEntities.append(entity)
-            elif(item["entityType"] == "CharacterEntityCoords" or item["entityType"] == "InventoryCharacterCoords"): partyVisuals[index] = entity
+            elif(item["entityType"] == "CharacterEntityCoords"): 
+                visualEntities.append(entity)
+                if (entity.getButtons() is not None): buttons.append(entity.getButtons())
             else: visualEntities.append(entity)

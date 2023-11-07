@@ -1,13 +1,12 @@
-import os, sys
+import os, sys, pygame
 sys.path.append(os.path.abspath("."))
 
-from model.player.Player import Player
+from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
 from inventory import loadInventory
 from view.JSONParser import loadJson
-import json, pygame, os
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()
@@ -17,11 +16,11 @@ screenX,screenY = info.current_w,info.current_h
 pygame.display.set_caption('Catgirl Dungeon')
 pygame.display.set_icon(pygame.image.load('src/main/python/sprites/catgirl_head.png'))
 screen = pygame.display.set_mode([screenX, screenY])
-
+gameData = Singleton(screen, None)
 visualEntities = []
 buttons = []
 
-player = Player()
+
 
 
 def refreshScreen():
@@ -35,19 +34,19 @@ def refreshScreen():
 def run():
     global buttons
     global visualEntities
+    global gameData
     leaveScreen = False
-    newSceneData = None
 
-    loadJson("menuScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("menuScreen.json", screenX, screenY, visualEntities, buttons)
 
     def exit():
         pygame.quit()
 
     def openWorldButton():
-        nonlocal newSceneData
         nonlocal leaveScreen
-        global player
-        newSceneData = [screen, "Open World", "samplemap", player]
+        global gameData
+        gameData.screenOpen = "Open World"
+        gameData.currentMap = "samplemap"
         leaveScreen = True
 
     buttonFunc = exit
@@ -68,23 +67,22 @@ def run():
 
         refreshScreen()
         if (leaveScreen): break
-    switchScreens(newSceneData)
+    switchScreens(gameData)
 
 
-def switchScreens(newSceneData):
+def switchScreens(gameData):
     global visualEntities
     global buttons
-    global player
     visualEntities = []
     buttons = []
     screen.fill((0, 0, 0))
-    loadJson("loadingScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("loadingScreen.json", screenX, screenY, visualEntities, buttons)
     refreshScreen()
 
-    if (newSceneData[1] == "Open World"): newSceneData = loadOpenWorld(newSceneData)
-    elif (newSceneData[1] == "Combat"): newSceneData = loadCombat(newSceneData)
-    elif (newSceneData[1] == "Inventory"): newSceneData = loadInventory(newSceneData)
-    switchScreens(newSceneData)
+    if (gameData.screenOpen == "Open World"): gameData = loadOpenWorld(gameData)
+    elif (gameData.screenOpen == "Combat"): gameData = loadCombat(gameData)
+    elif (gameData.screenOpen == "Inventory"): gameData = loadInventory(gameData)
+    switchScreens(gameData)
 
 
 run()

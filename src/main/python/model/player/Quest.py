@@ -1,8 +1,9 @@
-
+import json
 
 class Quest:
     questID = -1
     questName = "Kill The Slimes!"
+    # List of types of quests that you can have: killQuest, NPCInteractionQuest, freeQuest
     questType = "killQuest"
     questData = "Slime"
     questGoal = 10
@@ -12,29 +13,35 @@ class Quest:
     followUpQuests = [1]
 
     questXPReward = 0
-    questItemReward = []
+    questItemRewards = {}
 
     def __init__(self, questID):
-        # In the future we will pull from a database with a quest ID for now we just use the default values
-        self.questID = questID
+        if (type(questID) == str): self.questName = questID
+        else: self.questID = questID
         self.questProgress = 0
-        if (questID == 0):
-            self.questName = "Kill The Slimes!"
-            self.questType = "killQuest"
-            self.questData = "Slime"
-            self.questGoal = 2
-            self.NPCDialogue = {"Trapped_NPC": 0}
-            self.followUpQuests = [1]
-            self.questXPReward = 0
-            self.questItemReward = []
-        else:
-            self.questName = "Kill The Slimes! - Accept Reward"
-            self.questType = "NPCInteractionQuest"
-            self.questData = "Trapped_NPC"
-            self.questGoal = 1
-            self.NPCDialogue = {"Trapped_NPC": 1}
-            self.followUpQuests = []
-            self.questXPReward = 0
-            self.questItemReward = []
 
+        file = open("src/main/python/quests/quests.json", 'r')
+        data = json.load(file)
+
+        for questEntry in data:
+            if (questEntry['questID'] == questID or questEntry['questName'] == questID):
+                self.questID = questEntry['questID']
+                self.questName = questEntry['questName']
+                self.questType = questEntry['questType']
+                self.questData = questEntry['questData']
+                self.questGoal = questEntry['questGoal']
+
+                NPCDialogue = {}
+                for npc in questEntry['NPCDialogue']:
+                    NPCDialogue.update({npc['NPCID']:npc['Dialogue']})
+                self.NPCDialogue = NPCDialogue
+
+                self.followUpQuests = questEntry['followUpQuests']
+                self.questXPReward = questEntry['questXPReward']
+
+                itemRewards = {}
+                for item in questEntry['questItemRewards']:
+                    itemRewards.update({item['itemID']:item['count']})
+                self.questItemRewards = itemRewards
+                break
     

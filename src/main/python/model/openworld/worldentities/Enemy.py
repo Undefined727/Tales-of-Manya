@@ -6,17 +6,21 @@ class Enemy:
     enemyID:int
     spawnX:int
     spawnY:int
+    img:str
     respawnTimer:int
     worldObject:OpenWorldEntity
-    enemyStats:Character
+    enemyStats:list[Character]
 
     # In the future img and id will be connected directly using a database and thus dialogue will no longer be required for initialization
-    def __init__(self, enemyID, level, img, position, respawnTimer):
+    def __init__(self, enemyTypes, levels, img, position):
         if (len(position) > 1): position = tuple(position)
-        self.enemyStats = Character(enemyID, img, level)
+        self.enemyStats = []
+        for i in range(0, len(enemyTypes)):
+            self.enemyStats.append(Character(enemyTypes[i], "slime.png", levels[i]))
         self.spawnX, self.spawnY = position
-        self.respawnTimer = respawnTimer
-        self.enemyID = enemyID
+        self.img = img
+        self.respawnTimer = 0
+        self.enemyID = enemyTypes[0]
         self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "enemy", "attack")
 
     def setCenter(self, point):

@@ -12,6 +12,7 @@ from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
 from model.player.Quest import Quest
+from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
@@ -21,12 +22,11 @@ from PIL import Image
 visualEntities = []
 buttons = []
 quit = False
-newSceneData = []
+gameData:Singleton
+currentSceneData:list
 
 visualNovel:VisualNovel
 currentNPC = None
-
-playerData:Player
 
 def refreshMenu(screen):
     global visualEntities
@@ -39,21 +39,30 @@ def exitButton():
     global quit
     quit = True
 
-def combatButton(screen, enemies):
+def combatButton(enemies):
     global quit
-    global newSceneData
+    global gameData
     quit = True
-    newSceneData = [screen, "Combat", enemies, playerData]
+    gameData.screenOpen = "Combat"
+    gameData.currentEnemies = enemies
+
+def inventoryButton():
+    global quit
+    global gameData
+    quit = True
+    gameData.screenOpen = "Inventory"
 
 def continueText(renderedEntities, buttons):
     global visualNovel
     global currentNPC
+    global gameData
+
     result = visualNovel.continueText()
     if (result == "Options"):
         for button in visualNovel.optionButtons:
             buttons.append(button)
     elif (result == "Finished"):
-        currentQuests = playerData.getCurrentQuests()
+        currentQuests = gameData.player.getCurrentQuests()
         for quest in currentQuests:
             if (quest.questType == "NPCInteractionQuest"):
                 if (quest.questData == currentNPC):
@@ -61,59 +70,125 @@ def continueText(renderedEntities, buttons):
                     if (quest.questProgress >= quest.questGoal): 
                         completeQuest(quest, renderedEntities)
         visualNovel.isShowing = False
+        visualNovel.optionButtons = []
 
-def textOption(type, data):
-    print("test")
+def textOption(optionType, data, renderedEntities, buttons):
+    global visualNovel
+    global gameData
 
-def updateNPCS(renderedEntities):
-    global playerData
-    for quest in playerData.getCurrentQuests():
-        for npc in renderedEntities:
-            if (type(npc) == NPC):
-                if (npc.NPCID in quest.NPCDialogue.keys()):
-                    npc.dialogue = quest.NPCDialogue[npc.NPCID]
+    for optionButton in visualNovel.optionButtons:
+            if optionButton in buttons[:]:
+                buttons.remove(optionButton)
+    visualNovel.hideOptions()
+    visualNovel.isShowing = False
+    
 
-def completeQuest(quest, renderedEntities):
-    global playerData
+    if (optionType == "End"):
+        pass
+    elif (optionType == "Quest"):
+        gameData.player.addQuest(data)
+        for entity in visualEntities:
+            if entity.name == "CurrentQuestListing":
+                currentQuests = gameData.player.getCurrentQuests()
+                if (len(gameData.player.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
 
-    quest.questProgress = quest.questGoal
-    playerData.currentQuests.remove(quest)
+        updateNPCData(gameData.player.getCurrentQuests())
+        refreshCurrentNPCDialogue(renderedEntities)
+    elif (optionType == "Dialogue"):
+        visualNovel.isShowing = True
+        visualNovel.updateDialogue(data)
+
+
+def refreshCurrentNPCDialogue(renderedEntities):
     for npc in renderedEntities:
         if (type(npc) == NPC):
-            if (npc.NPCID in quest.NPCDialogue.keys()):
-                npc.dialogue = npc.defaultDialogue
+            npc.updateDialogue()
 
+def updateNPCData(quests):
+    file = open("src/main/python/npcs/NPCList.json", 'r')
+    npcData = json.load(file)
+    file.close()
+
+    for npc in npcData:
+        npc["currentDialogue"] = npc["defaultDialogue"]
+
+    for npc in npcData:
+        for quest in quests:
+            if (npc['NPCID'] in quest.NPCDialogue.keys()):
+                npc["currentDialogue"] = quest.NPCDialogue[npc['NPCID']]
+
+    file = open("src/main/python/npcs/NPCList.json", 'w')
+    json.dump(npcData, file, indent=4)
+
+def completeQuest(quest:Quest, renderedEntities):
+    global gameData
+    
+    for item, count in quest.questItemRewards.items():
+        gameData.player.inventory.addItem(item, count)
+    
+    gameData.player.currentQuests.remove(quest)
+    
     for id in quest.followUpQuests: 
-        playerData.currentQuests.append(Quest(id))
-    updateNPCS(renderedEntities)
+        gameData.player.addQuest(id)
+
+    updateNPCData(gameData.player.getCurrentQuests())
+    refreshCurrentNPCDialogue(renderedEntities)
+
+    
 
     for entity in visualEntities:
-        if entity.name == "CurrentQuestListing":
-            if (len(playerData.getCurrentQuests()) > 0):
-                entity.updateText(playerData.getCurrentQuests()[0].questName)
-            else: entity.updateText("No current quests :/")
+            if entity.name == "CurrentQuestListing":
+                currentQuests = gameData.player.getCurrentQuests()
+                if (len(gameData.player.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
 
         
 
-def loadOpenWorld(sceneData):
+def loadOpenWorld(transferredData):
     global quit
     global visualEntities
     global buttons
     global visualNovel
-    global playerData
+    global gameData
     global currentNPC
-    screen = sceneData[0]
-    playerData = sceneData[3]
+    gameData = transferredData
+
+    screen = gameData.pygameWindow
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open("src/main/python/maps/" + sceneData[2] + "/map.png")
+    img = Image.open(f"src/main/python/maps/{gameData.currentMap}/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
     TILE_SIZE = 48
 
-    file =  open('src/main/python/maps/samplemap/entityData.json', 'r')
+    pygame.mixer.init()
+    randInt = random.randint(1, 200)
+    if (randInt == 69): 
+        song = "nyan_cat.mp3"
+    else: 
+        song = "zelda_lost_woods.mp3"
+    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
+    pygame.mixer.music.set_volume(0.2)
+    pygame.mixer.music.play(-1)
+
+    file =  open(f'src/main/python/maps/{gameData.currentMap}/entityData.json', 'r')
     entitydata = json.load(file)
 
     spawnX = 0
@@ -121,18 +196,42 @@ def loadOpenWorld(sceneData):
     allEntities = []
     simulatedObjects = []
     for entity in entitydata:
-        print(entity['type'])
         if (entity['type'] == "spawnPoint"):
             spawnX = entity['position'][0]
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
-            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], 30)
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'])
             allEntities.append(enemy)
-            simulatedObjects.append(enemy)
         elif(entity['type'] == "npc"):
-            npc = NPC(entity['defaultDialogue'], f"entities/{entity['image']}", entity['position'], entity['NPCID'], playerData.currentQuests)
+            npc = NPC(entity['NPCID'], entity['position'])
             allEntities.append(npc)
-            simulatedObjects.append(npc)
+
+
+    if (gameData.renderedMapEntities is None):
+        character = PlayerObject((spawnX, spawnY))
+        allEntities.append(character)
+        for entity in allEntities:
+            simulatedObjects.append(entity)
+        testInteractionObject = PlayerInteractionObject((0, 0))
+        testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
+        allEntities.append(testAttack)
+        allEntities.append(testInteractionObject)
+        gameData.renderedMapEntities = allEntities
+    else: 
+        allEntities = gameData.renderedMapEntities
+        for entity in allEntities:
+            if (type(entity) == Enemy and entity.respawnTimer <= 0): simulatedObjects.append(entity)
+            elif (type(entity) == NPC): simulatedObjects.append(entity)
+            elif (type(entity) == PlayerObject): simulatedObjects.append(entity)
+        for entity in allEntities:
+            if (type(entity) == PlayerObject): character = entity
+            if (type(entity) == PlayerInteractionObject): testInteractionObject = entity
+            if (type(entity) == PlayerAttackObject): testAttack = entity
+
+    
+
+    updateNPCData(gameData.player.getCurrentQuests())
+    refreshCurrentNPCDialogue(simulatedObjects)
 
     file = open("src/main/python/maps/tileIndex.json", 'r')
     tiledata = json.load(file)
@@ -151,7 +250,6 @@ def loadOpenWorld(sceneData):
             tileHeight = npArray[y, x][3]
             for tile in tiledata:
                 if ((tileColor == tile['color']).all()): 
-                    #tiles.append(Tile(tile['name'], 1, tile['defaultSolid']))
                     tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
                     tileFound = True
                     break
@@ -163,7 +261,7 @@ def loadOpenWorld(sceneData):
     
 
 
-    loadJson("openWorldScreen.json", screenX, screenY, [visualEntities, buttons])
+    loadJson("openWorldScreen.json", screenX, screenY, visualEntities, buttons)
     visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
@@ -172,9 +270,16 @@ def loadOpenWorld(sceneData):
 
     for entity in visualEntities:
         if entity.name == "CurrentQuestListing":
-            if (len(playerData.getCurrentQuests()) > 0):
-                entity.updateText(playerData.getCurrentQuests()[0].questName)
-            else: entity.updateText("No current quests :/")
+                currentQuests = gameData.player.getCurrentQuests()
+                if (len(gameData.player.getCurrentQuests()) > 0):
+                    listingString = ""
+                    first = True
+                    for quest in currentQuests:
+                        if (first): listingString = listingString + "- " + quest.questName
+                        else: listingString = listingString + "%/n%- " + quest.questName
+                        first = False
+                else: listingString = "No current quests :/"
+                entity.updateText(listingString)
 
 
     FRICTION_GRASS = 0.005
@@ -185,16 +290,7 @@ def loadOpenWorld(sceneData):
     cameraX = 0
     cameraY = 0
 
-
-    character = PlayerObject((spawnX, spawnY))
-    testInteractionObject = PlayerInteractionObject((0, 0))
-    testAttack = PlayerAttackObject("Physical", "Rectangle", 0.5, 4, 2, 0, 30, "sample_sword.png")
     
-    allEntities.append(character)
-    allEntities.append(testAttack)
-    allEntities.append(testInteractionObject)
-
-    simulatedObjects.append(character)
 
     
     movementSpeed = 0.1
@@ -234,7 +330,7 @@ def loadOpenWorld(sceneData):
     continueTextCooldown = 20
     keyboardMode = False
 
-
+    pygame.mixer.music.play(-1)
     ### Running Game :D ###
     while True:
         mouse = pygame.mouse.get_pos()
@@ -243,16 +339,22 @@ def loadOpenWorld(sceneData):
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
-                    if entity.mouseInRegion(mouse):
-                        if (entity.func == "exit"): buttonFunc = exitButton
-                        if (entity.func == "combat"): buttonFunc = combatButton
-                        if (entity.func == "textOption"): buttonFunc = textOption
-                        if (entity.func == "continueText"): 
-                            continueText(simulatedObjects, buttons)
+                    if (not ("MenuButton" in entity.tags and visualNovel.isShowing)):
+                        if (entity.isActive and entity.mouseInRegion(mouse)):
+                            if (entity.func == "exit"): buttonFunc = exitButton
+                            if (entity.func == "combat"): buttonFunc = combatButton
+                            if (entity.func == "inventory"): 
+                                inventoryButton()
+                                break
+                            if (entity.func == "textOption"): 
+                                textOption(*entity.args, simulatedObjects, buttons)
+                                break
+                            if (entity.func == "continueText"): 
+                                continueText(simulatedObjects, buttons)
+                                break
+                            if (len(entity.args) == 0): buttonFunc()
+                            else: buttonFunc(*entity.args)
                             break
-                        if (len(entity.args) == 0): buttonFunc()
-                        else: buttonFunc(*entity.args)
-                        break
             if (event.type == pygame.MOUSEMOTION):
                 keyboardMode = False
 
@@ -466,20 +568,20 @@ def loadOpenWorld(sceneData):
                     if (trigger.worldObject.entityType == entity.worldObject.trigger):
                         if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
                             if (type(entity) == Enemy):
-                                currentQuests = playerData.getCurrentQuests()
+                                currentQuests = gameData.player.getCurrentQuests()
                                 for quest in currentQuests:
                                     if (quest.questType == "killQuest"):
                                         if (quest.questData == entity.enemyID):
                                             quest.questProgress += 1
                                             if (quest.questProgress >= quest.questGoal): 
                                                 completeQuest(quest, simulatedObjects)
-                                combatButton(screen, [entity.enemyStats])
-                                simulatedObjects.remove(entity)
-                                entity.respawnTimer = 60
+                                combatButton(entity.enemyStats)
+                                entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):
-                                combatButton(screen, [trigger.enemyStats])
+                                combatButton(trigger.enemyStats)
+                                trigger.respawnTimer = 120
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.dialogue)
+                                visualNovel.updateDialogue(entity.currentDialogue)
                                 visualNovel.isShowing = True
                                 currentNPC = entity.NPCID
                                  
@@ -522,17 +624,20 @@ def loadOpenWorld(sceneData):
         
 
         ## Respawn Enemies ##
-        # for entity in allEntities:
-        #     if (type(entity) == Enemy):
-        #         if (not entity.respawnTimer == 0):
-        #             entity.respawnTimer -= 1
-        #             if (entity.respawnTimer <= 0):
-        #                 entity.respawnTimer = 0
-        #                 entity.setCenter((entity.spawnX, entity.spawnY))
-        #                 simulatedObjects.append(entity)
+        for entity in allEntities:
+            if (type(entity) == Enemy):
+                if (not entity.respawnTimer == 0):
+                    entity.respawnTimer -= 1
+                    if (entity.respawnTimer <= 0):
+                        entity.respawnTimer = 0
+                        entity.setCenter((entity.spawnX, entity.spawnY))
+                        simulatedObjects.append(entity)
 
 
-        
+        currentQuests = gameData.player.getCurrentQuests()
+        for quest in currentQuests:
+            if (quest.questType == "freeQuest"):
+                completeQuest(quest, simulatedObjects)
 
 
         ## Display ##
@@ -582,5 +687,6 @@ def loadOpenWorld(sceneData):
         ## Quit ##
         if (quit):
             quit = False 
+            gameData.renderedMapEntities = allEntities
             break
-    return newSceneData
+    return gameData

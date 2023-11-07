@@ -1,77 +1,136 @@
-from model.character.Character import Character
-from view.visualentity.DynamicStatEntity import DynamicStatEntity
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.Animation import Animation
+from view.visualentity.TextEntity import TextEntity
+from view.visualentity.ShapeEntity import ShapeEntity
+from model.character.Character import Character
+from view.visualentity.ShapeButton import ShapeButton
 
-class CharacterEntities:
+class CombatCharacterEntity:
 
-    HPBar:DynamicStatEntity
-    ManaBar:DynamicStatEntity
-    img:ImageEntity
-    inactiveImg:ImageEntity
-    checkmark:ImageEntity
     character:Character
+    isEnemy:bool
+    isSelected:bool
+    isShowing:bool
 
-    def __init__(self, character):
-        self.character = character
-        self.HPBar = DynamicStatEntity(character.health, "health")
-        self.ManaBar = DynamicStatEntity(character.mana, "mana")
-        self.img = ImageEntity(character.name + "img", True, 0, 0, 0, 0, [], character.img)
-        self.inactiveImg = ImageEntity(character.name + "inactiveImg", True, 0, 0, 0, 0, [], character.inactiveImg)
-        self.checkmark = ImageEntity(character.name + "checkmark", True, 0, 0, 0, 0, [], "Checkmark.png")
+    characterImg:ImageEntity
+
+    selectedCharacterAnimation:Animation
+    selectionButton:ShapeButton
+    characterCheckmark:ImageEntity
+
+    characterHPBarBorder:ImageEntity
+    characterHPBarGreen:ShapeEntity
+    characterHPBarRed:ShapeEntity
+    characterHPBarText:TextEntity
+    characterManaBarBorder:ImageEntity
+    characterManaBarBlue:ShapeEntity
+    characterManaBarRed:ShapeEntity
+    characterManaBarText:TextEntity
+
+
+    DEFAULT_VALUES = {
+        "checkmarkWidth": 0.02,
+        "checkmarkHeight": 0.02,
+        "BorderWidth": 0.1,
+        "BorderHeight": 0.07,
+        "BarWidth": 0.06,
+        "BarHeight": 0.02,
+        "TextWidth": 0.1,
+        "TextHeight": 0.07,
+    }
+
+    def __init__(self):
+       self.character = None
+       self.isShowing = True
+       self.isEnemy = False
+       self.isSelected = False
+       self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
+       self.selectedCharacterAnimation = Animation("Animation",True,0,0,0,0,[],["selectedCatgirlAnimation/catgirl1.png", "selectedCatgirlAnimation/catgirl2.png", "selectedCatgirlAnimation/catgirl3.png", "selectedCatgirlAnimation/catgirl4.png"])
+       self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png", True)
+       self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png", True)
+       self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
+       self.characterHPBarGreen = ShapeEntity("HPGreen", True, 0, 0, 0, 0, [], "green", False, "rectangle")
+       self.characterHPBarText = TextEntity("HPText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
+       self.characterManaBarBorder = ImageEntity("ManaBorder", True, 0, 0, 0, 0, [], "ManaBar.png", True)
+       self.characterManaBarRed = ShapeEntity("ManaRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")
+       self.characterManaBarBlue = ShapeEntity("ManaBlue", True, 0, 0, 0, 0, [], "blue", False, "rectangle")
+       self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 16, "black", None)
+       self.selectionButton = ShapeButton("Selection_Button", True, 0, 0, 0, 0, [], (255, 0, 0, 0), False, "rectangle", "characterSelection", [self], True)
 
     def getItems(self):
-        return [self.img, self.inactiveImg, self.HPBar, self.ManaBar, self.checkmark]
+        hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
+        manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
+        characterVisuals = [self.characterImg]
+        if (self.isSelected): characterVisuals = [self.selectedCharacterAnimation]
+        if (self.isEnemy): return hpBar + characterVisuals
+        characterUI = [self.characterCheckmark, self.selectionButton]
+        return hpBar + manaBar + characterVisuals + characterUI
+    
+    def getButtons(self):
+        if (not self.isEnemy): return self.selectionButton
+        return None
 
     def scale(self, screenX, screenY):
-        self.HPBar.scale(screenX, screenY)
-        self.ManaBar.scale(screenX, screenY)
-        self.img.scale(screenX, screenY)
-        self.inactiveImg.scale(screenX, screenY)
-        self.checkmark.scale(screenX, screenY)
-    
-    def changeCharacter(self, character):
-        if (character == None):
-            self.HPBar.isShowing = False
-            self.ManaBar.isShowing = False
-            self.img.isShowing = False
-            self.inactiveImg.isShowing = False
-            self.checkmark.isShowing = False
-            return
+        self.characterImg.scale(screenX, screenY)
+        self.selectedCharacterAnimation.scale(screenX, screenY)
+        self.selectionButton.scale(screenX, screenY)
+        self.characterCheckmark.scale(screenX, screenY)
+        self.characterHPBarBorder.scale(screenX, screenY)
+        self.characterHPBarRed.scale(screenX, screenY)
+        self.characterHPBarGreen.scale(screenX, screenY)
+        self.characterHPBarText.scale(screenX, screenY)
+        self.characterManaBarBorder.scale(screenX, screenY)
+        self.characterManaBarRed.scale(screenX, screenY)
+        self.characterManaBarBlue.scale(screenX, screenY)
+        self.characterManaBarText.scale(screenX, screenY)
 
+    def changeCharacter(self, character:Character, isEnemy:bool):
         self.character = character
-        self.HPBar.changeStat(character.health, "health")
-        self.ManaBar.changeStat(character.mana, "mana")
-        self.img.updateImg(character.img)
-        self.inactiveImg.updateImg(character.inactiveImg)
-        self.checkmark.isShowing = not character.hasActed
-    
+        if (character == None): return
+
+        self.isEnemy = isEnemy
+        self.characterImg.updateImg(f"entities/{character.img}")
+        #self.selectedCharacterAnimation.updateImg(f"entities/{character.selectedImg}")
+        self.characterCheckmark.isShowing = character.hasActed
+        
+        self.characterHPBarGreen.width = self.characterHPBarRed.width * (character.health.current_value/character.health.max_value)
+        self.characterManaBarBlue.width = self.characterManaBarRed.width * (character.mana.current_value/character.mana.max_value)
+        self.characterHPBarText.updateText(f"{character.health.current_value}/{character.health.max_value}")
+        self.characterManaBarText.updateText(f"{character.mana.current_value}/{character.mana.max_value}")
+
     def updateCharacter(self):
-        self.HPBar.updateItems()
-        self.ManaBar.updateItems()
-        self.checkmark.isShowing = not self.character.hasActed
+        self.changeCharacter(self.character, self.isEnemy)
 
     @staticmethod
-    def createFrom(json_object, character):
-        newObject = CharacterEntities(character)
-        if ("HPXPosition" in json_object):
-            newObject.HPBar.reposition(json_object["HPXPosition"], json_object["HPYPosition"])
-            newObject.HPBar.resize(json_object["HPWidth"], json_object["HPHeight"])
-        else: newObject.HPBar.isShowing = False
-        if ("ManaXPosition" in json_object):
-            newObject.ManaBar.reposition(json_object["ManaXPosition"], json_object["ManaYPosition"])
-            newObject.ManaBar.resize(json_object["ManaWidth"], json_object["ManaHeight"])
-        else: newObject.ManaBar.isShowing = False
+    def createFrom(json_object):
+        newObject = CombatCharacterEntity()
         if ("imgXPosition" in json_object):
-            newObject.img.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
-            newObject.img.resize(json_object["imgWidth"], json_object["imgHeight"])
-        else: newObject.img.isShowing = False
-        if ("headImgXPosition" in json_object):
-            newObject.inactiveImg.reposition(json_object["headImgXPosition"], json_object["headImgYPosition"])
-            newObject.inactiveImg.resize(json_object["headImgWidth"], json_object["headImgHeight"])
-        else: newObject.inactiveImg.isShowing = False
+            newObject.characterImg.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.characterImg.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectionButton.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectionButton.resize(json_object["imgWidth"], json_object["imgHeight"])
+            newObject.selectedCharacterAnimation.reposition(json_object["imgXPosition"], json_object["imgYPosition"])
+            newObject.selectedCharacterAnimation.resize(json_object["imgWidth"], json_object["imgHeight"])
         if ("checkmarkXPosition" in json_object):
-            newObject.checkmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
-            newObject.checkmark.resize(json_object["checkmarkWidth"], json_object["checkmarkHeight"])
-        else: newObject.checkmark.isShowing = False
+            newObject.characterCheckmark.reposition(json_object["checkmarkXPosition"], json_object["checkmarkYPosition"])
+            newObject.characterCheckmark.resize(newObject.DEFAULT_VALUES["checkmarkWidth"], newObject.DEFAULT_VALUES["checkmarkHeight"])
+        if ("HPBorderXPosition" in json_object):
+            newObject.characterHPBarBorder.reposition(json_object["HPBorderXPosition"], json_object["HPBorderYPosition"])
+            newObject.characterHPBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+            newObject.characterHPBarRed.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterHPBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterHPBarGreen.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterHPBarGreen.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterHPBarText.reposition(json_object["HPBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/2, json_object["HPBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/2)
+            newObject.characterHPBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
+        if ("ManaBorderXPosition" in json_object):
+            newObject.characterManaBarBorder.reposition(json_object["ManaBorderXPosition"], json_object["ManaBorderYPosition"])
+            newObject.characterManaBarBorder.resize(newObject.DEFAULT_VALUES["BorderWidth"], newObject.DEFAULT_VALUES["BorderHeight"])
+            newObject.characterManaBarRed.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterManaBarRed.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterManaBarBlue.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/5, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/3)
+            newObject.characterManaBarBlue.resize(newObject.DEFAULT_VALUES["BarWidth"], newObject.DEFAULT_VALUES["BarHeight"])
+            newObject.characterManaBarText.reposition(json_object["ManaBorderXPosition"]+newObject.DEFAULT_VALUES["BorderWidth"]/2, json_object["ManaBorderYPosition"]+newObject.DEFAULT_VALUES["BorderHeight"]/2)
+            newObject.characterManaBarText.resize(newObject.DEFAULT_VALUES["TextWidth"], newObject.DEFAULT_VALUES["TextHeight"])
         return newObject
-    
+        
