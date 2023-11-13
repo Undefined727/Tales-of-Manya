@@ -164,6 +164,7 @@ def loadCombat(transferredData):
         nonlocal enemies
         nonlocal currSelectedChar
         if(currSelectedChar == None): return
+        if(currSelectedChar.character.hasActed): return
         counter = 0 
         while (enemies[counter].getCurrentHP() <= 0):
             if (counter >= len(enemies)): break
