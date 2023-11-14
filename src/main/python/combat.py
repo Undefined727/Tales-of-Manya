@@ -88,8 +88,7 @@ def loadCombat(transferredData):
     activeCharacter = 1
     skillSelected = 0
     skillsShowing = False
-    enemySelectionShowing = False
-    currSelectedChar = None
+    
 
     
     visualEntities = []
@@ -126,30 +125,20 @@ def loadCombat(transferredData):
     def buttonExit():
         pygame.quit()
 
-    def characterSelection(selectedChar):
+    currSelectedChar = None
+    currSelectedEnemy = None
+    def characterSelection(selectedChar:CombatCharacterEntity):
         nonlocal currSelectedChar
-        if (currSelectedChar is not None): currSelectedChar.isSelected = False
-        currSelectedChar = selectedChar
-        currSelectedChar.isSelected = True
+        nonlocal currSelectedEnemy
+        if (selectedChar.isEnemy):
+            if (currSelectedEnemy is not None): currSelectedEnemy.isSelected = False
+            currSelectedEnemy = selectedChar
+            currSelectedEnemy.isSelected = True
+        else:
+            if (currSelectedChar is not None): currSelectedChar.isSelected = False
+            currSelectedChar = selectedChar
+            currSelectedChar.isSelected = True
         updateCharacters()
-
-    def enemySelection(selectedChar:CombatCharacterEntity):
-        nonlocal skillSelected
-        enemySelected = args[0]
-        global visualEntities
-        nonlocal enemies
-        nonlocal enemySelectionShowing
-        nonlocal skillsShowing
-        nonlocal activeCharacter
-        if enemySelectionShowing:
-            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-            party[activeCharacter-1].hasActed = True
-            updateCharacters()
-            for entity in visualEntities:
-                if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
-                    entity.isShowing = False
-            skillsShowing = False
-            enemySelectionShowing = False
 
     def skillButtonFunction():
         nonlocal skillsShowing
@@ -183,21 +172,23 @@ def loadCombat(transferredData):
 
         count = 0
         for enemy in enemies:
-            print(enemy)
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
 
             entityDetails = {
                 "name": enemy.name,
-                "HPBorderXPosition": currEnemyX-0.1,
+                "HPBorderXPosition": currEnemyX-enemySpacing*0.8,
                 "HPBorderYPosition": 0.1,
+                "BorderWidth": enemySpacing*0.8,
+                "BorderHeight": 0.05,
                 "imgXPosition": currEnemyX,
                 "imgYPosition": 0.1,
                 "imgWidth": enemySpacing,
-                "imgHeight": 0.2
+                "imgHeight": enemySpacing*screenX/screenY
             }
             entityDetails = json.loads(json.dumps(entityDetails))
 
             displayedEnemy = CombatCharacterEntity.createFrom(entityDetails)
+            displayedEnemy.characterHPBarText.updateText(displayedEnemy.characterHPBarText.text, displayedEnemy.characterHPBarText.font, 12)
             displayedEnemy.scale(screenX, screenY)
             displayedEnemy.changeCharacter(enemy, True)
             visualEntities.append(displayedEnemy)
