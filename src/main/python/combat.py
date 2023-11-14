@@ -85,8 +85,6 @@ def loadCombat(transferredData):
     enemies = gameData.currentEnemies
     playerData = gameData.player
     party = playerData.party
-    activeCharacter = 1
-    skillSelected = 0
     skillsShowing = False
     
 
@@ -119,6 +117,7 @@ def loadCombat(transferredData):
             if type(entity) == CombatCharacterEntity:
                 if (entity.character is not None and entity.character.health.current_value <= 0):
                     visualEntities.remove(entity)
+                    buttons.remove(entity.getButtons())
                 elif(entity.character is not None):
                     entity.updateCharacter()
 
@@ -150,16 +149,16 @@ def loadCombat(transferredData):
     
 
     def attack():
-        nonlocal enemies
         nonlocal currSelectedChar
-        if(currSelectedChar == None): return
+        nonlocal currSelectedEnemy
+        if((currSelectedChar == None) or (currSelectedEnemy == None)): return
         if(currSelectedChar.character.hasActed): return
-        counter = 0 
-        while (enemies[counter].getCurrentHP() <= 0):
-            if (counter >= len(enemies)): break
-            else: counter += 1
-        enemies[counter].takeDamage(currSelectedChar.character.attack)
+        currSelectedEnemy.character.takeDamage(currSelectedChar.character.attack)
         currSelectedChar.character.hasActed = True
+        currSelectedEnemy.isSelected = False
+        currSelectedEnemy = None
+        currSelectedChar.isSelected = False
+        currSelectedChar = None
         updateCharacters()
 
 
@@ -192,7 +191,7 @@ def loadCombat(transferredData):
             displayedEnemy.scale(screenX, screenY)
             displayedEnemy.changeCharacter(enemy, True)
             visualEntities.append(displayedEnemy)
-            if(displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
+            if (displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
             count = count+1
 
 

@@ -58,17 +58,19 @@ class CombatCharacterEntity:
     def getItems(self):
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
         manaBar = [self.characterManaBarBorder, self.characterManaBarRed, self.characterManaBarBlue, self.characterManaBarText]
+
         characterVisuals = [self.characterImg]
-        characterUI = [self.characterCheckmark, self.selectionButton]
-        if (self.isSelected): characterVisuals = [self.selectedCharacterAnimation]
-        if (self.isEnemy): 
-            characterUI = [self.selectionButton]
-            return hpBar + characterVisuals + characterUI
-        return hpBar + manaBar + characterVisuals + characterUI
+        characterStats = hpBar
+        characterUI = [self.selectionButton]
+
+        if (self.isSelected): characterVisuals.append(self.selectedCharacterAnimation)
+        if (not self.isEnemy): 
+            characterUI.append(self.characterCheckmark)
+            characterStats.extend(manaBar)
+        return characterStats + characterVisuals + characterUI
     
     def getButtons(self):
-        if (not self.isEnemy): return self.selectionButton
-        return None
+        return self.selectionButton
 
     def scale(self, screenX, screenY):
         self.characterImg.scale(screenX, screenY)
@@ -99,7 +101,7 @@ class CombatCharacterEntity:
 
         self.isEnemy = isEnemy
         self.characterImg.updateImg(f"entities/{character.img}")
-        self.selectedCharacterAnimation.updateImages("selectedCatgirlAnimation")
+        self.selectedCharacterAnimation.updateImages(character.selectedImg)
         self.updateCharacter()
 
     

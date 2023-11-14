@@ -54,7 +54,8 @@ class Character:
         self.name           = name
         self.level          = level
         self.img            = img
-        self.selectedImg    = "selectedCatgirl.png"
+        if (name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
+        else: self.selectedImg = "selectedCatgirlAnimation"
         self.overworldImg   = img
 
         self.health     = DynamicStat(level * 100)
