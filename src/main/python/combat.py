@@ -139,6 +139,7 @@ def loadCombat(transferredData):
             currSelectedChar.isSelected = True
         updateCharacters()
 
+
     def skillButtonFunction():
         nonlocal skillsShowing
         global visualEntities
@@ -199,9 +200,6 @@ def loadCombat(transferredData):
     updateCharacters()
 
 
-
-
-
     buttonFunc = updateCharacters
     while True:
         mouse = pygame.mouse.get_pos()
@@ -241,10 +239,10 @@ def loadCombat(transferredData):
             if (enemy.getCurrentHP() > 0):
                 enemiesDead = False
                 break
+        
         if (enemiesDead):
             for enemy in enemies:
                 enemy.setCurrentHP(character.getMaxHP())
-
             openWorld()
 
         refreshScreen(screen)
