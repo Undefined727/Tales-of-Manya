@@ -1,4 +1,4 @@
-from model.openworld.OpenWorldEntity import OpenWorldEntity
+from model.openworld.openWorldEntity import OpenWorldEntity
 from model.openworld.Circle import Circle
 import json
 
@@ -14,7 +14,7 @@ class NPC:
         if (type(NPCID) == str): self.NPCName = NPCID
         else: self.NPCID = NPCID
 
-        file = open("src/main/python/npcs/NPCList.json", 'r')
+        file = open("npcs/NPCList.json", 'r')
         data = json.load(file)
 
         for NPCEntry in data:
@@ -30,7 +30,7 @@ class NPC:
     
 
     def updateDialogue(self):
-        file = open("src/main/python/npcs/NPCList.json", 'r')
+        file = open("npcs/NPCList.json", 'r')
         data = json.load(file)
         for NPCEntry in data:
             if (NPCEntry['NPCID'] == self.NPCID):

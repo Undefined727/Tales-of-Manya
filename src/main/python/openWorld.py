@@ -113,7 +113,7 @@ def refreshCurrentNPCDialogue(renderedEntities):
             npc.updateDialogue()
 
 def updateNPCData(quests):
-    file = open("src/main/python/npcs/NPCList.json", 'r')
+    file = open("npcs/NPCList.json", 'r')
     npcData = json.load(file)
     file.close()
 
@@ -125,7 +125,7 @@ def updateNPCData(quests):
             if (npc['NPCID'] in quest.NPCDialogue.keys()):
                 npc["currentDialogue"] = quest.NPCDialogue[npc['NPCID']]
 
-    file = open("src/main/python/npcs/NPCList.json", 'w')
+    file = open("npcs/NPCList.json", 'w')
     json.dump(npcData, file, indent=4)
 
 def completeQuest(quest:Quest, renderedEntities):
@@ -172,7 +172,7 @@ def loadOpenWorld(transferredData):
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open(f"src/main/python/maps/{gameData.currentMap}/map.png")
+    img = Image.open(f"maps/{gameData.currentMap}/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
@@ -184,11 +184,11 @@ def loadOpenWorld(transferredData):
         song = "nyan_cat.mp3"
     else: 
         song = "zelda_lost_woods.mp3"
-    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
+    pygame.mixer.music.load(f"audio/music/{song}")
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
-    file =  open(f'src/main/python/maps/{gameData.currentMap}/entityData.json', 'r')
+    file =  open(f'maps/{gameData.currentMap}/entityData.json', 'r')
     entitydata = json.load(file)
 
     spawnX = 0
@@ -233,12 +233,12 @@ def loadOpenWorld(transferredData):
     updateNPCData(gameData.player.getCurrentQuests())
     refreshCurrentNPCDialogue(simulatedObjects)
 
-    file = open("src/main/python/maps/tileIndex.json", 'r')
+    file = open("maps/tileIndex.json", 'r')
     tiledata = json.load(file)
     tileImages = {}
 
     for tile in tiledata:
-        img = pygame.image.load(f"src/main/python/sprites/tiles/{tile['image']}").convert()
+        img = pygame.image.load(f"sprites/tiles/{tile['image']}").convert()
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
         tileImages.update({tile['name']:img})
 
@@ -256,7 +256,7 @@ def loadOpenWorld(transferredData):
             if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight, True))
 
     backgroundHeight = 3*screenY
-    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
+    backgroundFog = pygame.image.load("sprites/tiles/Gofhres.png").convert()
     backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
     
 

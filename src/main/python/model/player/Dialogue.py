@@ -7,7 +7,7 @@ class Dialogue:
 
     def __init__(self, dialogue_ID):
         self.dialogue_ID = dialogue_ID
-        file = open("src/main/python/dialogue/dialogue.json", 'r')
+        file = open("dialogue/dialogue.json", 'r')
         data = json.load(file)
 
         for dialogueEntry in data:

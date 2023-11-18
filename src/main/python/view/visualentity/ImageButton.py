@@ -44,7 +44,7 @@ class ImageButton(VisualEntity):
         self.img.scale(screenX, screenY)
         self.resize(self.width*screenX, self.height*screenY)
         self.reposition(self.xPosition*screenX, self.yPosition*screenY)
-        PILimg = Image.open("src/main/python/sprites/" + self.path).convert('RGBA')
+        PILimg = Image.open("sprites/" + self.path).convert('RGBA')
         PILimg = PILimg.resize((int(self.width), int(self.height)))
         self.npArray = numpy.asarray(PILimg)
 

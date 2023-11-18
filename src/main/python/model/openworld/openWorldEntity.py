@@ -14,7 +14,7 @@ class OpenWorldEntity:
     currentHeight = 0
     shape = Circle(0, 0)
     imgPath = "nekoarc.png"
-    img = pygame.image.load("src/main/python/sprites/nekoarc.png")
+    img = pygame.image.load("sprites/nekoarc.png")
     rotImg = img
     currentRotation = 0
     # entityType replaced by some sort of enum/database later maybe
@@ -37,7 +37,7 @@ class OpenWorldEntity:
         self.speedY = 0
 
 
-        img = pygame.image.load("src/main/python/sprites/" + imgPath)
+        img = pygame.image.load("sprites/" + imgPath)
         imgSize = shape.getImageSize()
         imgSize = (self.TILE_SIZE * imgSize[0], self.TILE_SIZE * imgSize[1])
         self.img = pygame.transform.scale(img, imgSize)

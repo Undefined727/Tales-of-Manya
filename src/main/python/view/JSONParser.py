@@ -14,7 +14,7 @@ from view.visualentity.InventoryCharacterEntity import InventoryCharacterEntity
 from view.visualentity.ItemDisplay import ItemDisplay
 
 def loadJson(address, screenX, screenY, visualEntities, buttons):
-    file = open("src/main/python/screens/" + address, 'r')
+    file = open("screens/" + address, 'r')
     data = JSON.load(file)
     for item in data:
         entity = None

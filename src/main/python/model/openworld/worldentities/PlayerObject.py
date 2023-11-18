@@ -1,4 +1,4 @@
-from model.openworld.OpenWorldEntity import OpenWorldEntity
+from model.openworld.openWorldEntity import OpenWorldEntity
 from model.openworld.Circle import Circle
 
 class PlayerObject:

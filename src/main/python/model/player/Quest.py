@@ -20,7 +20,7 @@ class Quest:
         else: self.questID = questID
         self.questProgress = 0
 
-        file = open("src/main/python/quests/quests.json", 'r')
+        file = open("quests/quests.json", 'r')
         data = json.load(file)
 
         for questEntry in data:

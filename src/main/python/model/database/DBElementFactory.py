@@ -1,18 +1,18 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
-from src.main.python.model.item.Item import Item
-from src.main.python.model.item.ItemSlotType import ItemSlotType
-from src.main.python.model.item.ItemStatType import ItemStatType
-from src.main.python.model.item.ItemTag import ItemTag
-from src.main.python.model.effect.Effect import Effect
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.model.effect.EffectTag import EffectTag
-from src.main.python.model.skill.Skill import Skill
-from src.main.python.model.skill.SkillTag import SkillTag
-from src.main.python.model.player.Quest import Quest
-from src.main.python.model.database.DatabaseModels import *
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
-from src.main.python.util.IDHandler import IDHandler
+from model.item.Item import Item
+from model.item.ItemSlotType import ItemSlotType
+from model.item.ItemStatType import ItemStatType
+from model.item.ItemTag import ItemTag
+from model.effect.Effect import Effect
+from model.effect.EffectType import EffectType
+from model.effect.EffectTag import EffectTag
+from model.skill.Skill import Skill
+from model.skill.SkillTag import SkillTag
+from model.player.Quest import Quest
+from model.database.DatabaseModels import *
+from util.IllegalArgumentException import IllegalArgumentException
+from util.IDHandler import IDHandler
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy import select
@@ -21,10 +21,12 @@ class DBElementFactory:
     # TODO Missing method to test if the IDs are unique
     # TODO complete a few methods, finish relationships
 
-    def __init__(self, path : str = "src/main/python/catgirl-dungeon.db", echo : bool = False):
-        self.engine = create_engine(f"sqlite:///{path}", echo = echo)
+    def __init__(self, path : str = "catgirl-dungeon.db", echo : bool = False):
+        self.engine = create_engine(f"sqlite:///{path}", echo = echo, pool_pre_ping = True)
 
     def fetchItem(self, name : str):
+        cwd = os.getcwd()
+        print(cwd)
         connection = self.engine.connect()
         statement = select(DBItem).where(DBItem.name == name)
         row = connection.execute(statement).first()
