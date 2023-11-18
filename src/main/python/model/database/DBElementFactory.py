@@ -1,5 +1,6 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
+from src.main.python.model.character.Character import Character
 from src.main.python.model.item.Item import Item
 from src.main.python.model.item.ItemSlotType import ItemSlotType
 from src.main.python.model.item.ItemStatType import ItemStatType
@@ -16,6 +17,8 @@ from src.main.python.util.IDHandler import IDHandler
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy import select
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
 
 class DBElementFactory:
     # TODO Missing method to test if the IDs are unique
@@ -78,6 +81,7 @@ class DBElementFactory:
 
     def store(self, element):
         if type(element) is Item: self.pushItem(element)
+        elif type(element) is Character: self.pushCharacter(element)
         elif type(element) is ItemSlotType: self.pushItemSlot(element)
         elif type(element) is Effect: self.pushEffect(element)
         elif type(element) is Quest: self.pushQuest(element)
@@ -181,8 +185,46 @@ class DBElementFactory:
         self.add(dbTag)
         return new_id
 
+    def pushCharacter(self, character: Character) -> str:
+        db_character = DBCharacter(
+            id = character.getID(),
+            name = character.getName(),
+            image = character.getImage(),
+            skill1 = 1,
+            skill2 = 1,
+            skill3 = 1,
+            ultimate = 1,
+            brilliance = 0,
+            surge = 0,
+            blaze = 0,
+            passage = 0,
+            clockwork = 0,
+            void = 0,
+            foundation = 0,
+            frost = 0,
+            flow = 0,
+            abundance = 0,
+            description = "",
+            basehealth = 100,
+            basemana = 100,
+            basedef = 10,
+            basespellpower = 10,
+            baseattack = 10
+        )
+        self.add(db_character)
+        return character.getID()
+
+    def getNextID(self, object_type):
+        with Session(self.engine) as session:
+            query = session.query(func.max(object_type.id)).all()
+            max_id = query[0][0]
+        return max_id[0][0]
+
 # ## SETUP ###
 factory = DBElementFactory()
+example_character = Character()
+factory.store(example_character)
+print(f"The max ID of ItemStats is {factory.getNextID(DBCharacter)}")
 
 ## Storing on the database ###
 #example_item = Item("Slimy Helmet", ItemSlotType.HEAD, "A helmet covered in slime, it's pretty nasty but wearable", "slimy_helmet.png")

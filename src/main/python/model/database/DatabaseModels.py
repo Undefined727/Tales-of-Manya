@@ -3,6 +3,7 @@ from typing import List
 from typing import Optional
 from sqlalchemy import String
 from sqlalchemy import Integer
+from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
@@ -78,7 +79,7 @@ class DBItem(Base):
 
     def __repr__(self) -> str:
         return f"Item(id = {self.id!r}, name = {self.name!r}, image_path = {self.image_path!r}, description = {self.description!r})"
-    
+
 class DBItemStat(Base):
     __tablename__ = "ItemStat"
     id : Mapped[str] = mapped_column(String(36), primary_key=True)
@@ -106,15 +107,47 @@ class DBSkill(Base):
     def __repr__(self) -> str:
         return f"Item(id = {self.id!r}, name = {self.name!r}, manaCost = {self.manaCost!r}, tags = {self.tags!r}, effects = {self.effects!r})"
 
+class DBCharacter(Base):
+    __tablename__ = "Character"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    image : Mapped[str] = mapped_column(String(120))
+    skill1 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
+    skill2 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
+    skill3 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
+    ultimate : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
+    brilliance : Mapped[int] = mapped_column(Integer, nullable=False)
+    surge : Mapped[int] = mapped_column(Integer, nullable=False)
+    blaze : Mapped[int] = mapped_column(Integer, nullable=False)
+    passage : Mapped[int] = mapped_column(Integer, nullable=False)
+    clockwork : Mapped[int] = mapped_column(Integer, nullable=False)
+    void : Mapped[int] = mapped_column(Integer, nullable=False)
+    foundation : Mapped[int] = mapped_column(Integer, nullable=False)
+    frost : Mapped[int] = mapped_column(Integer, nullable=False)
+    flow : Mapped[int] = mapped_column(Integer, nullable=False)
+    abundance : Mapped[int] = mapped_column(Integer, nullable=False)
+    description : Mapped[str] = mapped_column(String(2000))
+    basehealth : Mapped[int] = mapped_column(Integer, nullable=False)
+    basemana : Mapped[int] = mapped_column(Integer, nullable=False)
+    basedef : Mapped[int] = mapped_column(Integer, nullable=False)
+    basespellpower : Mapped[int] = mapped_column(Integer, nullable=False)
+    baseattack : Mapped[int] = mapped_column(Integer, nullable=False)
+
+    def __repr__(self):
+        affinities = f"brilliance surge      blaze      passage    clockwork  void       foundation frost      flow       abundance \n"
+        affinities += f"{self.brilliance!r:10} {self.surge!r:10} {self.blaze!r:10} {self.passage!r:10} {self.clockwork!r:10} {self.void!r:10} {self.foundation!r:10} {self.frost!r:10} {self.flow!r:10} {self.abundance!r:10}"
+        basic_stats = f"health     mana       defense    spellpower attack    \n"
+        basic_stats += f"{self.basehealth!r:10}  {self.basemana!r:10}  {self.basedef!r:10} {self.basespellpower!r:10} {self.baseattack!r:10}"
+        return f"id: {self.id}\nname: {self.name}\nimage: {self.image}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nultimate: {self.ultimate}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
 # ## Initialization ###
 from sqlalchemy import create_engine
 engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = True)
 
-# ## This line resets the whole database ###
-#Base.metadata.drop_all(engine)
+## This line resets the whole database ###
+# Base.metadata.drop_all(engine)
 
 # ## This line creates the database as described in the classes above ###
-#Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 # # ## Example code to add an Item ###
 # with Session(engine) as session:

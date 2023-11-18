@@ -7,13 +7,14 @@ from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
 from model.item.Item import Item
-from uuid import uuid4
+from util.IDHandler import IDHandler
 
 
 class Character:
     ### Base Stats ###
     id : str
     name : str
+    description : str
     #attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
     #defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
     #spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
@@ -38,11 +39,10 @@ class Character:
     loadout_bonuses : dict[ int, int ]
     buff_bonuses : dict[ EffectType, int ]
 
-
     ### Combat Visuals ###
     img : str = "nekoarc.png"
     selectedImg : str = "nekoarc.png"
-    
+
     ## Overworld Visuals
     overworldImg : str = "nekoarc.png"
     hasActed : bool = False
@@ -50,9 +50,9 @@ class Character:
 
     # Add Pulling from Database with ID in the future #
     def __init__(self, name : str = "Placeholder Name", img : str = "nekoarc.png", level : int = 1):
-        self.id             = uuid4()
+        self.id             = IDHandler.generateID(type(self))
         self.name           = name
-        self.level          = level
+        self.description    = ""
         self.img            = img
         if (name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
         else: self.selectedImg = "selectedCatgirlAnimation"
@@ -72,6 +72,18 @@ class Character:
         self.update()
 
     ### Getters ###
+
+    def getID(self):
+        return self.id
+
+    def getName(self):
+        return self.name
+
+    def getImage(self):
+        return self.img
+
+    def getDescription(self):
+        return self.description
 
     def getBonuses(self, bonus_type : EffectType) -> int:
         # This helps other functions to fetch either the flat and percentage
@@ -99,6 +111,15 @@ class Character:
         return self.experience.getXP()
 
     ### Setters ###
+
+    def setID(self, new_id : int):
+        self.id = new_id
+
+    def setName(self, new_name : str):
+        self.name = new_name
+
+    def setImage(self, new_image : str):
+        self.img = new_image
 
     def setCurrentHP(self, value : int):
         self.health.setCurrentValue(value)
@@ -148,8 +169,6 @@ class Character:
             elif (stat == ItemStatType.SPELLPOWER.value): base_spellpower += value
             elif (stat == ItemStatType.HEALTH.value): base_health += value
             elif (stat == ItemStatType.MANA.value): base_mana += value
-       
-
 
         # Augment base stats with buffs
         # extra_health_flat = self.getBonuses(EffectType.HEALTH_FLAT)
