@@ -3,6 +3,7 @@ temp/
 target/
 pyvenv.cfg
 *.pyc
+*.sql
 Lib/
 __pycache__/
 .vscode/

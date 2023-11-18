@@ -1,5 +1,6 @@
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.VisualEntity import VisualEntity
+import os
 
 class Animation(VisualEntity):
     images:list[ImageEntity]
@@ -9,28 +10,32 @@ class Animation(VisualEntity):
     currentDelayPosition:int
     keepQuality:bool
 
-    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], files = [], delay = 5, keepQuality = True):
+    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], imageFolder = "nekoarc", delay = 5, keepQuality = True):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.keepQuality = keepQuality
         self.delay = delay
         self.currentImage = 0
         self.currentDelayPosition = 0
         self.images = []
+        files = os.listdir(os.path.join(os.path.abspath("."), f"src\\main\\python\\sprites\\animations\\{imageFolder}"))
         counter = 0 
         for file in files:
-            self.images.append(ImageEntity(f"Image{counter}", True, 0, 0, 0, 0, [], file, keepQuality))
+            self.images.append(ImageEntity(f"Image{counter}", True, 0, 0, 0, 0, [], f"animations/{imageFolder}/{file}", keepQuality))
             counter += 1
     
-    def updateImages(self, files):
+    def updateImages(self, imageFolder):
+        files = os.listdir(os.path.join(os.path.abspath("."), f"src\\main\\python\\sprites\\animations\\{imageFolder}"))
         counter = 0
         if (len(files) == len(self.images)):
             for file in files:
-                self.images[counter].updateImg(file)
+                self.images[counter].updateImg(f"animations/{imageFolder}/{file}")
         else:
             self.images = []
             for file in files:
-                self.images.append(ImageEntity(f"Image{counter}", True, self.xPosition, self.yPosition, self.width, self.height, [], file, self.keepQuality))
+                self.images.append(ImageEntity(f"Image{counter}", True, self.xPosition, self.yPosition, self.width, self.height, [], f"animations/{imageFolder}/{file}", self.keepQuality))
                 counter += 1
+            for image in self.images:
+                image.resize(self.width, self.height)
 
     def getImage(self):
         if (self.currentDelayPosition >= 0): 

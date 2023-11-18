@@ -27,6 +27,9 @@ class Inventory:
     def addItem(self, item, count:int) -> bool:
         if (not type(item) == Item): 
             item = databaseFactory.fetchItem(item)
+            if (item == None): 
+                print("Could not find item")
+                return False
         for i in range(count):
             added = False
             for currentSlot in self.slots:

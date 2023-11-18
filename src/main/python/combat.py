@@ -85,11 +85,8 @@ def loadCombat(transferredData):
     enemies = gameData.currentEnemies
     playerData = gameData.player
     party = playerData.party
-    activeCharacter = 1
-    skillSelected = 0
     skillsShowing = False
-    enemySelectionShowing = False
-    currSelectedChar = None
+    
 
     
     visualEntities = []
@@ -120,36 +117,28 @@ def loadCombat(transferredData):
             if type(entity) == CombatCharacterEntity:
                 if (entity.character is not None and entity.character.health.current_value <= 0):
                     visualEntities.remove(entity)
+                    buttons.remove(entity.getButtons())
                 elif(entity.character is not None):
                     entity.updateCharacter()
 
     def buttonExit():
         pygame.quit()
 
-    def characterSelection(selectedChar):
+    currSelectedChar = None
+    currSelectedEnemy = None
+    def characterSelection(selectedChar:CombatCharacterEntity):
         nonlocal currSelectedChar
-        if (currSelectedChar is not None): currSelectedChar.isSelected = False
-        currSelectedChar = selectedChar
-        currSelectedChar.isSelected = True
+        nonlocal currSelectedEnemy
+        if (selectedChar.isEnemy):
+            if (currSelectedEnemy is not None): currSelectedEnemy.isSelected = False
+            currSelectedEnemy = selectedChar
+            currSelectedEnemy.isSelected = True
+        else:
+            if (currSelectedChar is not None): currSelectedChar.isSelected = False
+            currSelectedChar = selectedChar
+            currSelectedChar.isSelected = True
         updateCharacters()
 
-    def enemySelection(selectedChar:CombatCharacterEntity):
-        nonlocal skillSelected
-        enemySelected = args[0]
-        global visualEntities
-        nonlocal enemies
-        nonlocal enemySelectionShowing
-        nonlocal skillsShowing
-        nonlocal activeCharacter
-        if enemySelectionShowing:
-            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-            party[activeCharacter-1].hasActed = True
-            updateCharacters()
-            for entity in visualEntities:
-                if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
-                    entity.isShowing = False
-            skillsShowing = False
-            enemySelectionShowing = False
 
     def skillButtonFunction():
         nonlocal skillsShowing
@@ -161,15 +150,16 @@ def loadCombat(transferredData):
     
 
     def attack():
-        nonlocal enemies
         nonlocal currSelectedChar
-        if(currSelectedChar == None): return
-        counter = 0 
-        while (enemies[counter].getCurrentHP() <= 0):
-            if (counter >= len(enemies)): break
-            else: counter += 1
-        enemies[counter].takeDamage(currSelectedChar.character.attack)
+        nonlocal currSelectedEnemy
+        if((currSelectedChar == None) or (currSelectedEnemy == None)): return
+        if(currSelectedChar.character.hasActed): return
+        currSelectedEnemy.character.takeDamage(currSelectedChar.character.attack)
         currSelectedChar.character.hasActed = True
+        currSelectedEnemy.isSelected = False
+        currSelectedEnemy = None
+        currSelectedChar.isSelected = False
+        currSelectedChar = None
         updateCharacters()
 
 
@@ -182,33 +172,32 @@ def loadCombat(transferredData):
 
         count = 0
         for enemy in enemies:
-            print(enemy)
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
 
             entityDetails = {
                 "name": enemy.name,
-                "HPBorderXPosition": currEnemyX-0.1,
+                "HPBorderXPosition": currEnemyX-enemySpacing*0.8,
                 "HPBorderYPosition": 0.1,
+                "BorderWidth": enemySpacing*0.8,
+                "BorderHeight": 0.05,
                 "imgXPosition": currEnemyX,
                 "imgYPosition": 0.1,
                 "imgWidth": enemySpacing,
-                "imgHeight": 0.2
+                "imgHeight": enemySpacing*screenX/screenY
             }
             entityDetails = json.loads(json.dumps(entityDetails))
 
             displayedEnemy = CombatCharacterEntity.createFrom(entityDetails)
+            displayedEnemy.characterHPBarText.updateText(displayedEnemy.characterHPBarText.text, displayedEnemy.characterHPBarText.font, 12)
             displayedEnemy.scale(screenX, screenY)
             displayedEnemy.changeCharacter(enemy, True)
             visualEntities.append(displayedEnemy)
-            if(displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
+            if (displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
             count = count+1
 
 
     addEnemies()
     updateCharacters()
-
-
-
 
 
     buttonFunc = updateCharacters
@@ -250,10 +239,10 @@ def loadCombat(transferredData):
             if (enemy.getCurrentHP() > 0):
                 enemiesDead = False
                 break
+        
         if (enemiesDead):
             for enemy in enemies:
                 enemy.setCurrentHP(character.getMaxHP())
-
             openWorld()
 
         refreshScreen(screen)
