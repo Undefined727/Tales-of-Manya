@@ -1,7 +1,7 @@
 from uuid import uuid4
-from model.Singleton import global_states
-from model.database.DatabaseModels import DBEffect, DBItem, DBItemStat, DBSkill, DBTag, DBCharacter
-from model.database.DBElementFactory import DBElementFactory
+from src.main.python.model.Singleton import global_states
+from src.main.python.model.database.DatabaseModels import DBCharacter, DBItem
+
 class IDHandler:
     @staticmethod
     def generateID(object_type):

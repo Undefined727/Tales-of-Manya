@@ -1,3 +1,6 @@
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
+from src.main.python.model.database.DatabaseModels import engine, DBCharacter
 from model.character.CharacterLoadout import CharacterLoadout
 from model.character.ExperienceStat import ExperienceManager
 from model.character.DynamicStat import DynamicStat
@@ -6,9 +9,6 @@ from model.character.Inventory import Inventory
 from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
-from model.item.Item import Item
-from util.IDHandler import IDHandler
-
 
 class Character:
     ### Base Stats ###
@@ -49,8 +49,11 @@ class Character:
 
 
     # Add Pulling from Database with ID in the future #
-    def __init__(self, name : str = "Placeholder Name", img : str = "nekoarc.png", level : int = 1):
-        self.id             = IDHandler.generateID(type(self))
+    def __init__(self,
+                 name : str = "Placeholder Name",
+                 img : str = "nekoarc.png",
+                 level : int = 1):
+        self.id             = self.generateID()
         self.name           = name
         self.description    = ""
         self.img            = img
@@ -191,9 +194,10 @@ class Character:
         self.defense = base_defense
         self.spellpower = base_spellpower
 
-
-
-       
-
-
-        
+    ## Misc ##
+    @staticmethod
+    def generateID() -> int:
+        with Session(engine) as session:
+            query = session.query(func.max(DBCharacter.id)).all()
+            max_id = query[0][0]
+            return max_id + 1

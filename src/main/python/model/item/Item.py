@@ -1,9 +1,9 @@
-from sqlalchemy.engine.row import Row
-import json
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
+from model.database.DatabaseModels import engine, DBItem
 from model.item.ItemSlotType import ItemSlotType
 from model.item.ItemTag import ItemTag
 from model.item.ItemStatType import ItemStatType
-from util.IDHandler import IDHandler
 
 class Item:
     id : str
@@ -11,7 +11,7 @@ class Item:
     type : ItemSlotType
     tags : list[ ItemTag ]
     stats : dict[ ItemStatType, int ]
-    set : str
+    item_set : str
     description : str
     image_path: str
 
@@ -22,19 +22,20 @@ class Item:
                  image_path : str,
                  tags : list[ ItemTag ] = None,
                  stats : dict[ ItemStatType, int ] = None,
-                 set : str = None,
+                 item_set : str = None,
                  id : str = None):
         self.setName(name)
         self.setType(type)
         self.setDescription(description)
         self.setImagePath(image_path)
         self.setTags(tags)
-        self.setSet(set)
+        self.setItemSet(item_set)
         self.setStats(stats)
 
-        if id is None: self.setID(str(IDHandler.generateID(Item)))
+        if id is None: self.setID(self.generateID())
         else: self.setID(id)
 
+    ## Getters ##
     def getID(self) -> str:
         return self.id
 
@@ -55,10 +56,11 @@ class Item:
 
     def getStats(self) -> dict[ ItemStatType, int ]:
         return self.stats
-    
-    def getSet(self) -> str:
-        return self.set
 
+    def getItemSet(self) -> str:
+        return self.item_set
+
+    ## Setters ##
     def setID(self, new_id : str):
         self.id = new_id
 
@@ -80,13 +82,21 @@ class Item:
     def setStats(self, stats : dict[ ItemStatType, int ]):
         self.stats = stats
 
-    def setSet(self, set : str):
-        self.set = set    
+    def setItemSet(self, item_set : str):
+        self.item_set = item_set
 
-    def equals(self, item):
+    ## Misc ##
+    def __eq__(self, item):
         if (type(item) == Item):
             if (item.getName() == self.getName()): return True
         return False
 
-    def toString(self):
+    def __repr__(self):
         return f"Name: {self.getName()}; Type: {self.getType()}; Tags: {self.getTags()}; Stats: {self.getStats()}; Set: {self.getStats()}; Description: {self.getDescription()}; Path: {self.getPath()}"
+
+    @staticmethod
+    def generateID() -> int:
+        with Session(engine) as session:
+            query = session.query(func.max(DBItem.id)).all()
+            max_id = query[0][0]
+            return max_id + 1

@@ -13,7 +13,6 @@ from src.main.python.model.skill.SkillTag import SkillTag
 from src.main.python.model.player.Quest import Quest
 from src.main.python.model.database.DatabaseModels import *
 from src.main.python.util.IllegalArgumentException import IllegalArgumentException
-from src.main.python.util.IDHandler import IDHandler
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy import select
@@ -218,13 +217,13 @@ class DBElementFactory:
         with Session(self.engine) as session:
             query = session.query(func.max(object_type.id)).all()
             max_id = query[0][0]
-        return max_id[0][0]
+        return max_id
 
 # ## SETUP ###
-factory = DBElementFactory()
-example_character = Character()
-factory.store(example_character)
-print(f"The max ID of ItemStats is {factory.getNextID(DBCharacter)}")
+# factory = DBElementFactory()
+# example_character = Character()
+# factory.store(example_character)
+# print(f"The max ID of ItemStats is {factory.getNextID(DBCharacter)}")
 
 ## Storing on the database ###
 #example_item = Item("Slimy Helmet", ItemSlotType.HEAD, "A helmet covered in slime, it's pretty nasty but wearable", "slimy_helmet.png")

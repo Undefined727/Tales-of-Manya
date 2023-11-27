@@ -1,6 +1,6 @@
-from model.character.Character import Character
-from model.player.Player import Player
-from model.database.DBElementFactory import DBElementFactory
+from src.main.python.model.character.Character import Character
+from src.main.python.model.player.Player import Player
+from src.main.python.model.database.DBElementFactory import DBElementFactory
 import pygame
 
 class Singleton:
