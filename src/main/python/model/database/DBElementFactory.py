@@ -188,7 +188,6 @@ class DBElementFactory:
         db_character = DBCharacter(
             id = character.getID(),
             name = character.getName(),
-            image = character.getImage(),
             skill1 = 1,
             skill2 = 1,
             skill3 = 1,

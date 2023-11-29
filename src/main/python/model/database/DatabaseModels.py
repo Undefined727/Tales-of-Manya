@@ -79,34 +79,6 @@ class DBItemStat(Base):
 
     def __repr__(self) -> str:
         return f"ItemStat(id = {self.id!r}, item = {self.item!r}, stat = {self.stat!r}, value = {self.value!r})"
-    
-class DBCharacter(Base):
-    __tablename__ = "Character"
-    id : Mapped[str] = mapped_column(String(36), primary_key=True)
-    name : Mapped[str] = mapped_column(String(120), unique=True)
-    skill1 : Mapped[Optional[str]] = mapped_column(String(120))
-    skill2 : Mapped[Optional[str]] = mapped_column(String(120))
-    skill3 : Mapped[Optional[str]] = mapped_column(String(120))
-    ultimate : Mapped[Optional[str]] = mapped_column(String(120))
-    brilliance : Mapped[int] = mapped_column(Integer)
-    surge : Mapped[int] = mapped_column(Integer)
-    blaze : Mapped[int] = mapped_column(Integer)
-    passage : Mapped[int] = mapped_column(Integer)
-    clockwork : Mapped[int] = mapped_column(Integer)
-    void : Mapped[int] = mapped_column(Integer)
-    foundation : Mapped[int] = mapped_column(Integer)
-    frost : Mapped[int] = mapped_column(Integer)
-    flow : Mapped[int] = mapped_column(Integer)
-    abundance : Mapped[int] = mapped_column(Integer)
-    description : Mapped[Optional[str]] = mapped_column(String(2000))
-    basehealth : Mapped[int] = mapped_column(Integer)
-    basemana : Mapped[int] = mapped_column(Integer)
-    basedef : Mapped[int] = mapped_column(Integer)
-    basespellpower : Mapped[int] = mapped_column(Integer)
-    baseattack : Mapped[int] = mapped_column(Integer)
-
-    def __repr__(self) -> str:
-        return f"Character(id = {self.id!r}, name = {self.name!r}, description = {self.description!r})"
 
 class DBSkill(Base):
     __tablename__ = "Skill"
@@ -129,7 +101,6 @@ class DBCharacter(Base):
     __tablename__ = "Character"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     name : Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    image : Mapped[str] = mapped_column(String(120))
     skill1 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
     skill2 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
     skill3 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.id",ondelete="CASCADE"))
@@ -156,7 +127,7 @@ class DBCharacter(Base):
         affinities += f"{self.brilliance!r:10} {self.surge!r:10} {self.blaze!r:10} {self.passage!r:10} {self.clockwork!r:10} {self.void!r:10} {self.foundation!r:10} {self.frost!r:10} {self.flow!r:10} {self.abundance!r:10}"
         basic_stats = f"health     mana       defense    spellpower attack    \n"
         basic_stats += f"{self.basehealth!r:10}  {self.basemana!r:10}  {self.basedef!r:10} {self.basespellpower!r:10} {self.baseattack!r:10}"
-        return f"id: {self.id}\nname: {self.name}\nimage: {self.image}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nultimate: {self.ultimate}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
+        return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nultimate: {self.ultimate}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
 # ## Initialization ###
 from sqlalchemy import create_engine
 engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = True)
