@@ -26,6 +26,8 @@ class DBElementFactory:
     def __init__(self, path : str = "src/main/python/catgirl-dungeon.db", echo : bool = False):
         self.engine = create_engine(f"sqlite:///{path}", echo = echo)
 
+    ## Getting from Database ##
+
     def fetchItem(self, name : str):
         connection = self.engine.connect()
         statement = select(DBItem).where(DBItem.name == name)
@@ -62,6 +64,18 @@ class DBElementFactory:
                     row.id)
         connection.close()
         return item
+    
+    def fetchCharacterData(self, id:int):
+        connection = self.engine.connect()
+        statement = select(DBCharacter).where(DBCharacter.id == id)
+        row = connection.execute(statement).first()
+        connection.close()
+        if row is None: raise IllegalArgumentException("The item is not in the database")
+
+        return [row.name, row.skill1, row.skill2, row.skill3, row.ultimate,
+                row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
+                row.void, row.foundation, row.frost, row.flow, row.abundance,
+                row.description, row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack]
 
     def buildSkill(self, row) -> Skill:
         skill = Skill(row.name,
@@ -77,6 +91,8 @@ class DBElementFactory:
                         None,
                         row.id)
         return effect
+    
+    ## Adding to Database ##
 
     def store(self, element):
         if type(element) is Item: self.pushItem(element)
@@ -184,7 +200,7 @@ class DBElementFactory:
         self.add(dbTag)
         return new_id
 
-    def pushCharacter(self, character: Character) -> str:
+    def pushCharacter(self, character) -> str:
         db_character = DBCharacter(
             id = character.getID(),
             name = character.getName(),

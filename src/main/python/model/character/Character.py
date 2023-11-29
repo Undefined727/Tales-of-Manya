@@ -4,11 +4,14 @@ from src.main.python.model.database.DatabaseModels import engine, DBCharacter
 from model.character.CharacterLoadout import CharacterLoadout
 from model.character.ExperienceStat import ExperienceManager
 from model.character.DynamicStat import DynamicStat
-from model.effect.EffectsList import EffectsList
+#from model.effect.EffectsList import EffectsList
 from model.character.Inventory import Inventory
 from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
+import model.database.DBElementFactory as db
+
+databaseFactory = db()
 
 class Character:
     ## Character Identifiers ##
@@ -82,14 +85,14 @@ class Character:
 
 
     # Add Pulling from Database with ID in the future #
-    def __init__(self, id:int = 1, level : int = 1):
-        self.id             = uuid4()
-        self.name           = name
-        self.description    = ""
-        self.img            = img
-        if (name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
+    def __init__(self, id:int=1, level : int = 1):
+        characterData = databaseFactory.fetchCharacterData(id)
+        self.name = characterData[0]
+        self.description    = characterData[15]
+        self.img            = f"{self.name}.png"
+        if (self.name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
         else: self.selectedImg = "selectedCatgirlAnimation"
-        self.overworldImg   = img
+        self.overworldImg   = f"{self.name}.png"
 
         self.health     = DynamicStat(level * 100)
         self.mana       = DynamicStat((level * 10) + 1000)
