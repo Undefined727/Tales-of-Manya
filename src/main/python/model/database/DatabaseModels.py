@@ -14,16 +14,6 @@ from sqlalchemy.orm import Session
 class Base(DeclarativeBase):
     pass
 
-# class DBItemSlot(Base):
-#     __tablename__ = "ItemSlot"
-#     id : Mapped[str] = mapped_column(String(36), primary_key=True)
-#     item_id : Mapped[str] = mapped_column(String(36), ForeignKey("Item.id"))
-#     item :  Mapped["DBItem"] = relationship(back_populates = "slots")
-#     slot : Mapped[str] = mapped_column(String(100))
-
-#     def __repr__(self) -> str:
-#         return f"ItemSlot(id = {self.id!r}, item_id = {self.item_id!r}, slot = {self.slot!r})"
-
 class DBTag(Base):
     __tablename__ = "Tag"
     id : Mapped[str] = mapped_column(String(36), primary_key=True)
@@ -88,6 +78,34 @@ class DBItemStat(Base):
 
     def __repr__(self) -> str:
         return f"ItemStat(id = {self.id!r}, item = {self.item!r}, stat = {self.stat!r}, value = {self.value!r})"
+    
+class DBCharacter(Base):
+    __tablename__ = "Character"
+    id : Mapped[str] = mapped_column(String(36), primary_key=True)
+    name : Mapped[str] = mapped_column(String(120), unique=True)
+    skill1 : Mapped[Optional[str]] = mapped_column(String(120))
+    skill2 : Mapped[Optional[str]] = mapped_column(String(120))
+    skill3 : Mapped[Optional[str]] = mapped_column(String(120))
+    ultimate : Mapped[Optional[str]] = mapped_column(String(120))
+    brilliance : Mapped[int] = mapped_column(Integer)
+    surge : Mapped[int] = mapped_column(Integer)
+    blaze : Mapped[int] = mapped_column(Integer)
+    passage : Mapped[int] = mapped_column(Integer)
+    clockwork : Mapped[int] = mapped_column(Integer)
+    void : Mapped[int] = mapped_column(Integer)
+    foundation : Mapped[int] = mapped_column(Integer)
+    frost : Mapped[int] = mapped_column(Integer)
+    flow : Mapped[int] = mapped_column(Integer)
+    abundance : Mapped[int] = mapped_column(Integer)
+    description : Mapped[Optional[str]] = mapped_column(String(2000))
+    basehealth : Mapped[int] = mapped_column(Integer)
+    basemana : Mapped[int] = mapped_column(Integer)
+    basedef : Mapped[int] = mapped_column(Integer)
+    basespellpower : Mapped[int] = mapped_column(Integer)
+    baseattack : Mapped[int] = mapped_column(Integer)
+
+    def __repr__(self) -> str:
+        return f"Character(id = {self.id!r}, name = {self.name!r}, description = {self.description!r})"
 
 class DBSkill(Base):
     __tablename__ = "Skill"

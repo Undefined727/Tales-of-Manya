@@ -11,45 +11,78 @@ from uuid import uuid4
 
 
 class Character:
-    ### Base Stats ###
+    ## Character Identifiers ##
     id : str
     name : str
-    #attack      = lambda self, type1 = EffectType.ATTACK_FLAT, type2 = EffectType.ATTACK_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    #defense     = lambda self, type1 = EffectType.DEFENSE_FLAT, type2 = EffectType.DEFENSE_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    #spellpower  = lambda self, type1 = EffectType.SPELLPOWER_FLAT, type2 = EffectType.SPELLPOWER_PCT: ((self.level * 10) + self.getBonuses(type1)) * (1 + self.getBonuses(type2))
-    attack:int
-    defense:int
-    spellpower:int
 
-    ### Dynamic Stats ###
+    ## Basic Stats ##
+    # Base Stats #
+    baseattack:int
+    basespellpower:int
+    basehealth:int
+    basemana:int
+    # 0 for characters
+    basedef:int
+
+    # Variable Stats #
+    attack:int
+    spellpower:int
+    defense:int
+    # These are handled with a class due to them being a bar and a stat #
     health : DynamicStat
     mana : DynamicStat
-    experience : ExperienceManager
+
+    ## Elemental Affinities ##
+    # Base Stats #
+    baseBrilliance:int
+    baseVoid:int
+    baseSurge:int
+    baseFoundation:int
+    baseBlaze:int
+    baseFrost:int
+    basePassage:int
+    baseFlow:int
+    baseAbundance:int
+    baseClockwork:int
+
+    # Variable Stats #
+    brilliance:int
+    void:int
+    surge:int
+    foundation:int
+    blaze:int
+    frost:int
+    passage:int
+    flow:int
+    abundance:int
+    clockwork:int
+
+    ## Skills ##
+    skills:list[str]
+
+    ## Inventory ##
     loadout : CharacterLoadout
     inventory : Inventory
-    buffs : EffectsList
-    debuffs : EffectsList
+    experience : ExperienceManager
 
-    ### Collections ###
-    skills:list[Skill]
-    # spells:list[Spell] TODO #16 Implement
+    ## Effects ##
+    buffs : list[str]
 
-    ### Listeners ###
-    loadout_bonuses : dict[ int, int ]
-    buff_bonuses : dict[ EffectType, int ]
-
-
-    ### Combat Visuals ###
+    ### Visuals ###
+    ## Combat ##
     img : str = "nekoarc.png"
     selectedImg : str = "nekoarc.png"
     
-    ## Overworld Visuals
+    ## Overworld ##
     overworldImg : str = "nekoarc.png"
+
+
+    # Move this to the combat turn taking section
     hasActed : bool = False
 
 
     # Add Pulling from Database with ID in the future #
-    def __init__(self, name : str = "Placeholder Name", img : str = "nekoarc.png", level : int = 1):
+    def __init__(self, id:int = 1, level : int = 1):
         self.id             = uuid4()
         self.name           = name
         self.level          = level
@@ -62,6 +95,8 @@ class Character:
         self.mana       = DynamicStat((level * 10) + 1000)
         self.experience = DynamicStat(level * 100)
         self.loadout    = CharacterLoadout()
+
+        
 
         self.skills = [Skill(1), Skill(1), Skill(1)]
         self.spells = list()
