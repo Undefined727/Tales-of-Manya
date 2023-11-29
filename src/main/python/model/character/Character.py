@@ -1,3 +1,6 @@
+from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
+from src.main.python.model.database.DatabaseModels import engine, DBCharacter
 from model.character.CharacterLoadout import CharacterLoadout
 from model.character.ExperienceStat import ExperienceManager
 from model.character.DynamicStat import DynamicStat
@@ -6,9 +9,6 @@ from model.character.Inventory import Inventory
 from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
-from model.item.Item import Item
-from uuid import uuid4
-
 
 class Character:
     ## Character Identifiers ##
@@ -85,7 +85,7 @@ class Character:
     def __init__(self, id:int = 1, level : int = 1):
         self.id             = uuid4()
         self.name           = name
-        self.level          = level
+        self.description    = ""
         self.img            = img
         if (name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
         else: self.selectedImg = "selectedCatgirlAnimation"
@@ -107,6 +107,18 @@ class Character:
         self.update()
 
     ### Getters ###
+
+    def getID(self):
+        return self.id
+
+    def getName(self):
+        return self.name
+
+    def getImage(self):
+        return self.img
+
+    def getDescription(self):
+        return self.description
 
     def getBonuses(self, bonus_type : EffectType) -> int:
         # This helps other functions to fetch either the flat and percentage
@@ -134,6 +146,15 @@ class Character:
         return self.experience.getXP()
 
     ### Setters ###
+
+    def setID(self, new_id : int):
+        self.id = new_id
+
+    def setName(self, new_name : str):
+        self.name = new_name
+
+    def setImage(self, new_image : str):
+        self.img = new_image
 
     def setCurrentHP(self, value : int):
         self.health.setCurrentValue(value)
@@ -183,8 +204,6 @@ class Character:
             elif (stat == ItemStatType.SPELLPOWER.value): base_spellpower += value
             elif (stat == ItemStatType.HEALTH.value): base_health += value
             elif (stat == ItemStatType.MANA.value): base_mana += value
-       
-
 
         # Augment base stats with buffs
         # extra_health_flat = self.getBonuses(EffectType.HEALTH_FLAT)
@@ -207,9 +226,10 @@ class Character:
         self.defense = base_defense
         self.spellpower = base_spellpower
 
-
-
-       
-
-
-        
+    ## Misc ##
+    @staticmethod
+    def generateID() -> int:
+        with Session(engine) as session:
+            query = session.query(func.max(DBCharacter.id)).all()
+            max_id = query[0][0]
+            return max_id + 1
