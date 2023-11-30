@@ -2,9 +2,9 @@ from util.Messages import Error
 from model.item.Item import Item
 from model.item.InventorySlot import InventorySlot
 from util.IllegalArgumentException import IllegalArgumentException
-import model.database.DBElementFactory as db
+from model.database.DBElementFactory import DBElementFactory
 
-databaseFactory = db()
+databaseFactory = DBElementFactory()
 
 class Inventory:
     slots:list[InventorySlot]

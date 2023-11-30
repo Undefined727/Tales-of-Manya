@@ -14,11 +14,12 @@ class Singleton:
 
     def __init__(self, screen, dataFile):
         self.pygameWindow = screen
-        self.player = Player()
+        self.database_factory = DBElementFactory()
+        self.player = Player(self.database_factory)
         self.screenOpen = "Welcome"
         self.currentMap = None
         self.currentEnemies = None
         self.renderedMapEntities = None
-        self.database_factory = DBElementFactory()
+        
 
-global_states = Singleton()
+#global_states = Singleton()

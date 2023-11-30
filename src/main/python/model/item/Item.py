@@ -90,6 +90,11 @@ class Item:
         if (type(item) == Item):
             if (item.getName() == self.getName()): return True
         return False
+    
+    def equals(self, item):
+        if (type(item) == Item):
+            if (item.getName() == self.getName()): return True
+        return False
 
     def __repr__(self):
         return f"Name: {self.getName()}; Type: {self.getType()}; Tags: {self.getTags()}; Stats: {self.getStats()}; Set: {self.getStats()}; Description: {self.getDescription()}; Path: {self.getPath()}"

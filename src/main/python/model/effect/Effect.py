@@ -1,6 +1,6 @@
 from model.effect.EffectTag import EffectTag
 from model.effect.EffectType import EffectType
-from util.IDHandler import IDHandler
+#from util.IDHandler import IDHandler
 from util.IllegalArgumentException import IllegalArgumentException
 
 class Effect:
@@ -12,7 +12,9 @@ class Effect:
     tags : list[ EffectTag ]
 
     def __init__(self, name = "Placeholder Name", eff_type : EffectType = EffectType.NONE, value : int = 0, duration : int = -1, tags : list[ EffectTag ] = [], id : str = None):
-        if id is None: self.setID(IDHandler.generateID(Effect))
+        if id is None: 
+            raise IllegalArgumentException("no id")
+            #self.setID(IDHandler.generateID(Effect))
         else: self.setID(id)
         self.setName(name)
         self.setType(eff_type)

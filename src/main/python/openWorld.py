@@ -200,7 +200,7 @@ def loadOpenWorld(transferredData):
             spawnX = entity['position'][0]
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
-            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'])
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
             npc = NPC(entity['NPCID'], entity['position'])

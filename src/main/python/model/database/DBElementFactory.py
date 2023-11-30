@@ -5,7 +5,7 @@ from src.main.python.model.item.Item import Item
 from src.main.python.model.item.ItemSlotType import ItemSlotType
 from src.main.python.model.item.ItemStatType import ItemStatType
 from src.main.python.model.item.ItemTag import ItemTag
-from src.main.python.model.effect.Effect import Effect
+import src.main.python.model.effect.Effect as Effect
 from src.main.python.model.effect.EffectType import EffectType
 from src.main.python.model.effect.EffectTag import EffectTag
 from src.main.python.model.skill.Skill import Skill
@@ -65,17 +65,25 @@ class DBElementFactory:
         connection.close()
         return item
     
-    def fetchCharacterData(self, id:int):
+    def fetchCharacter(self, id):
         connection = self.engine.connect()
-        statement = select(DBCharacter).where(DBCharacter.id == id)
+        if type(id) == int:
+            statement = select(DBCharacter).where(DBCharacter.id == id)
+        else:
+            statement = select(DBCharacter).where(DBCharacter.name == id)
         row = connection.execute(statement).first()
-        connection.close()
-        if row is None: raise IllegalArgumentException("The item is not in the database")
+        if row is None: 
+            connection.close()
+            raise IllegalArgumentException("The item is not in the database")
+        
+        character = Character(row.name, row.description,
+                              row.skill1, row.skill2, row.skill3, row.ultimate,
+                              row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
+                              row.void, row.foundation, row.frost, row.flow, row.abundance,
+                              row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack)
 
-        return [row.name, row.skill1, row.skill2, row.skill3, row.ultimate,
-                row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
-                row.void, row.foundation, row.frost, row.flow, row.abundance,
-                row.description, row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack]
+        connection.close()
+        return character
 
     def buildSkill(self, row) -> Skill:
         skill = Skill(row.name,
@@ -200,7 +208,7 @@ class DBElementFactory:
         self.add(dbTag)
         return new_id
 
-    def pushCharacter(self, character) -> str:
+    def pushCharacter(self, character:Character) -> str:
         db_character = DBCharacter(
             id = character.getID(),
             name = character.getName(),

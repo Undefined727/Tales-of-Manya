@@ -10,10 +10,13 @@ class Player:
     party:list
     inventory:Inventory
 
-    def __init__(self, fileName = None):
+    def __init__(self, database, fileName = None):
         # This will pull from a file in the future
         self.currentQuests = [Quest(0)]
-        self.party = [Character("Catgirl1", "catgirl.png", 10), Character("Catgirl2", "catgirl.png", 15), Character("Catgirl3", "catgirl.png", 20)]
+        self.party = [database.fetchCharacter(1), database.fetchCharacter(1), database.fetchCharacter(1)]
+        self.party[0].level = 10
+        self.party[1].level = 15
+        self.party[2].level = 20
         
         self.inventory = Inventory()
         self.inventory.addItem("Purrveyor of the Nyaight", 5)

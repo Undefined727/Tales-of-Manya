@@ -5,13 +5,9 @@ from model.character.CharacterLoadout import CharacterLoadout
 from model.character.ExperienceStat import ExperienceManager
 from model.character.DynamicStat import DynamicStat
 #from model.effect.EffectsList import EffectsList
-from model.character.Inventory import Inventory
 from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
 from model.skill.Skill import Skill
-import model.database.DBElementFactory as db
-
-databaseFactory = db()
 
 class Character:
     ## Character Identifiers ##
@@ -65,7 +61,6 @@ class Character:
 
     ## Inventory ##
     loadout : CharacterLoadout
-    inventory : Inventory
     experience : ExperienceManager
 
     ## Effects ##
@@ -85,24 +80,44 @@ class Character:
 
 
     # Add Pulling from Database with ID in the future #
-    def __init__(self, id:int=1, level : int = 1):
-        characterData = databaseFactory.fetchCharacterData(id)
-        self.name = characterData[0]
-        self.description    = characterData[15]
+    def __init__(self, name, description, 
+                 skill1, skill2, skill3, ultimate,
+                 brilliance, surge, blaze, passage, clockwork,
+                 void, foundation, frost, flow, abundance,
+                 basehealth, basemana, basedef, basespellpower, baseattack):
+
+        self.name = name
+        self.description = description
+        self.skills = [skill1, skill2, skill3, ultimate]
+        self.baseBrilliance = brilliance
+        self.baseSurge = surge
+        self.baseBlaze = blaze
+        self.basePassage = passage
+        self.baseClockwork = clockwork
+        self.baseVoid = void
+        self.baseFoundation = foundation
+        self.baseFrost = frost
+        self.baseFlow = flow
+        self.baseAbundance = abundance
+        self.basehealth = basehealth
+        self.basemana = basemana
+        self.basedef = basedef
+        self.basespellpower = basespellpower
+        self.baseattack = baseattack
+        self.loadout    = CharacterLoadout()
+
+        # Default Level is 1 until initialized later #
+        self.level = 1
+        self.health     = DynamicStat(100)
+        self.mana       = DynamicStat(1000)
+        self.experience = DynamicStat(100)
+
+
         self.img            = f"{self.name}.png"
         if (self.name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
         else: self.selectedImg = "selectedCatgirlAnimation"
         self.overworldImg   = f"{self.name}.png"
 
-        self.health     = DynamicStat(level * 100)
-        self.mana       = DynamicStat((level * 10) + 1000)
-        self.experience = DynamicStat(level * 100)
-        self.loadout    = CharacterLoadout()
-
-        
-
-        self.skills = [Skill(1), Skill(1), Skill(1)]
-        self.spells = list()
 
         self.loadout_bonuses    = dict()
         self.buff_bonuses       = dict()
