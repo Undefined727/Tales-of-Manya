@@ -57,6 +57,5 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
     elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity):
         for item in entity.getItems():
-            print(item)
             if item.isShowing: displayEntity(item, screen)
         

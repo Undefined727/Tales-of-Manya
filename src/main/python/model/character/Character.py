@@ -209,19 +209,19 @@ class Character:
         # of a turn
 
         # Set base values from level
-        base_health = (self.level * 100)
-        base_mana = 1000 + (self.level * 10)
-        base_attack = (self.level * 10)
-        base_defense = (self.level * 10)
-        base_spellpower = (self.level * 10)
+        flatHP = self.level * self.basehealth * 100
+        flatMana = self.level * self.basemana * 100
+        flatAttack = self.level * self.baseattack
+        flatDEF = self.level * self.basedef
+        flatSP = self.level * self.basespellpower
 
         # Add Item stats
         for stat, value in self.loadout.getStats().items():
-            if (stat == ItemStatType.ATTACK.value): base_attack += value
-            elif (stat == ItemStatType.DEFENSE.value): base_defense += value
-            elif (stat == ItemStatType.SPELLPOWER.value): base_spellpower += value
-            elif (stat == ItemStatType.HEALTH.value): base_health += value
-            elif (stat == ItemStatType.MANA.value): base_mana += value
+            if (stat == ItemStatType.ATTACK.value): flatAttack += value
+            elif (stat == ItemStatType.DEFENSE.value): flatDEF += value
+            elif (stat == ItemStatType.SPELLPOWER.value): flatSP += value
+            elif (stat == ItemStatType.HEALTH.value): flatHP += value
+            elif (stat == ItemStatType.MANA.value): flatMana += value
 
         # Augment base stats with buffs
         # extra_health_flat = self.getBonuses(EffectType.HEALTH_FLAT)
@@ -238,11 +238,11 @@ class Character:
         #self.debuffs.update()
 
         # Set Values
-        self.health.setMaxValue(base_health)
-        self.mana.setMaxValue(base_mana)
-        self.attack = base_attack
-        self.defense = base_defense
-        self.spellpower = base_spellpower
+        self.health.setMaxValue(flatHP)
+        self.mana.setMaxValue(flatMana)
+        self.attack = flatAttack
+        self.defense = flatDEF
+        self.spellpower = flatSP
 
     ## Misc ##
     @staticmethod
