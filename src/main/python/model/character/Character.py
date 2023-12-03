@@ -209,7 +209,7 @@ class Character:
         # of a turn
 
         # Set base values from level
-        flatHP = self.level * self.basehealth * 100
+        flatHP = (20 + self.level) * self.basehealth * 100
         flatMana = self.level * self.basemana * 100
         flatAttack = self.level * self.baseattack
         flatDEF = self.level * self.basedef
@@ -239,7 +239,9 @@ class Character:
 
         # Set Values
         self.health.setMaxValue(flatHP)
+        self.health.setCurrentValue(flatHP)
         self.mana.setMaxValue(flatMana)
+        self.mana.setCurrentValue(flatMana)
         self.attack = flatAttack
         self.defense = flatDEF
         self.spellpower = flatSP
