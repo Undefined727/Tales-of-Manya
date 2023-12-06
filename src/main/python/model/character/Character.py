@@ -239,9 +239,7 @@ class Character:
 
         # Set Values
         self.health.setMaxValue(flatHP)
-        self.health.setCurrentValue(flatHP)
         self.mana.setMaxValue(flatMana)
-        self.mana.setCurrentValue(flatMana)
         self.attack = flatAttack
         self.defense = flatDEF
         self.spellpower = flatSP
