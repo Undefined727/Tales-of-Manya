@@ -83,18 +83,16 @@ def loadCombat(transferredData):
     screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
     enemies = gameData.currentEnemies
-    for character in enemies:
-        character.setCurrentHP(character.health.max_value)
     playerData = gameData.player
     party = playerData.party
     skillsShowing = False
+
+    for character in enemies:
+        character.setCurrentHP(character.health.max_value)
     for character in party:
         character.setCurrentHP(character.health.max_value)
         character.setCurrentMana(character.mana.max_value)
 
-    
-
-    
     visualEntities = []
     buttons = []
     loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)
