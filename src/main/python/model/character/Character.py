@@ -186,7 +186,9 @@ class Character:
 
     def takeDamage(self, amount : int):
         # Add defense to scale this
-        self.health.decreaseBy(amount)
+
+        # Round before decreasing the players HP
+        self.health.decreaseBy(int(amount))
 
     def recoverMana(self, amount : int):
         amount *= 1 + self.getBonuses(EffectType.MANA_RECOVERY)

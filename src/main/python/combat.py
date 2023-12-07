@@ -2,12 +2,13 @@ import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.character.Character import Character
+from model.character.Skill import Skill
+import model.character.SkillFunctions as SkillFunctions
 from model.player.Player import Player
 from model.item.Item import Item
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
-
 
 visualEntities = []
 partyVisuals = []
@@ -19,17 +20,13 @@ inventory = []
 playerData:Player
 screen:pygame.surface
 gameData:Singleton
-
 party:list
-
-
 
 def openWorld():
     global quit
     global gameData
     quit = True
     gameData.screenOpen = "Open World"
-
 
 def refreshScreen(screen):
     # Fill the background
@@ -44,30 +41,6 @@ def refreshScreen(screen):
                 displayEntity(item, screen)
 
     pygame.display.flip()
-
-# activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
-# Reminder that AoE effects do NOT include the target of an ability
-# This does NOT verify that an ability can/should be used and simply executes the effects
-def useSkill(enemies, selectedEnemy, activeCharacter, skill):
-    global party
-    if (len(enemies) == 0): return
-    party[activeCharacter].mana = party[activeCharacter].mana - skill.manaCost
-
-    party[activeCharacter].setCurrentHP(party[activeCharacter].getCurrentHP() + skill.healing*party[activeCharacter].magic/100)
-    for character in range(0, len(party)):
-        if (character != activeCharacter): party[character].setCurrentHP(party[character].getCurrentHP() + skill.aoeHealing*party[activeCharacter].magic/100)
-    
-    enemies[selectedEnemy].setCurrentHP(enemies[selectedEnemy].getCurrentHP() - (skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[selectedEnemy].DEF/250))
-    for enemy in range(0, len(enemies)):
-        if (enemy != selectedEnemy): 
-            enemies[enemy].setCurrentHP(enemies[enemy].getCurrentHP() - ((skill.aoeDamage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[enemy].DEF/250)))
-
-    # Special code for individual skills with unique effects will go here
-    if (skill.name == "Berserk"):
-        party[activeCharacter].setCurrentHP(party[activeCharacter].getCurrentHP() - ((skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, party[activeCharacter].DEF/250)))
-
-
-    party[activeCharacter].hasActed = True
 
 def loadCombat(transferredData):
     global visualEntities
@@ -139,7 +112,6 @@ def loadCombat(transferredData):
             currSelectedChar.isSelected = True
         updateCharacters()
 
-
     def skillButtonFunction():
         nonlocal skillsShowing
         global visualEntities
@@ -149,18 +121,25 @@ def loadCombat(transferredData):
                 entity.isShowing = not entity.isShowing
     
 
-    def attack():
+    def useSkill(skill):
+        global gameData
         nonlocal currSelectedChar
         nonlocal currSelectedEnemy
         if((currSelectedChar == None) or (currSelectedEnemy == None)): return
         if(currSelectedChar.character.hasActed): return
-        currSelectedEnemy.character.takeDamage(currSelectedChar.character.attack)
+
+        SkillFunctions.useSkill(currSelectedChar.character, currSelectedEnemy.character, gameData, skill)
+
         currSelectedChar.character.hasActed = True
         currSelectedEnemy.isSelected = False
         currSelectedEnemy = None
         currSelectedChar.isSelected = False
         currSelectedChar = None
         updateCharacters()
+
+
+    def attack():
+        useSkill(Skill("attack", "", None, None, 0, 10, 100))
 
 
     def addEnemies():
