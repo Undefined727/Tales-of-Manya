@@ -1,6 +1,7 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
 from src.main.python.model.character.Character import Character
+from src.main.python.model.character.Skill import Skill
 from src.main.python.model.item.Item import Item
 from src.main.python.model.item.ItemSlotType import ItemSlotType
 from src.main.python.model.item.ItemStatType import ItemStatType
@@ -8,8 +9,6 @@ from src.main.python.model.item.ItemTag import ItemTag
 import src.main.python.model.effect.Effect as Effect
 from src.main.python.model.effect.EffectType import EffectType
 from src.main.python.model.effect.EffectTag import EffectTag
-from src.main.python.model.skill.Skill import Skill
-from src.main.python.model.skill.SkillTag import SkillTag
 from src.main.python.model.player.Quest import Quest
 from src.main.python.model.database.DatabaseModels import *
 from src.main.python.util.IllegalArgumentException import IllegalArgumentException
@@ -65,6 +64,23 @@ class DBElementFactory:
         connection.close()
         return item
     
+    def fetchSkill(self, id):
+        if (id is None): return None
+        connection = self.engine.connect()
+        if type(id) == int:
+            statement = select(DBSkill).where(DBSkill.id == id)
+        else:
+            statement = select(DBSkill).where(DBSkill.name == id)
+        row = connection.execute(statement).first()
+        if row is None: 
+            connection.close()
+            raise IllegalArgumentException("The item is not in the database")
+
+        skill = Skill(row.name, row.description, row.character, row.element, row.affinity, row.manaCost, row.motionValue)
+
+        connection.close()
+        return skill
+
     def fetchCharacter(self, id):
         connection = self.engine.connect()
         if type(id) == int:
@@ -77,19 +93,17 @@ class DBElementFactory:
             raise IllegalArgumentException("The item is not in the database")
         
         character = Character(row.name, row.description,
-                              row.skill1, row.skill2, row.skill3, row.ultimate,
                               row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
                               row.void, row.foundation, row.frost, row.flow, row.abundance,
                               row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack)
 
+        character.skills = [self.fetchSkill(row.skill1), self.fetchSkill(row.skill2), self.fetchSkill(row.skill3), self.fetchSkill(row.ultimate)]
+
+        character.setCurrentHP(character.health.max_value)
         connection.close()
         return character
 
-    def buildSkill(self, row) -> Skill:
-        skill = Skill(row.name,
-                      row.mana_cost,
-                      row.id)
-        return skill
+    
 
     def buildEffect(self, row) -> Effect:
         effect = Effect(row.name,
@@ -166,47 +180,47 @@ class DBElementFactory:
         return skill.getID()
 
     # TODO Each method will have to check if IDs are unique
-    def pushTag(self, tag, parent_id : str) -> str:
-        if type(tag) is ItemTag:
-            return self.pushItemTag(tag, parent_id)
-        elif type(tag) is EffectTag:
-            return self.pushEffectTag(tag, parent_id)
-        elif type(tag) is SkillTag:
-            return self.pushSkillTag(tag, parent_id)
-        else: raise IllegalArgumentException("Type not recognized")
+    # def pushTag(self, tag, parent_id : str) -> str:
+    #     if type(tag) is ItemTag:
+    #         return self.pushItemTag(tag, parent_id)
+    #     elif type(tag) is EffectTag:
+    #         return self.pushEffectTag(tag, parent_id)
+    #     elif type(tag) is SkillTag:
+    #         return self.pushSkillTag(tag, parent_id)
+    #     else: raise IllegalArgumentException("Type not recognized")
 
-    def pushItemTag(self, tag : ItemTag, parent_id : str) -> str:
-        new_id = IDHandler.generateID(ItemTag)
-        dbTag = DBTag(
-            id = new_id,
-            item_id = parent_id,
-            tag = tag.name,
-            value = tag.value
-        )
-        self.add(dbTag)
-        return new_id
+    # def pushItemTag(self, tag : ItemTag, parent_id : str) -> str:
+    #     new_id = IDHandler.generateID(ItemTag)
+    #     dbTag = DBTag(
+    #         id = new_id,
+    #         item_id = parent_id,
+    #         tag = tag.name,
+    #         value = tag.value
+    #     )
+    #     self.add(dbTag)
+    #     return new_id
 
-    def pushEffectTag(self, tag : EffectTag, parent_id : str) -> str:
-        new_id = IDHandler.generateID(EffectTag)
-        dbTag = DBTag(
-            id = new_id,
-            effect_id = parent_id,
-            tag = tag.name,
-            value = tag.value
-        )
-        self.add(dbTag)
-        return new_id
+    # def pushEffectTag(self, tag : EffectTag, parent_id : str) -> str:
+    #     new_id = IDHandler.generateID(EffectTag)
+    #     dbTag = DBTag(
+    #         id = new_id,
+    #         effect_id = parent_id,
+    #         tag = tag.name,
+    #         value = tag.value
+    #     )
+    #     self.add(dbTag)
+    #     return new_id
 
-    def pushSkillTag(self, tag : SkillTag, parent_id : str) -> str:
-        new_id = IDHandler.generateID(SkillTag)
-        dbTag = DBTag(
-            id = new_id,
-            skill_id = parent_id,
-            tag = tag.name,
-            value = tag.value
-        )
-        self.add(dbTag)
-        return new_id
+    # def pushSkillTag(self, tag : SkillTag, parent_id : str) -> str:
+    #     new_id = IDHandler.generateID(SkillTag)
+    #     dbTag = DBTag(
+    #         id = new_id,
+    #         skill_id = parent_id,
+    #         tag = tag.name,
+    #         value = tag.value
+    #     )
+    #     self.add(dbTag)
+    #     return new_id
 
     def pushCharacter(self, character:Character) -> str:
         db_character = DBCharacter(

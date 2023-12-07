@@ -7,7 +7,7 @@ from model.character.DynamicStat import DynamicStat
 #from model.effect.EffectsList import EffectsList
 from model.effect.EffectType import EffectType
 from model.item.ItemStatType import ItemStatType
-from model.skill.Skill import Skill
+from model.character.Skill import Skill
 
 class Character:
     ## Character Identifiers ##
@@ -57,7 +57,7 @@ class Character:
     clockwork:int
 
     ## Skills ##
-    skills:list[str]
+    skills:list[Skill]
 
     ## Inventory ##
     loadout : CharacterLoadout
@@ -80,15 +80,13 @@ class Character:
 
 
     # Add Pulling from Database with ID in the future #
-    def __init__(self, name, description, 
-                 skill1, skill2, skill3, ultimate,
-                 brilliance, surge, blaze, passage, clockwork,
+    def __init__(self, name, description, brilliance, 
+                 surge, blaze, passage, clockwork,
                  void, foundation, frost, flow, abundance,
                  basehealth, basemana, basedef, basespellpower, baseattack):
 
         self.name = name
         self.description = description
-        self.skills = [skill1, skill2, skill3, ultimate]
         self.baseBrilliance = brilliance
         self.baseSurge = surge
         self.baseBlaze = blaze

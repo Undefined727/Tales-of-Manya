@@ -15,39 +15,39 @@ from sqlalchemy.orm import Session
 class Base(DeclarativeBase):
     pass
 
-class DBTag(Base):
-    __tablename__ = "Tag"
-    id : Mapped[str] = mapped_column(String(36), primary_key=True)
-    effect_id : Mapped[str] = mapped_column(ForeignKey("Effect.id"))
-    effect : Mapped["DBEffect"] = relationship(back_populates = "tags")
-    item_id : Mapped[str] = mapped_column(ForeignKey("Item.id"))
-    item :  Mapped["DBItem"] = relationship(back_populates = "tags")
-    skill_id : Mapped[str] = mapped_column(ForeignKey("Skill.id"))
-    skill : Mapped["DBSkill"] = relationship(back_populates = "tags")
-    tag : Mapped[str] = mapped_column(String(100))
+# class DBTag(Base):
+#     __tablename__ = "Tag"
+#     id : Mapped[str] = mapped_column(String(36), primary_key=True)
+#     effect_id : Mapped[str] = mapped_column(ForeignKey("Effect.id"))
+#     effect : Mapped["DBEffect"] = relationship(back_populates = "tags")
+#     item_id : Mapped[str] = mapped_column(ForeignKey("Item.id"))
+#     item :  Mapped["DBItem"] = relationship(back_populates = "tags")
+#     skill_id : Mapped[str] = mapped_column(ForeignKey("Skill.id"))
+#     skill : Mapped["DBSkill"] = relationship(back_populates = "tags")
+#     tag : Mapped[str] = mapped_column(String(100))
 
-    def __repr__(self) -> str:
-        return f"ItemSlot(id = {self.id!r}, item_id = {self.item_id!r}, tag = {self.tag!r})"
+#     def __repr__(self) -> str:
+#         return f"ItemSlot(id = {self.id!r}, item_id = {self.item_id!r}, tag = {self.tag!r})"
 
-class DBEffect(Base):
-    __tablename__ = "Effect"
-    id : Mapped[str] = mapped_column(String(36), primary_key = True)
-    item_id : Mapped[str] = mapped_column(ForeignKey("Item.id"), nullable = True)
-    item : Mapped["DBItem"] = relationship(back_populates = "effects")
-    skill_id : Mapped[str] = mapped_column(ForeignKey("Skill.id"), nullable = True)
-    skill : Mapped["DBSkill"] = relationship(back_populates = "effects")
-    name : Mapped[str] = mapped_column(String(100), nullable = False)
-    effect_type : Mapped[str] = mapped_column(String(100))
-    value : Mapped[Optional[int]] = mapped_column(Integer)
-    duration : Mapped[int] = mapped_column(Integer)
+# class DBEffect(Base):
+#     __tablename__ = "Effect"
+#     id : Mapped[str] = mapped_column(String(36), primary_key = True)
+#     item_id : Mapped[str] = mapped_column(ForeignKey("Item.id"), nullable = True)
+#     item : Mapped["DBItem"] = relationship(back_populates = "effects")
+#     skill_id : Mapped[str] = mapped_column(ForeignKey("Skill.id"), nullable = True)
+#     skill : Mapped["DBSkill"] = relationship(back_populates = "effects")
+#     name : Mapped[str] = mapped_column(String(100), nullable = False)
+#     effect_type : Mapped[str] = mapped_column(String(100))
+#     value : Mapped[Optional[int]] = mapped_column(Integer)
+#     duration : Mapped[int] = mapped_column(Integer)
 
-    tags : Mapped["DBTag"] = relationship(
-        back_populates = "effect",
-        cascade = "all, delete-orphan"
-    )
+#     tags : Mapped["DBTag"] = relationship(
+#         back_populates = "effect",
+#         cascade = "all, delete-orphan"
+#     )
 
-    def __repr__(self) -> str:
-        return f"ItemSlot(id = {self.id!r}, item_id = {self.item_id!r}, effect = {self.effect!r}, value = {self.value!r})"
+#     def __repr__(self) -> str:
+#        return f"ItemSlot(id = {self.id!r}, item_id = {self.item_id!r}, effect = {self.effect!r}, value = {self.value!r})"
 
 class DBItem(Base):
     __tablename__ = "Item"
@@ -56,16 +56,6 @@ class DBItem(Base):
     type : Mapped[str] = mapped_column(String(120))
     image_path : Mapped[Optional[str]] = mapped_column(String(256))
     description : Mapped[Optional[str]] = mapped_column(String(1000))
-
-    tags : Mapped[List[DBTag]] = relationship(
-        back_populates = "item",
-        cascade = "all, delete-orphan"
-        )
-
-    effects : Mapped[List[DBEffect]] = relationship(
-        back_populates = "item",
-        cascade = "all, delete-orphan"
-        )
 
     def __repr__(self) -> str:
         return f"Item(id = {self.id!r}, name = {self.name!r}, image_path = {self.image_path!r}, description = {self.description!r})"
@@ -79,23 +69,20 @@ class DBItemStat(Base):
 
     def __repr__(self) -> str:
         return f"ItemStat(id = {self.id!r}, item = {self.item!r}, stat = {self.stat!r}, value = {self.value!r})"
-
+    
 class DBSkill(Base):
     __tablename__ = "Skill"
-    id : Mapped[str] = mapped_column(String(36), primary_key=True)
-    name : Mapped[str] = mapped_column(String(100))
+    id : Mapped[str] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120))
+    description : Mapped[str] = mapped_column(String(2000))
+    character : Mapped[str] = mapped_column(String(120))
+    element : Mapped[str] = mapped_column(String(15))
+    affinity : Mapped[int] = mapped_column(Integer)
     manaCost : Mapped[int] = mapped_column(Integer)
-    tags : Mapped[List[DBTag]] = relationship(
-        back_populates = "skill",
-        cascade = "all, delete-orphan"
-    )
-    effects : Mapped[List[DBEffect]] = relationship(
-        back_populates = "skill",
-        cascade = "all, delete-orphan"
-    )
+    motionValue : Mapped[int] = mapped_column(Integer)
 
     def __repr__(self) -> str:
-        return f"Item(id = {self.id!r}, name = {self.name!r}, manaCost = {self.manaCost!r}, tags = {self.tags!r}, effects = {self.effects!r})"
+        return f"Skill(id = {self.id!r}, name = {self.name!r}, element = {self.element!r}, manaCost = {self.manaCost!r}, motionValue = {self.motionValue!r})"
 
 class DBCharacter(Base):
     __tablename__ = "Character"
@@ -128,9 +115,12 @@ class DBCharacter(Base):
         basic_stats = f"health     mana       defense    spellpower attack    \n"
         basic_stats += f"{self.basehealth!r:10}  {self.basemana!r:10}  {self.basedef!r:10} {self.basespellpower!r:10} {self.baseattack!r:10}"
         return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nultimate: {self.ultimate}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
+
+
 # ## Initialization ###
 from sqlalchemy import create_engine
 engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = True)
+
 
 ## This line resets the whole database ###
 # Base.metadata.drop_all(engine)

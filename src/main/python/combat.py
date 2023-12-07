@@ -1,7 +1,6 @@
 import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
-from model.skill.Skill import Skill
 from model.character.Character import Character
 from model.player.Player import Player
 from model.item.Item import Item
@@ -87,10 +86,7 @@ def loadCombat(transferredData):
     party = playerData.party
     skillsShowing = False
 
-    for character in enemies:
-        character.setCurrentHP(character.health.max_value)
     for character in party:
-        character.setCurrentHP(character.health.max_value)
         character.setCurrentMana(character.mana.max_value)
 
     visualEntities = []
