@@ -97,7 +97,7 @@ class DBElementFactory:
                               row.void, row.foundation, row.frost, row.flow, row.abundance,
                               row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack)
 
-        character.skills = [self.fetchSkill("Attack")]
+        character.skills = []
         character.skills.append(self.fetchSkill(row.skill1))
         character.skills.append(self.fetchSkill(row.skill2))
         character.skills.append(self.fetchSkill(row.skill3))

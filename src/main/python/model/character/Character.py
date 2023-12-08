@@ -58,6 +58,7 @@ class Character:
 
     ## Skills ##
     skills:list[Skill]
+    # Global actions are handled separately from this
 
     ## Inventory ##
     loadout : CharacterLoadout

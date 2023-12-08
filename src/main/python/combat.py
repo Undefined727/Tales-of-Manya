@@ -128,6 +128,7 @@ def loadCombat(transferredData):
         if((currSelectedChar == None) or (currSelectedEnemy == None)): return
         if(currSelectedChar.character.hasActed): return
 
+        print(skill.name)
         SkillFunctions.useSkill(currSelectedChar.character, currSelectedEnemy.character, gameData, skill)
 
         currSelectedChar.character.hasActed = True
