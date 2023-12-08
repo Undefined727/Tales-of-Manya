@@ -139,7 +139,12 @@ def loadCombat(transferredData):
 
 
     def attack():
-        useSkill(Skill("attack", "", None, None, 0, 10, 100))
+        nonlocal currSelectedChar
+        nonlocal currSelectedEnemy
+        if((currSelectedChar == None) or (currSelectedEnemy == None)): return
+        if(currSelectedChar.character.hasActed): return
+
+        useSkill(currSelectedChar.character.skills[0])
 
 
     def addEnemies():

@@ -15,4 +15,4 @@ def useSkill(character:Character, enemy:Character, gameData:Singleton, skill:Ski
     # mega switch statement :widegladeline2:
     # nvm python doesn't have switch statements :youknowicattodoittoem:
     # add a line for every new skill :thumbeline:
-    if skill.name == "attack": attack(character, enemy, gameData.player.party, gameData.currentEnemies, skill.motionValue)
+    if skill.name == "Attack": attack(character, enemy, gameData.player.party, gameData.currentEnemies, skill.motionValue)
