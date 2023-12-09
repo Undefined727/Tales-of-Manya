@@ -7,6 +7,9 @@ from view.visualentity.ShapeButton import ShapeButton
 
 class CombatCharacterEntity:
 
+    name:str
+    tags:list
+
     character:Character
     isEnemy:bool
     isSelected:bool
@@ -38,6 +41,8 @@ class CombatCharacterEntity:
     }
 
     def __init__(self):
+       self.name = 'CombatCharacterEntity'
+       self.tags = []
        self.character = None
        self.isShowing = True
        self.isEnemy = False

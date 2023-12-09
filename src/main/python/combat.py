@@ -1,5 +1,6 @@
 import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
+from view.visualentity.ImageButton import ImageButton
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.character.Character import Character
 from model.character.Skill import Skill
@@ -58,6 +59,8 @@ def loadCombat(transferredData):
     playerData = gameData.player
     party = playerData.party
     skillsShowing = False
+    currSelectedChar = None
+    currSelectedEnemy = None
 
     for character in party:
         character.setCurrentMana(character.mana.max_value)
@@ -83,6 +86,28 @@ def loadCombat(transferredData):
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
+    def skillMenu():
+        global visualEntities
+        global buttons
+        nonlocal currSelectedChar
+        nonlocal skillsShowing
+        if(currSelectedChar == None): return
+
+        # Add animation in the future
+        if (not skillsShowing):
+            count = 0
+            for skill in currSelectedChar.character.skills:
+                skillButton = ImageButton(f"Skill{count}", True, 0.61 + 0.1*math.sin(2*math.pi*count/len(currSelectedChar.character.skills)), 0.45 + 0.1*math.cos(2*math.pi*count/len(currSelectedChar.character.skills)), 0.08, 0.08, ["SkillMenu"], "attackButton.png", "useSkill", [skill], True)
+                skillButton.scale(screenX, screenY)
+                visualEntities.append(skillButton)
+                buttons.append(skillButton)
+                count += 1
+        else:
+            for entity in visualEntities[:]:
+                if "SkillMenu" in entity.tags:
+                    visualEntities.remove(entity)
+        skillsShowing = not skillsShowing
+
     def updateCharacters():
         global visualEntities
         nonlocal enemies
@@ -97,8 +122,6 @@ def loadCombat(transferredData):
     def buttonExit():
         pygame.quit()
 
-    currSelectedChar = None
-    currSelectedEnemy = None
     def characterSelection(selectedChar:CombatCharacterEntity):
         nonlocal currSelectedChar
         nonlocal currSelectedEnemy
@@ -110,16 +133,8 @@ def loadCombat(transferredData):
             if (currSelectedChar is not None): currSelectedChar.isSelected = False
             currSelectedChar = selectedChar
             currSelectedChar.isSelected = True
+            if (skillsShowing): skillMenu()
         updateCharacters()
-
-    def skillButtonFunction():
-        nonlocal skillsShowing
-        global visualEntities
-        skillsShowing = not skillsShowing
-        for entity in visualEntities:
-            if ("Skill Selection" in entity.tags):
-                entity.isShowing = not entity.isShowing
-    
 
     def useSkill(skill):
         global gameData
@@ -138,7 +153,6 @@ def loadCombat(transferredData):
         currSelectedChar = None
         updateCharacters()
 
-
     def attack():
         nonlocal currSelectedChar
         nonlocal currSelectedEnemy
@@ -146,6 +160,8 @@ def loadCombat(transferredData):
         if(currSelectedChar.character.hasActed): return
 
         useSkill(currSelectedChar.character.skills[0])
+
+    
 
 
     def addEnemies():
@@ -198,6 +214,8 @@ def loadCombat(transferredData):
                         elif (entity.func == "openWorld"): buttonFunc = openWorld
                         elif (entity.func == "characterSelection"): buttonFunc = characterSelection
                         elif (entity.func == "attack"): buttonFunc = attack
+                        elif (entity.func == "skillMenu"): buttonFunc = skillMenu
+                        elif (entity.func == "useSkill"): buttonFunc = useSkill
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
