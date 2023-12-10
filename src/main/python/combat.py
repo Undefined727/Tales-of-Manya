@@ -1,6 +1,7 @@
 import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.ImageButton import ImageButton
+from view.visualentity.TextEntity import TextEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.character.Character import Character
 from model.character.Skill import Skill
@@ -97,9 +98,14 @@ def loadCombat(transferredData):
         if (not skillsShowing):
             count = 0
             for skill in currSelectedChar.character.skills:
-                skillButton = ImageButton(f"Skill{count}", True, 0.61 + 0.1*math.sin(2*math.pi*count/len(currSelectedChar.character.skills)), 0.45 + 0.1*math.cos(2*math.pi*count/len(currSelectedChar.character.skills)), 0.08, 0.08, ["SkillMenu"], "attackButton.png", "useSkill", [skill], True)
+                xPos = 0.61 + 0.1*math.sin(2*math.pi*count/len(currSelectedChar.character.skills))
+                yPos = 0.45 + 0.1*math.cos(2*math.pi*count/len(currSelectedChar.character.skills))
+                skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["SkillMenu"], "attackButton.png", "useSkill", [skill], True)
+                skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["SkillMenu"], skill.name, "mono", 16)
                 skillButton.scale(screenX, screenY)
+                skillLabel.scale(screenX, screenY)
                 visualEntities.append(skillButton)
+                visualEntities.append(skillLabel)
                 buttons.append(skillButton)
                 count += 1
         else:
@@ -133,7 +139,9 @@ def loadCombat(transferredData):
             if (currSelectedChar is not None): currSelectedChar.isSelected = False
             currSelectedChar = selectedChar
             currSelectedChar.isSelected = True
-            if (skillsShowing): skillMenu()
+            if (skillsShowing): 
+                skillMenu()
+                skillMenu()
         updateCharacters()
 
     def useSkill(skill):
@@ -143,7 +151,6 @@ def loadCombat(transferredData):
         if((currSelectedChar == None) or (currSelectedEnemy == None)): return
         if(currSelectedChar.character.hasActed): return
 
-        print(skill.name)
         SkillFunctions.useSkill(currSelectedChar.character, currSelectedEnemy.character, gameData, skill)
 
         currSelectedChar.character.hasActed = True
@@ -152,6 +159,7 @@ def loadCombat(transferredData):
         currSelectedChar.isSelected = False
         currSelectedChar = None
         updateCharacters()
+        skillMenu()
 
     def attack():
         nonlocal currSelectedChar
@@ -208,8 +216,10 @@ def loadCombat(transferredData):
             if event.type == pygame.QUIT:
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
+                buttonPressed = False
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
+                        buttonPressed = True
                         if (entity.func == "exit"): buttonFunc = buttonExit
                         elif (entity.func == "openWorld"): buttonFunc = openWorld
                         elif (entity.func == "characterSelection"): buttonFunc = characterSelection
@@ -220,6 +230,15 @@ def loadCombat(transferredData):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+                if (not buttonPressed):
+                    # Code for clicking out
+                    if skillsShowing: skillMenu()
+                    if (currSelectedChar is not None): 
+                        currSelectedChar.isSelected = False
+                        currSelectedChar = None
+                    if (currSelectedEnemy is not None): 
+                        currSelectedEnemy.isSelected = False
+                        currSelectedEnemy = None   
             
         ### Make Hover Buttons shine funny color
         for button in buttons:
