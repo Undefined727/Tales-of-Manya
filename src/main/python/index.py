@@ -6,6 +6,7 @@ from view.displayHandler import displayEntity
 from openWorld import loadOpenWorld
 from combat import loadCombat
 from inventory import loadInventory
+from skillSelection import loadSkillSelection
 from view.JSONParser import loadJson
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -82,6 +83,7 @@ def switchScreens(gameData):
     if (gameData.screenOpen == "Open World"): gameData = loadOpenWorld(gameData)
     elif (gameData.screenOpen == "Combat"): gameData = loadCombat(gameData)
     elif (gameData.screenOpen == "Inventory"): gameData = loadInventory(gameData)
+    elif (gameData.screenOpen == "Skill Selection"): gameData = loadSkillSelection(gameData)
     switchScreens(gameData)
 
 

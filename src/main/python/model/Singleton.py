@@ -5,6 +5,8 @@ import pygame
 
 class Singleton:
     currentEnemies:list[Character]
+    # For screens that display data for a character specifically, i.e. Skill Selection
+    currentCharacter:Character
     player : Player
     currentMap : str
     screenOpen : str
@@ -19,6 +21,7 @@ class Singleton:
         self.screenOpen = "Welcome"
         self.currentMap = None
         self.currentEnemies = None
+        self.currentCharacter = None
         self.renderedMapEntities = None
         
 
