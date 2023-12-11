@@ -74,7 +74,7 @@ def loadCombat(transferredData):
         if type(entity) == CombatCharacterEntity:
             entity.changeCharacter(party[counter], False)
             counter += 1
-            if (counter > len(party)): break
+            if (counter >= len(party)): break
 
 
     pygame.mixer.init()
