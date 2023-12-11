@@ -12,6 +12,9 @@ def flameSwathe(character:Character, enemy:Character, gameData:Singleton, skill:
     for aoe in gameData.currentEnemies:
         aoe.takeDamage(character.attack * skill.motionValue/100)
 
+def rock(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
+    enemy.takeDamage(character.attack * skill.motionValue/100)
+
 
 
 def useSkill(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
@@ -24,3 +27,4 @@ def useSkill(character:Character, enemy:Character, gameData:Singleton, skill:Ski
     if skill.name == "Attack": attack(character, enemy, gameData, skill)
     elif skill.name == "Fire Bolt": fireBolt(character, enemy, gameData, skill)
     elif skill.name == "Flame Swathe": flameSwathe(character, enemy, gameData, skill)
+    elif skill.name == "Rock": rock(character, enemy, gameData, skill)
