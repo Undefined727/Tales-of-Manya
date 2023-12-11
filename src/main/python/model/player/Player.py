@@ -1,6 +1,7 @@
 from model.player.Quest import Quest
 from model.character.Character import Character
 from model.character.Inventory import Inventory
+from model.character.Skill import Skill
 from model.item.Item import Item
 from model.item.ItemSlotType import ItemSlotType
 
@@ -9,6 +10,7 @@ class Player:
     currentQuests:list[Quest]
     party:list
     inventory:Inventory
+    unlockedSkills:list[Skill]
 
     def __init__(self, database, fileName = None):
         # This will pull from a file in the future
@@ -18,6 +20,16 @@ class Player:
         self.party[1].level = 15
         self.party[2].level = 20
         
+        self.unlockedSkills = []
+        unlockedSkillNames = []
+        for char in self.party:
+            for skill in char.skills:
+                if skill.name not in unlockedSkillNames:
+                    self.unlockedSkills.append(skill)
+                    unlockedSkillNames.append(skill.name)
+        for skill in unlockedSkillNames:
+            print(skill)
+
         self.inventory = Inventory()
         self.inventory.addItem("Purrveyor of the Nyaight", 5)
         self.inventory.addItem("Flower Crown", 1)
