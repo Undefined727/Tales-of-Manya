@@ -1,6 +1,7 @@
 import pygame, math, random, json
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.ImageButton import ImageButton
+from view.visualentity.Animation import Animation
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.character.Character import Character
@@ -13,7 +14,6 @@ from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 
 visualEntities = []
-partyVisuals = []
 buttons = []
 quit = False
 newSceneData = []
@@ -35,19 +35,18 @@ def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
-            displayEntity(entity, screen)
-    for entity in partyVisuals:
-        ls = entity.getItems()
-        for item in ls:
-            if item.isShowing:
-                displayEntity(item, screen)
+            if (type(entity) == Animation):
+                print(entity.currentImage)
+            if (type(entity) == Animation and entity.playOnce == True and entity.currentImage == -1):
+                visualEntities.remove(entity)
+            else:
+                displayEntity(entity, screen)
 
     pygame.display.flip()
 
 def loadCombat(transferredData):
     global visualEntities
     global party
-    global partyVisuals
     global quit
     global playerData
     global screen

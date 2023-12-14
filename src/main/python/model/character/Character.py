@@ -218,6 +218,15 @@ class Character:
     def setXPFormula(self, new_formula):
         self.experience.setFormula(new_formula)
 
+    def changeLevel(self, new_level):
+        self.level = new_level
+        self.update()
+
+    def levelUp(self):
+        self.level += 1
+        self.update()
+
+
     def update(self):
         # This is what should be used to refresh a character's stats when they equip a piece of gear or undergo some change
         # It refreshes their stats based on buffs and gear
