@@ -23,6 +23,13 @@ class Character:
     # 0 for characters
     basedef:int
 
+    # Scaling Stats #
+    scaleattack:float
+    scalespellpower:float
+    scalehealth:float
+    scalemana:float
+    scaledef:float
+
     # Variable Stats #
     attack:int
     spellpower:int
@@ -84,7 +91,8 @@ class Character:
     def __init__(self, name, description, brilliance, 
                  surge, blaze, passage, clockwork,
                  void, foundation, frost, flow, abundance,
-                 basehealth, basemana, basedef, basespellpower, baseattack):
+                 basehealth, basemana, basedef, basespellpower, baseattack,
+                 scalehealth, scalemana, scaledef, scalespellpower, scaleattack):
 
         self.name = name
         self.description = description
@@ -103,6 +111,11 @@ class Character:
         self.basedef = basedef
         self.basespellpower = basespellpower
         self.baseattack = baseattack
+        self.scalehealth = scalehealth
+        self.scalemana = scalemana
+        self.scaledef = scaledef
+        self.scalespellpower = scalespellpower
+        self.scaleattack = scaleattack
         self.loadout    = CharacterLoadout()
 
         # Default Level is 1 until initialized later #
@@ -206,8 +219,10 @@ class Character:
         self.experience.setFormula(new_formula)
 
     def update(self):
-        # This is what should be used to update a character's stats at the end
-        # of a turn
+        # This is what should be used to refresh a character's stats when they equip a piece of gear or undergo some change
+        # It refreshes their stats based on buffs and gear
+
+        # This will NOT affect a character's current HP, so this could be used during combat
 
         # Set base values from level
         flatHP = (20 + self.level) * self.basehealth * 100

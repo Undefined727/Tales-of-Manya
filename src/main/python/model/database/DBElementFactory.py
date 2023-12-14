@@ -95,7 +95,8 @@ class DBElementFactory:
         character = Character(row.name, row.description,
                               row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
                               row.void, row.foundation, row.frost, row.flow, row.abundance,
-                              row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack)
+                              row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack,
+                              row.scalehealth, row.scalemana, row.scaledef, row.scalespellpower, row.scaleattack)
 
         character.skills = []
         character.skills.append(self.fetchSkill(row.skill1))
