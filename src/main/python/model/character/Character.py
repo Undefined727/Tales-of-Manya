@@ -225,11 +225,11 @@ class Character:
         # This will NOT affect a character's current HP, so this could be used during combat
 
         # Set base values from level
-        flatHP = (20 + self.level) * self.basehealth * 100
-        flatMana = self.level * self.basemana * 100
-        flatAttack = self.level * self.baseattack
-        flatDEF = self.level * self.basedef
-        flatSP = self.level * self.basespellpower
+        flatHP = (self.scalehealth*self.level) + self.basehealth
+        flatMana = (self.scalemana*self.level) + self.basemana
+        flatAttack = (self.scaleattack*self.level) + self.baseattack
+        flatDEF = (self.scaledef*self.level) + self.basedef
+        flatSP = (self.scalespellpower*self.level) + self.basespellpower
 
         # Add Item stats
         for stat, value in self.loadout.getStats().items():
