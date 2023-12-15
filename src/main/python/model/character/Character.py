@@ -23,6 +23,13 @@ class Character:
     # 0 for characters
     basedef:int
 
+    # Scaling Stats #
+    scaleattack:float
+    scalespellpower:float
+    scalehealth:float
+    scalemana:float
+    scaledef:float
+
     # Variable Stats #
     attack:int
     spellpower:int
@@ -84,7 +91,8 @@ class Character:
     def __init__(self, name, description, brilliance, 
                  surge, blaze, passage, clockwork,
                  void, foundation, frost, flow, abundance,
-                 basehealth, basemana, basedef, basespellpower, baseattack):
+                 basehealth, basemana, basedef, basespellpower, baseattack,
+                 scalehealth, scalemana, scaledef, scalespellpower, scaleattack):
 
         self.name = name
         self.description = description
@@ -103,6 +111,11 @@ class Character:
         self.basedef = basedef
         self.basespellpower = basespellpower
         self.baseattack = baseattack
+        self.scalehealth = scalehealth
+        self.scalemana = scalemana
+        self.scaledef = scaledef
+        self.scalespellpower = scalespellpower
+        self.scaleattack = scaleattack
         self.loadout    = CharacterLoadout()
 
         # Default Level is 1 until initialized later #
@@ -209,16 +222,27 @@ class Character:
     def setXPFormula(self, new_formula):
         self.experience.setFormula(new_formula)
 
+    def changeLevel(self, new_level):
+        self.level = new_level
+        self.update()
+
+    def levelUp(self):
+        self.level += 1
+        self.update()
+
+
     def update(self):
-        # This is what should be used to update a character's stats at the end
-        # of a turn
+        # This is what should be used to refresh a character's stats when they equip a piece of gear or undergo some change
+        # It refreshes their stats based on buffs and gear
+
+        # This will NOT affect a character's current HP, so this could be used during combat
 
         # Set base values from level
-        flatHP = (20 + self.level) * self.basehealth * 100
-        flatMana = self.level * self.basemana * 100
-        flatAttack = self.level * self.baseattack
-        flatDEF = self.level * self.basedef
-        flatSP = self.level * self.basespellpower
+        flatHP = (self.scalehealth*self.level) + self.basehealth
+        flatMana = (self.scalemana*self.level) + self.basemana
+        flatAttack = (self.scaleattack*self.level) + self.baseattack
+        flatDEF = (self.scaledef*self.level) + self.basedef
+        flatSP = (self.scalespellpower*self.level) + self.basespellpower
 
         # Add Item stats
         for stat, value in self.loadout.getStats().items():

@@ -67,6 +67,9 @@ def loadSkillSelection(transferredData:Singleton):
     characterImg = ImageEntity("Character", True, 0.68, 0.1, 0.15, 0.3, [], f"entities/{gameData.currentCharacter.name}.png", True)
     characterImg.scale(screenX, screenY)
     visualEntities.append(characterImg)
+    for skill in gameData.player.unlockedSkills:
+        pass
+
     count = 0
     for skill in currentCharacter.skills:
         xPos = 0.71 + 0.1*math.sin(2*math.pi*count/4)

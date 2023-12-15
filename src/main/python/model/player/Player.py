@@ -15,10 +15,10 @@ class Player:
     def __init__(self, database, fileName = None):
         # This will pull from a file in the future
         self.currentQuests = [Quest(0)]
-        self.party = [database.fetchCharacter(1), database.fetchCharacter(2), database.fetchCharacter(3)]
-        self.party[0].level = 10
-        self.party[1].level = 15
-        self.party[2].level = 20
+        self.party = [database.fetchCharacter(2), database.fetchCharacter(3), database.fetchCharacter(4)]
+        self.party[0].changeLevel(10)
+        self.party[1].changeLevel(15)
+        self.party[2].changeLevel(20)
         
         self.unlockedSkills = []
         unlockedSkillNames = []
