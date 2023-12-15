@@ -191,6 +191,10 @@ class Character:
         # Round before decreasing the players HP
         self.health.decreaseBy(int(amount))
 
+        #target is of type character
+    def dealDamage(self, rawDamage : float, damageType : str, target):
+        target.takeDamage(rawDamage)
+
     def recoverMana(self, amount : int):
         amount *= 1 + self.getBonuses(EffectType.MANA_RECOVERY)
         self.mana.increaseBy(amount)

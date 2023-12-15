@@ -3,17 +3,17 @@ from model.character.Character import Character
 from model.Singleton import Singleton
 
 def attack(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    enemy.takeDamage(character.attack * skill.motionValue/100)
+    character.dealDamage((character.attack * skill.motionValue/100), "Physical", enemy)
 
 def fireBolt(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    enemy.takeDamage(character.attack * skill.motionValue/100)
+     character.dealDamage((character.attack * skill.motionValue/100), "Blaze", enemy)
 
 def flameSwathe(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    for aoe in gameData.currentEnemies:
-        aoe.takeDamage(character.attack * skill.motionValue/100)
+    for allEnemies in gameData.currentEnemies:
+        character.dealDamage((character.attack * skill.motionValue/100), "Blaze", allEnemies)
 
 def rock(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    enemy.takeDamage(character.attack * skill.motionValue/100)
+    character.dealDamage((character.attack * skill.motionValue/100), "Foundation", enemy)
 
 
 
