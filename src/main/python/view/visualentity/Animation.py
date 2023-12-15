@@ -4,7 +4,7 @@ import os
 
 class Animation(VisualEntity):
     images:list[ImageEntity]
-    paths:list[str]
+    path:str
     currentImage:int
     delay:int
     currentDelayPosition:int
@@ -72,5 +72,5 @@ class Animation(VisualEntity):
     def createFrom(json_object):
         newObject = Animation()
         newObject.__dict__.update(json_object)
-        newObject.updateImages(newObject.paths)
+        newObject.updateImages(newObject.path)
         return newObject
