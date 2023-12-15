@@ -48,7 +48,7 @@ class CombatCharacterEntity:
        self.isEnemy = False
        self.isSelected = False
        self.characterImg = ImageEntity("img", True, 0, 0, 0, 0, [], "nekoarc.png", True)
-       self.selectedCharacterAnimation = Animation("Animation",True,0,0,0,0,[],"nekoarc", 5, True, True)
+       self.selectedCharacterAnimation = Animation("Animation")
        self.characterCheckmark = ImageEntity("checkmark", True, 0, 0, 0, 0, [], "Checkmark.png", True)
        self.characterHPBarBorder = ImageEntity("HPBorder", True, 0, 0, 0, 0, [], "HPBar.png", True)
        self.characterHPBarRed = ShapeEntity("HPRed", True, 0, 0, 0, 0, [], "red", False, "rectangle")

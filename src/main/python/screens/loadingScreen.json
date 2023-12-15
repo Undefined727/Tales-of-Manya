@@ -12,5 +12,14 @@
     "fontSize": 30,
     "fontColor": "black",
     "highlightColor": "green"
+},{
+    "name": "DonutMan",
+    "isShowing": true,
+    "xPosition": 0.5,
+    "yPosition": 0.5,
+    "width": 0.3,
+    "height": 0.3,
+    "entityType": "Animation",
+    "path": "donutScreen"
 }
 ]
