@@ -69,9 +69,11 @@ def loadCombat(transferredData):
     buttons = []
     loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)
     counter = 0
+    gameData.currentDisplayedParty = []
     for entity in visualEntities:
         if type(entity) == CombatCharacterEntity:
             entity.changeCharacter(party[counter], False)
+            gameData.currentDisplayedParty.append(entity)
             counter += 1
             if (counter >= len(party)): break
 
@@ -179,6 +181,7 @@ def loadCombat(transferredData):
         enemySpacing = enemiesWidth/(1+len(enemies)*2)
 
         count = 0
+        gameData.currentDisplayedEnemies = []
         for enemy in enemies:
             currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
 
@@ -202,6 +205,7 @@ def loadCombat(transferredData):
             visualEntities.append(displayedEnemy)
             if (displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
             count = count+1
+            gameData.currentDisplayedEnemies.append(displayedEnemy)
 
 
     addEnemies()
@@ -246,11 +250,11 @@ def loadCombat(transferredData):
 
         isEnemyTurn = True
         for character in party:
-            if not character.hasActed:
+            if (not character.hasActed and character.getCurrentHP() > 0):
                 isEnemyTurn = False
         if (isEnemyTurn):
-            for enemy in enemies:
-                party[random.randint(1, len(party))-1].takeDamage(enemy.attack)
+            for enemy in gameData.currentDisplayedEnemies:
+                SkillFunctions.useSkill(enemy, gameData.currentDisplayedParty[random.randint(1, len(gameData.currentDisplayedParty))-1], gameData, enemy.character.skills[0])
             for character in party:
                 character.hasActed = False
             updateCharacters()

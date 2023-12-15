@@ -198,15 +198,16 @@ class Character:
         amount *= 1 + self.getBonuses(EffectType.HEALING_PCT)
         self.health.increaseBy(amount)
 
-    def takeDamage(self, amount : int):
+    def takeDamage(self, amount : int) -> int:
         # Add defense to scale this
 
         # Round before decreasing the players HP
         self.health.decreaseBy(int(amount))
+        return amount
 
         #target is of type character
     def dealDamage(self, rawDamage : float, damageType : str) -> int:
-        return rawDamage
+        return int(rawDamage)
 
     def recoverMana(self, amount : int):
         amount *= 1 + self.getBonuses(EffectType.MANA_RECOVERY)
@@ -225,10 +226,14 @@ class Character:
     def changeLevel(self, new_level):
         self.level = new_level
         self.update()
+        self.setCurrentHP(self.getMaxHP())
+        self.setCurrentMana(self.getMaxMana())
 
     def levelUp(self):
         self.level += 1
         self.update()
+        self.setCurrentHP(self.getMaxHP())
+        self.setCurrentMana(self.getMaxMana())
 
 
     def update(self):
@@ -267,11 +272,11 @@ class Character:
         #self.debuffs.update()
 
         # Set Values
-        self.health.setMaxValue(flatHP)
-        self.mana.setMaxValue(flatMana)
-        self.attack = flatAttack
-        self.defense = flatDEF
-        self.spellpower = flatSP
+        self.health.setMaxValue(int(flatHP))
+        self.mana.setMaxValue(int(flatMana))
+        self.attack = int(flatAttack)
+        self.defense = int(flatDEF)
+        self.spellpower = int(flatSP)
 
     ## Misc ##
     @staticmethod

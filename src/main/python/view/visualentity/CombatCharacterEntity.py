@@ -14,6 +14,8 @@ class CombatCharacterEntity:
     isEnemy:bool
     isSelected:bool
     isShowing:bool
+    damageDisplayingTimer:int
+    damageTakenDisplay:list[ImageEntity]
 
     characterImg:ImageEntity
 
@@ -59,6 +61,7 @@ class CombatCharacterEntity:
        self.characterManaBarBlue = ShapeEntity("ManaBlue", True, 0, 0, 0, 0, [], "blue", False, "rectangle")
        self.characterManaBarText = TextEntity("ManaText", True, 0, 0, 0, 0, [], "0/0", "mono", 18)
        self.selectionButton = ShapeButton("Selection_Button", True, 0, 0, 0, 0, [], (255, 0, 0, 0), False, "rectangle", "characterSelection", [self], True)
+       self.damageDisplayingTimer = -1
 
     def getItems(self):
         hpBar = [self.characterHPBarBorder, self.characterHPBarRed, self.characterHPBarGreen, self.characterHPBarText]
@@ -68,9 +71,12 @@ class CombatCharacterEntity:
         characterStats = hpBar
         characterUI = [self.selectionButton]
 
-        if (self.selectedCharacterAnimation.playOnce and self.selectedCharacterAnimation.currentImage == -1):
-            self.isSelected = False
-            self.selectedCharacterAnimation.currentImage = 0
+        if (self.damageDisplayingTimer > 0):
+            characterVisuals.extend(self.damageTakenDisplay)
+            self.damageDisplayingTimer -= 1
+        elif (self.damageDisplayingTimer == 0):
+            self.damageDisplayingTimer = -1
+            self.damageTakenDisplay = []
         if (self.isSelected): characterVisuals.append(self.selectedCharacterAnimation)
         if (not self.isEnemy): 
             characterUI.append(self.characterCheckmark)
@@ -96,6 +102,7 @@ class CombatCharacterEntity:
 
 
     def updateCharacter(self):
+        self.character.update()
         self.characterCheckmark.isShowing = self.character.hasActed
         
         self.characterHPBarGreen.width = self.characterHPBarRed.width * (self.character.health.current_value/self.character.health.max_value)
@@ -118,7 +125,26 @@ class CombatCharacterEntity:
         pass
 
     def takeDamage(self, amount : int):
-        self.character.takeDamage(amount)
+        self.damageDisplayingTimer = 20
+        self.damageTakenDisplay = []
+        digits = 0
+        damage = self.character.takeDamage(amount)
+
+        counter = damage
+        while(counter > 0):
+            digits += 1
+            counter -= counter%10
+            counter /= 10
+
+        for i in range(digits):
+            digit = int((damage/10**(digits-i-1))%10) 
+            width = self.characterImg.width/digits
+            image = ImageEntity(f"Number{i}", True, self.characterImg.xPosition + width*i, self.characterImg.yPosition, width, self.characterImg.height/4)
+            image.updateImg(f"font/{digit}.png")
+            self.damageTakenDisplay.append(image)
+
+
+        
 
     @staticmethod
     def createFrom(json_object):
