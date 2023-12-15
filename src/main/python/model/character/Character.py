@@ -205,8 +205,8 @@ class Character:
         self.health.decreaseBy(int(amount))
 
         #target is of type character
-    def dealDamage(self, rawDamage : float, damageType : str, target):
-        target.takeDamage(rawDamage)
+    def dealDamage(self, rawDamage : float, damageType : str) -> int:
+        return rawDamage
 
     def recoverMana(self, amount : int):
         amount *= 1 + self.getBonuses(EffectType.MANA_RECOVERY)

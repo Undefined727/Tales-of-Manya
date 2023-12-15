@@ -113,6 +113,12 @@ class CombatCharacterEntity:
         self.updateCharacter()
 
     
+    def dealDamage(self, rawDamage : float, damageType : str, target):
+        target.takeDamage(self.character.dealDamage(rawDamage, damageType))
+        pass
+
+    def takeDamage(self, amount : int):
+        self.character.takeDamage(amount)
 
     @staticmethod
     def createFrom(json_object):
