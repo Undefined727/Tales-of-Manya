@@ -295,8 +295,8 @@ def loadOpenWorld(transferredData):
     
     movementSpeed = 0.1
     character.worldObject.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
-    
 
+    
     def convertToScreen(xValue, yValue):
         nonlocal cameraX
         nonlocal cameraY
@@ -337,6 +337,7 @@ def loadOpenWorld(transferredData):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
                     if (not ("MenuButton" in entity.tags and visualNovel.isShowing)):
