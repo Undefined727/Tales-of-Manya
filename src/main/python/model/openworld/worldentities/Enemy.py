@@ -17,6 +17,8 @@ class Enemy:
         self.enemyStats = []
         for i in range(0, len(enemyTypes)):
             self.enemyStats.append(database.fetchCharacter(enemyTypes[i]))
+            self.enemyStats[i].changeLevel(levels[i])
+        
         self.spawnX, self.spawnY = position
         self.img = img
         self.respawnTimer = 0

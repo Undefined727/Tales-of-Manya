@@ -9,12 +9,16 @@ def attack(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity,
 def fireBolt(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
      attack = (characterData.character.attack * skill.motionValue/100)
      if gameData.currentWeatherEffect == "Fog": attack = attack*.8
+     print(f"used Firebolt to deal {attack} damage in {gameData.currentWeatherEffect}")
      characterData.dealDamage(attack, "Blaze", enemyData)
 
 def flameSwathe(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
     for allEnemies in gameData.currentEnemies:
         characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Blaze", allEnemies)
+    print("used flame swathe")
+    print(gameData.currentWeatherEffect)
     if gameData.currentWeatherEffect == "Fog": gameData.currentWeatherEffect = "Mist"
+    print(gameData.currentWeatherEffect)
 
 def rock(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
     characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Foundation", enemyData)
@@ -24,6 +28,8 @@ def rock(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, g
 def useSkill(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
     # General things that always happen
     characterData.character.spendMana(skill.manaCost)
+    print("test")
+    print(skill.name)
 
     # mega switch statement :widegladeline2:
     # nvm python doesn't have switch statements :youknowicattodoittoem:

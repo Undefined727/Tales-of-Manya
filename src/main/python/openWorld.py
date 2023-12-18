@@ -44,6 +44,8 @@ def combatButton(enemies):
     global gameData
     quit = True
     gameData.screenOpen = "Combat"
+    for enemy in enemies:
+        print(enemy.level)
     gameData.currentEnemies = enemies
 
 def inventoryButton():
@@ -201,6 +203,8 @@ def loadOpenWorld(transferredData):
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
             enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
+            print(entity['level'])
+            print(enemy.enemyStats[0].level)
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
             npc = NPC(entity['NPCID'], entity['position'])

@@ -113,6 +113,9 @@ def loadCombat(transferredData):
             for entity in visualEntities[:]:
                 if "SkillMenu" in entity.tags:
                     visualEntities.remove(entity)
+            for entity in buttons[:]:
+                if "SkillMenu" in entity.tags:
+                    buttons.remove(entity)
         skillsShowing = not skillsShowing
 
     def updateCharacters():
