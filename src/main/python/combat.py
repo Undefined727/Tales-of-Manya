@@ -35,8 +35,6 @@ def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
-            if (type(entity) == Animation):
-                print(entity.currentImage)
             if (type(entity) == Animation and entity.playOnce == True and entity.currentImage == -1):
                 visualEntities.remove(entity)
             else:

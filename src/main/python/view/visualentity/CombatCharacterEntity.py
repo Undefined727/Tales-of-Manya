@@ -122,7 +122,6 @@ class CombatCharacterEntity:
     
     def dealDamage(self, rawDamage : float, damageType : str, target):
         realDamage = self.character.dealDamage(rawDamage, damageType)
-        print(realDamage)
         target.takeDamage(realDamage)
 
     def takeDamage(self, amount : int):

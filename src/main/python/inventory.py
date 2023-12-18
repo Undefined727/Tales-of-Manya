@@ -86,7 +86,6 @@ def loadInventory(transferredData):
             if (char == gameData.currentCharacter):
                 currentCharacter = count
                 characterDisplay.changeCharacter(playerData.party[currentCharacter])
-                print(currentCharacter)
                 break
             else: count += 1
     else:
