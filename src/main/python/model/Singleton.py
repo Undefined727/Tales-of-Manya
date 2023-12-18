@@ -13,6 +13,8 @@ class Singleton:
     pygameWindow : pygame.surface
     renderedMapEntities : list
     database_factory : DBElementFactory
+    currentWeatherEffect : str
+    currentTerrainEffect: str
 
     def __init__(self, screen, dataFile):
         self.pygameWindow = screen
@@ -23,6 +25,8 @@ class Singleton:
         self.currentEnemies = None
         self.currentCharacter = None
         self.renderedMapEntities = None
+        self.currentWeatherEffect = "Fog"
+        self.currentTerrainEffect = "None"
         
 
 #global_states = Singleton()

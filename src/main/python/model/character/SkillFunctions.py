@@ -6,11 +6,14 @@ def attack(character:Character, enemy:Character, gameData:Singleton, skill:Skill
     character.dealDamage((character.attack * skill.motionValue/100), "Physical", enemy)
 
 def fireBolt(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-     character.dealDamage((character.attack * skill.motionValue/100), "Blaze", enemy)
+     attack = (character.attack * skill.motionValue/100)
+     if gameData.currentWeatherEffect == "Fog": attack = attack*.8
+     character.dealDamage(attack, "Blaze", enemy)
 
 def flameSwathe(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
     for allEnemies in gameData.currentEnemies:
         character.dealDamage((character.attack * skill.motionValue/100), "Blaze", allEnemies)
+    if gameData.currentWeatherEffect == "Fog": gameData.currentWeatherEffect = "Mist"
 
 def rock(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
     character.dealDamage((character.attack * skill.motionValue/100), "Foundation", enemy)
