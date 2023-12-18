@@ -6,14 +6,14 @@ from model.Singleton import Singleton
 def attack(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
     characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Physical", enemyData)
 
-def fireBolt(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-     attack = (character.attack * skill.motionValue/100)
+def fireBolt(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
+     attack = (characterData.character.attack * skill.motionValue/100)
      if gameData.currentWeatherEffect == "Fog": attack = attack*.8
-     character.dealDamage(attack, "Blaze", enemy)
+     characterData.dealDamage(attack, "Blaze", enemyData)
 
 def flameSwathe(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
     for allEnemies in gameData.currentEnemies:
-        character.dealDamage((character.attack * skill.motionValue/100), "Blaze", allEnemies)
+        characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Blaze", allEnemies)
     if gameData.currentWeatherEffect == "Fog": gameData.currentWeatherEffect = "Mist"
 
 def rock(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
