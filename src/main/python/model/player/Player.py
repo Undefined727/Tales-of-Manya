@@ -27,8 +27,9 @@ class Player:
                 if skill.name not in unlockedSkillNames:
                     self.unlockedSkills.append(skill)
                     unlockedSkillNames.append(skill.name)
-        for skill in unlockedSkillNames:
-            print(skill)
+        for skill in self.unlockedSkills:
+            print(skill.name)
+            print(skill.affinity)
 
         self.inventory = Inventory()
         self.inventory.addItem("Purrveyor of the Nyaight", 5)

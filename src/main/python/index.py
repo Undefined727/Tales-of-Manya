@@ -23,14 +23,12 @@ buttons = []
 
 
 
-
 def refreshScreen():
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
             displayEntity(entity, screen)
     pygame.display.flip()
-
 
 def run():
     global buttons

@@ -21,5 +21,15 @@
         "path": "BagButton.png",
         "func": "inventory",
         "args": []
+    },{
+        "name": "DonutMan",
+        "isShowing": true,
+        "xPosition": 0.5,
+        "yPosition": 0.7,
+        "width": 0.5,
+        "height": 0.3,
+        "entityType": "Animation",
+        "path": "donutScreen",
+        "delay": 10
     }
 ]
