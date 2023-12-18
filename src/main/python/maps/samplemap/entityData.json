@@ -26,5 +26,16 @@
             22,
             25
         ]
+    },
+    {
+        "name": "Dummy",
+        "type": "enemy",
+        "image": "dummy.png",
+        "position": [
+            37,
+            33
+        ],
+        "enemyType": ["Dummy", "Dummy"],
+        "level": [1, 2]
     }
 ]

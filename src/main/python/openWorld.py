@@ -588,41 +588,48 @@ def loadOpenWorld(transferredData):
                                  
 
         ## Move Enemies ##
-        if (changeEnemyDirection <= 0):
-            enemyMoveDirection = random.randint(1, 9)
-            changeEnemyDirection += random.randint(90, 180)
-        else: changeEnemyDirection -= 1
+        
         for entity in simulatedObjects:
                 if type(entity) == Enemy:
+                    if (entity.changeDirectionTimer <= 0):
+                        enemyMoveDirection = random.randint(1, 9)
+                        if enemyMoveDirection == 1: entity.enemyMoveDirection = "Up"
+                        elif enemyMoveDirection == 2: entity.enemyMoveDirection = "UpRight"
+                        elif enemyMoveDirection == 3: entity.enemyMoveDirection = "Right"
+                        elif enemyMoveDirection == 4: entity.enemyMoveDirection = "DownRight"
+                        elif enemyMoveDirection == 5: entity.enemyMoveDirection = "Down"
+                        elif enemyMoveDirection == 6: entity.enemyMoveDirection = "DownLeft"
+                        elif enemyMoveDirection == 7: entity.enemyMoveDirection = "Left"
+                        elif enemyMoveDirection == 8: entity.enemyMoveDirection = "UpLeft"
+                        entity.changeDirectionTimer += random.randint(90, 180)
+                    else: entity.changeDirectionTimer -= 1
+
                     enemyMovementSpeed = 0.015
-                    if (enemyMoveDirection == 1):
-                        entity.worldObject.speedX = 0
-                        entity.worldObject.speedY = enemyMovementSpeed
-                    elif (enemyMoveDirection == 2):
-                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 3):
-                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 4):
-                        entity.worldObject.speedX = enemyMovementSpeed
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 5):
-                        entity.worldObject.speedX = -enemyMovementSpeed
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 6):
-                        entity.worldObject.speedX = 0
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 7):
-                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 8):
+                    if (entity.enemyMoveDirection == "Up"):
                         entity.worldObject.speedX = 0
                         entity.worldObject.speedY = -enemyMovementSpeed
-                    elif (enemyMoveDirection == 9):
+                    elif (entity.enemyMoveDirection == "UpRight"):
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Right"):
+                        entity.worldObject.speedX = enemyMovementSpeed
+                        entity.worldObject.speedY = 0
+                    elif (entity.enemyMoveDirection == "DownRight"):
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Down"):
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "DownLeft"):
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Left"):
+                        entity.worldObject.speedX = -enemyMovementSpeed
+                        entity.worldObject.speedY = 0
+                    elif (entity.enemyMoveDirection == "UpLeft"):
                         entity.worldObject.speedX = -0.707*enemyMovementSpeed
                         entity.worldObject.speedY = -0.707*enemyMovementSpeed
-        
+                        
 
         ## Respawn Enemies ##
         for entity in allEntities:
