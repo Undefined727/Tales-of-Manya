@@ -16,7 +16,7 @@
             37
         ],
         "enemyType": ["Slime", "Slime"],
-        "level": [100, 100]
+        "level": [15, 20]
     },
     {
         "name": "NPC",

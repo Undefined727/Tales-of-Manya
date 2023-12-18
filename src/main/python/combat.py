@@ -35,8 +35,6 @@ def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
-            if (type(entity) == Animation):
-                print(entity.currentImage)
             if (type(entity) == Animation and entity.playOnce == True and entity.currentImage == -1):
                 visualEntities.remove(entity)
             else:
@@ -113,6 +111,9 @@ def loadCombat(transferredData):
             for entity in visualEntities[:]:
                 if "SkillMenu" in entity.tags:
                     visualEntities.remove(entity)
+            for entity in buttons[:]:
+                if "SkillMenu" in entity.tags:
+                    buttons.remove(entity)
         skillsShowing = not skillsShowing
 
     def updateCharacters():

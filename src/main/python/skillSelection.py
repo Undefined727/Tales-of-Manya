@@ -110,7 +110,6 @@ def loadSkillSelection(transferredData:Singleton):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "inventory"): buttonFunc = inventory
                         if (entity.func == "showSkillDetails"): buttonFunc = showSkillDetails
-                        print(entity)
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
