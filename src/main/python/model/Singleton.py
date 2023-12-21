@@ -5,15 +5,12 @@ from src.main.python.model.database.DBElementFactory import DBElementFactory
 import pygame
 
 class Singleton:
-    currentDisplayedParty:list[CombatCharacterEntity]
-    currentDisplayedEnemies:list[CombatCharacterEntity]
     currentEnemies:list[Character]
-    # For screens that display data for a character specifically, i.e. Skill Selection
     currentCharacter:Character
     player : Player
     currentMap : str
     screenOpen : str
-    pygameWindow : pygame.surface
+    pygameWindow : pygame.Surface
     renderedMapEntities : list
     database_factory : DBElementFactory
     currentWeatherEffect : str

@@ -10,47 +10,6 @@
         "entityType": "Image",
         "path": "combatbg.png"
     },{
-        "name": "Character1",
-        "HPBorderXPosition": 0.02,
-        "HPBorderYPosition": 0.41,
-        "ManaBorderXPosition": 0.02,
-        "ManaBorderYPosition": 0.51,
-        "TextWidth": 0.1,
-        "TextHeight": 0.07,
-        "imgXPosition": 0.1,
-        "imgYPosition": 0.4,
-        "imgWidth": 0.12,
-        "imgHeight": 0.24,
-        "checkmarkXPosition": 0.175,
-        "checkmarkYPosition": 0.4,
-        "entityType": "CharacterEntityCoords"
-    },{
-        "name": "Character2",
-        "HPBorderXPosition": 0.22,
-        "HPBorderYPosition": 0.56,
-        "ManaBorderXPosition": 0.22,
-        "ManaBorderYPosition": 0.66,
-        "imgXPosition": 0.3,
-        "imgYPosition": 0.55,
-        "imgWidth": 0.12,
-        "imgHeight": 0.24,
-        "checkmarkXPosition": 0.375,
-        "checkmarkYPosition": 0.55,
-        "entityType": "CharacterEntityCoords"
-    },{
-        "name": "Character3",
-        "HPBorderXPosition": 0.42,
-        "HPBorderYPosition": 0.71,
-        "ManaBorderXPosition": 0.42,
-        "ManaBorderYPosition": 0.81,
-        "imgXPosition": 0.5,
-        "imgYPosition": 0.7,
-        "imgWidth": 0.12,
-        "imgHeight": 0.24,
-        "checkmarkXPosition": 0.575,
-        "checkmarkYPosition": 0.7,
-        "entityType": "CharacterEntityCoords"
-    },{
         "name": "GlossaryButtonImg",
         "isShowing": true,
         "xPosition": 0.85,

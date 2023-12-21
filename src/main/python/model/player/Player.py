@@ -8,7 +8,7 @@ from model.item.ItemSlotType import ItemSlotType
 class Player:
 
     currentQuests:list[Quest]
-    party:list
+    party:list[Character]
     inventory:Inventory
     unlockedSkills:list[Skill]
 

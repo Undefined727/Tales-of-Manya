@@ -1,37 +1,37 @@
 from model.character.Skill import Skill
 from model.character.Character import Character
-from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
+from view.visualentity.Battlefield import Battlefield
 from model.Singleton import Singleton
 
-def attack(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-    attack = (characterData.character.attack * skill.motionValue/100)
-    characterData.dealDamage(attack, "Physical", enemyData)
+def attack(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
+    attack = (character.attack * skill.motionValue/100)
+    battlefield.dealDamage(attack, "Physical", character, enemy)
 
-def fireBolt(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-     attack = (characterData.character.attack * skill.motionValue/100)
+def fireBolt(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
+     attack = (character.attack * skill.motionValue/100)
      if gameData.currentWeatherEffect == "Fog": attack = attack*.8
-     characterData.dealDamage(attack, "Blaze", enemyData)
+     battlefield.dealDamage(attack, "Blaze", character, enemy)
 
-def flameSwathe(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-    attack = (characterData.character.attack * skill.motionValue/100)
+def flameSwathe(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
+    attack = (character.attack * skill.motionValue/100)
     for allEnemies in gameData.currentEnemies:
-        characterData.dealDamage(attack, "Blaze", allEnemies)
+        battlefield.dealDamage(attack, "Blaze", character, allEnemies)
     if gameData.currentWeatherEffect == "Fog": gameData.currentWeatherEffect = "Mist"
 
-def rock(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-    attack = (characterData.character.attack * skill.motionValue/100)
-    characterData.dealDamage(attack, "Foundation", enemyData)
+def rock(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
+    attack = (character.attack * skill.motionValue/100)
+    character.dealDamage(attack, "Foundation", enemy)
 
 
 
-def useSkill(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
+def useSkill(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
     # General things that always happen
-    characterData.character.spendMana(skill.manaCost)
+    character.spendMana(skill.manaCost)
 
     # mega switch statement :widegladeline2:
     # nvm python doesn't have switch statements :youknowicattodoittoem:
     # add a line for every new skill :thumbeline:
-    if skill.name == "Attack": attack(characterData, enemyData, gameData, skill)
-    elif skill.name == "Fire Bolt": fireBolt(characterData, enemyData, gameData, skill)
-    elif skill.name == "Flame Swathe": flameSwathe(characterData, enemyData, gameData, skill)
-    elif skill.name == "Rock": rock(characterData, enemyData, gameData, skill)
+    if skill.name == "Attack": attack(character, enemy, gameData, battlefield, skill)
+    elif skill.name == "Fire Bolt": fireBolt(character, enemy, gameData, battlefield, skill)
+    elif skill.name == "Flame Swathe": flameSwathe(character, enemy, gameData, battlefield, skill)
+    elif skill.name == "Rock": rock(character, enemy, gameData, battlefield, skill)

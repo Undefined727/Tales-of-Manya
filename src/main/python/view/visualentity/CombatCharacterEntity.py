@@ -110,7 +110,7 @@ class CombatCharacterEntity:
         self.characterHPBarText.updateText(f"{self.character.health.current_value}/{self.character.health.max_value}")
         self.characterManaBarText.updateText(f"{self.character.mana.current_value}/{self.character.mana.max_value}")
 
-    def changeCharacter(self, character:Character, isEnemy:bool):
+    def changeCharacter(self, character:Character, isEnemy:bool = True):
         self.character = character
         if (character == None): return
 
