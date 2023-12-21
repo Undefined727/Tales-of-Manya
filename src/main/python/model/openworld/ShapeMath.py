@@ -40,7 +40,10 @@ def rotatePoint(point, pivot, degrees=0):
         rotated = np.atleast_2d(point)
         return np.squeeze((rotation_matrix @ (rotated.T-pivot.T) + pivot.T).T)
 
+## Distance Calculation ##
 
+def distanceBetweenPoints(point1, point2):
+      return np.sqrt((point1[0]-point2[0])*(point1[0]-point2[0]) + (point1[1]-point2[1])*(point1[1]-point2[1]))
 
 
 ### Collision ###
@@ -78,7 +81,8 @@ def collidesRectRect(rect1, rect2):
         return False
 
 def collidesCircleRect(circle, rect):
-        # Finds point on each side of the rectangle that's closest to the center of the circle, if distance to point from center of circle
+        # Finds point on each side of the rectangle that's closest to
+        # the center of the circle, if distance to point from center of circle
         # less than radius, collides.
         # Also checks if center of circle is in rectangle incase it's fully inside
         if (rect.pointIn(circle.center)): return True

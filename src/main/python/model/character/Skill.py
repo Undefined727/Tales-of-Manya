@@ -1,5 +1,4 @@
 class Skill:
-    id : str
     name : str
     description : str
     character: str

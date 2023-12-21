@@ -284,3 +284,6 @@ class Character:
             query = session.query(func.max(DBCharacter.id)).all()
             max_id = query[0][0]
             return max_id + 1
+
+    # def __eq__(other_character):
+    #     if ()

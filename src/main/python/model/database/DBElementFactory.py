@@ -91,7 +91,7 @@ class DBElementFactory:
         if row is None: 
             connection.close()
             raise IllegalArgumentException("The item is not in the database")
-
+        
         character = Character(row.name, row.description,
                               row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
                               row.void, row.foundation, row.frost, row.flow, row.abundance,

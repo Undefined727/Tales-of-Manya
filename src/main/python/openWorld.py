@@ -16,6 +16,7 @@ from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
+import sys
 import math, pygame, time, random, json
 from PIL import Image
 
@@ -325,7 +326,6 @@ def loadOpenWorld(transferredData):
 
 
     lastInput = "Right"
-    changeEnemyDirection = 0
     frameCounter = 0
     continueTextCooldown = 20
     keyboardMode = False
@@ -505,6 +505,7 @@ def loadOpenWorld(transferredData):
                 scannedTiles = []
                 for y in range(0, scannedHeight):
                     for x in range(0, scannedWidth):
+                        # corner1 = entity.getCorner1() + (x, y)
                         corner1 = np.array([(math.floor(minX)-1 + x), (math.floor(minY)-1 + y)])
                         corner2 = np.array([(math.floor(minX) + x), (math.floor(minY)-1 + y)])
                         corner3 = np.array([(math.floor(minX)-1 + x), (math.floor(minY) + y)])
@@ -520,11 +521,10 @@ def loadOpenWorld(transferredData):
                             movedXVector[0] = 0
                         if (collisionTile(entity, tile, movedYVector)):
                             movedYVector[1] = 0
-                        if (movedXVector[0] == 0 and movedYVector[1] == 0): 
+                        if (movedXVector[0] == 0 and movedYVector[1] == 0):
                             break
-                    else:
-                        continue
-                    break
+                        else:
+                            continue
 
 
             movedVector = movedXVector + movedYVector
@@ -542,7 +542,6 @@ def loadOpenWorld(transferredData):
         ## Update Camera Position ##
         cameraY = character.getCenter()[1]
         cameraX = character.getCenter()[0]
-        
 
 
         ## If the character is stuck respawn them ##
@@ -634,7 +633,7 @@ def loadOpenWorld(transferredData):
         ## Respawn Enemies ##
         for entity in allEntities:
             if (type(entity) == Enemy):
-                if (not entity.respawnTimer == 0):
+                if (entity.respawnTimer > 0 and ShapeMath.distanceBetweenPoints((entity.spawnX, entity.spawnY), character.getCenter()) > 10):
                     entity.respawnTimer -= 1
                     if (entity.respawnTimer <= 0):
                         entity.respawnTimer = 0
@@ -651,8 +650,8 @@ def loadOpenWorld(transferredData):
         ## Display ##
         screen.fill((0, 0, 0))
         fogParallax = 0.2
-        ratio = ((frameCounter%6000)/6000)
-        bgY = (ratio*backgroundHeight) - fogParallax*cameraY*TILE_SIZE
+        ratio = ((frameCounter % 6000)/ 6000)
+        bgY = (ratio * backgroundHeight) - fogParallax * cameraY*TILE_SIZE
         bgY2 = bgY - backgroundHeight
         bgY3 = bgY + backgroundHeight
 
@@ -679,7 +678,6 @@ def loadOpenWorld(transferredData):
         # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
         # pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
 
-            
         refreshMenu(screen)
 
         ## Frame Limiter ##
@@ -690,7 +688,6 @@ def loadOpenWorld(transferredData):
         sleep_time = (1. / FPS) - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
-        
 
         ## Quit ##
         if (quit):

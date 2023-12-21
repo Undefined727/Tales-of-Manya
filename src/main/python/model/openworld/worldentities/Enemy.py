@@ -3,7 +3,6 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 
 class Enemy:
-    enemyID:int
     spawnX:int
     spawnY:int
     img:str
@@ -13,20 +12,19 @@ class Enemy:
     worldObject:OpenWorldEntity
     enemyStats:list[Character]
 
-    # In the future img and id will be connected directly using a database and thus dialogue will no longer be required for initialization
+
     def __init__(self, enemyTypes, levels, img, position, database):
         if (len(position) > 1): position = tuple(position)
         self.enemyStats = []
         for i in range(0, len(enemyTypes)):
             self.enemyStats.append(database.fetchCharacter(enemyTypes[i]))
             self.enemyStats[i].changeLevel(levels[i])
-        
+
         self.spawnX, self.spawnY = position
         self.img = img
         self.respawnTimer = 0
         self.changeDirectionTimer = 0
         self.enemyMoveDirection = "Up"
-        self.enemyID = enemyTypes[0]
         self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "enemy", "attack")
 
     def setCenter(self, point):

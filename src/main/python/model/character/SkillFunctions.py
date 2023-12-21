@@ -22,12 +22,6 @@ def rock(character:Character, enemy:Character, gameData:Singleton, battlefield:B
     attack = (character.attack * skill.motionValue/100)
     character.dealDamage(attack, "Foundation", enemy)
 
-def fireBolt(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    enemy.takeDamage(character.attack * skill.motionValue/100)
-
-def flameSwathe(character:Character, enemy:Character, gameData:Singleton, skill:Skill):
-    for aoe in gameData.currentEnemies:
-        aoe.takeDamage(character.attack * skill.motionValue/100)
 
 
 def useSkill(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
@@ -37,7 +31,10 @@ def useSkill(character:Character, enemy:Character, gameData:Singleton, battlefie
     # mega switch statement :widegladeline2:
     # nvm python doesn't have switch statements :youknowicattodoittoem:
     # add a line for every new skill :thumbeline:
-    if skill.name == "Attack": attack(character, enemy, gameData, battlefield, skill)
-    elif skill.name == "Fire Bolt": fireBolt(character, enemy, gameData, battlefield, skill)
-    elif skill.name == "Flame Swathe": flameSwathe(character, enemy, gameData, battlefield, skill)
-    elif skill.name == "Rock": rock(character, enemy, gameData, battlefield, skill)
+    skillList = { 
+        "Attack": attack,
+        "Fire Bolt": fireBolt,
+        "Flame Swathe": flameSwathe,
+        "Rock": rock,
+    }
+    skillList[skill.name](character, enemy, gameData, battlefield, skill)
