@@ -26,7 +26,6 @@ class DialogueTree:
 
     def updateLeaves(self):
         self.leaves = self.head.checkLeaves()
-        
-    
+
     ## TODO implement ##
     pass

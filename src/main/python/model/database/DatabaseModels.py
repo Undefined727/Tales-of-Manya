@@ -91,7 +91,7 @@ class DBCharacter(Base):
     skill1 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
     skill2 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
     skill3 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
-    ultimate : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
+    skill4 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
     brilliance : Mapped[int] = mapped_column(Integer, nullable=False)
     surge : Mapped[int] = mapped_column(Integer, nullable=False)
     blaze : Mapped[int] = mapped_column(Integer, nullable=False)
@@ -114,7 +114,7 @@ class DBCharacter(Base):
         affinities += f"{self.brilliance!r:10} {self.surge!r:10} {self.blaze!r:10} {self.passage!r:10} {self.clockwork!r:10} {self.void!r:10} {self.foundation!r:10} {self.frost!r:10} {self.flow!r:10} {self.abundance!r:10}"
         basic_stats = f"health     mana       defense    spellpower attack    \n"
         basic_stats += f"{self.basehealth!r:10}  {self.basemana!r:10}  {self.basedef!r:10} {self.basespellpower!r:10} {self.baseattack!r:10}"
-        return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nultimate: {self.ultimate}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
+        return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nskill 4: {self.skill4}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
 
 
 # ## Initialization ###

@@ -9,7 +9,7 @@ class Conversation:
     dialogues : DialogueTree
 
     def __init__(self, name : str):
-        self.id = self.generateID()
+        # self.id = self.generateID()
         self.setName(name)
 
     ## Getters ##

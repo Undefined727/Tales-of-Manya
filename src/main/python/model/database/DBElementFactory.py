@@ -91,13 +91,17 @@ class DBElementFactory:
         if row is None: 
             connection.close()
             raise IllegalArgumentException("The item is not in the database")
-        
+
         character = Character(row.name, row.description,
                               row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
                               row.void, row.foundation, row.frost, row.flow, row.abundance,
                               row.basehealth, row.basemana, row.basedef, row.basespellpower, row.baseattack)
 
-        character.skills = [self.fetchSkill(row.skill1), self.fetchSkill(row.skill2), self.fetchSkill(row.skill3), self.fetchSkill(row.ultimate)]
+        character.skills = []
+        character.skills.append(self.fetchSkill(row.skill1))
+        character.skills.append(self.fetchSkill(row.skill2))
+        character.skills.append(self.fetchSkill(row.skill3))
+        character.skills.append(self.fetchSkill(row.skill4))
 
         character.setCurrentHP(character.health.max_value)
         connection.close()
