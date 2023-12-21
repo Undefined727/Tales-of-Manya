@@ -4,15 +4,17 @@ import os
 
 class Animation(VisualEntity):
     images:list[ImageEntity]
-    paths:list[str]
+    path:str
     currentImage:int
     delay:int
     currentDelayPosition:int
     keepQuality:bool
+    playOnce:bool
 
-    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], imageFolder = "nekoarc", delay = 5, keepQuality = True):
+    def __init__(self, name = "Default_Name", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], imageFolder = "nekoarc", delay = 5, keepQuality = True, playOnce = False):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.keepQuality = keepQuality
+        self.playOnce = playOnce
         self.delay = delay
         self.currentImage = 0
         self.currentDelayPosition = 0
@@ -43,6 +45,9 @@ class Animation(VisualEntity):
             return self.images[self.currentImage]
         else:
             self.currentImage = (self.currentImage+1)%len(self.images)
+            if (self.currentImage == 0 and self.playOnce == True):
+                self.currentImage = -1
+                return self.images[len(self.images) - 1]
             self.currentDelayPosition = self.delay
             return self.images[self.currentImage]
 
@@ -67,5 +72,5 @@ class Animation(VisualEntity):
     def createFrom(json_object):
         newObject = Animation()
         newObject.__dict__.update(json_object)
-        newObject.updateImages(newObject.paths)
+        newObject.updateImages(newObject.path)
         return newObject

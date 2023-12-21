@@ -1,10 +1,7 @@
 from uuid import uuid4
 from typing import List
 from typing import Optional
-from sqlalchemy import String
-from sqlalchemy import Integer
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
+from sqlalchemy import String, Integer, Column, ForeignKey, Float
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import mapped_column
@@ -104,17 +101,24 @@ class DBCharacter(Base):
     abundance : Mapped[int] = mapped_column(Integer, nullable=False)
     description : Mapped[str] = mapped_column(String(2000))
     basehealth : Mapped[int] = mapped_column(Integer, nullable=False)
+    scalehealth : Mapped[float] = mapped_column(Float, nullable=False)
     basemana : Mapped[int] = mapped_column(Integer, nullable=False)
+    scalemana : Mapped[float] = mapped_column(Float, nullable=False)
     basedef : Mapped[int] = mapped_column(Integer, nullable=False)
+    scaledef : Mapped[float] = mapped_column(Float, nullable=False)
     basespellpower : Mapped[int] = mapped_column(Integer, nullable=False)
+    scalespellpower : Mapped[float] = mapped_column(Float, nullable=False)
     baseattack : Mapped[int] = mapped_column(Integer, nullable=False)
+    scaleattack : Mapped[float] = mapped_column(Float, nullable=False)
 
     def __repr__(self):
         affinities = f"brilliance surge      blaze      passage    clockwork  void       foundation frost      flow       abundance \n"
         affinities += f"{self.brilliance!r:10} {self.surge!r:10} {self.blaze!r:10} {self.passage!r:10} {self.clockwork!r:10} {self.void!r:10} {self.foundation!r:10} {self.frost!r:10} {self.flow!r:10} {self.abundance!r:10}"
         basic_stats = f"health     mana       defense    spellpower attack    \n"
         basic_stats += f"{self.basehealth!r:10}  {self.basemana!r:10}  {self.basedef!r:10} {self.basespellpower!r:10} {self.baseattack!r:10}"
-        return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nskill 4: {self.skill4}\n{affinities}\ndescription: {self.description}\n{basic_stats}\n"
+        level_stats = f"health     mana       defense    spellpower attack    \n"
+        level_stats += f"{self.scalehealth!r:10}  {self.scalemana!r:10}  {self.scaledef!r:10} {self.scalespellpower!r:10} {self.scaleattack!r:10}"
+        return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nskill 4: {self.skill4}\n{affinities}\ndescription: {self.description}\nbase stats: {basic_stats}\nscaling stats: {level_stats}\n"
 
 
 # ## Initialization ###

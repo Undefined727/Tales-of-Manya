@@ -47,6 +47,15 @@ def changeCharacterButton():
     currentCharacter = (currentCharacter+1)%len(playerData.party)
     characterDisplay.changeCharacter(playerData.party[currentCharacter])
 
+def skillSelection():
+    global playerData
+    global currentCharacter
+    global leaveScreen
+    global gameData
+    leaveScreen = True
+    gameData.currentCharacter = playerData.party[currentCharacter]
+    gameData.screenOpen = "Skill Selection"
+
 def loadInventory(transferredData):
     global visualEntities
     global buttons
@@ -62,6 +71,7 @@ def loadInventory(transferredData):
     screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
     
+    
     loadJson("inventoryScreen.json", screenX, screenY, visualEntities, buttons)
 
     for entity in visualEntities:
@@ -69,6 +79,17 @@ def loadInventory(transferredData):
             itemDisplay = entity
         if type(entity) == InventoryCharacterEntity:
             characterDisplay = entity
+
+    if (gameData.currentCharacter is not None):
+        count = 0
+        for char in playerData.party:
+            if (char == gameData.currentCharacter):
+                currentCharacter = count
+                characterDisplay.changeCharacter(playerData.party[currentCharacter])
+                break
+            else: count += 1
+    else:
+        characterDisplay.changeCharacter(playerData.party[0])
 
     
     currInventory = playerData.inventory.getItems()
@@ -88,7 +109,7 @@ def loadInventory(transferredData):
         counter += 1
 
 
-    characterDisplay.changeCharacter(playerData.party[0])
+    
     invSlotChangeDelay = 10
     equipItemDelay = 20
     while True:
@@ -101,6 +122,7 @@ def loadInventory(transferredData):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "returnToMap"): buttonFunc = returnToMapButton
                         elif (entity.func == "changeCharacter"): buttonFunc = changeCharacterButton
+                        elif (entity.func == "skillSelection"): buttonFunc = skillSelection
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)

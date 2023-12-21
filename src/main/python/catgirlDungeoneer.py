@@ -1,4 +1,5 @@
 import os, sys, time, pygame, math, random, json
+sys.path.append(os.path.abspath("."))
 from PIL import Image
 import numpy as np
 from view.JSONParser import loadJson

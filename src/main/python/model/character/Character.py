@@ -23,6 +23,13 @@ class Character:
     # 0 for characters
     basedef:int
 
+    # Scaling Stats #
+    scaleattack:float
+    scalespellpower:float
+    scalehealth:float
+    scalemana:float
+    scaledef:float
+
     # Variable Stats #
     attack:int
     spellpower:int
@@ -84,7 +91,8 @@ class Character:
     def __init__(self, name, description, brilliance, 
                  surge, blaze, passage, clockwork,
                  void, foundation, frost, flow, abundance,
-                 basehealth, basemana, basedef, basespellpower, baseattack):
+                 basehealth, basemana, basedef, basespellpower, baseattack,
+                 scalehealth, scalemana, scaledef, scalespellpower, scaleattack):
 
         self.name = name
         self.description = description
@@ -103,6 +111,11 @@ class Character:
         self.basedef = basedef
         self.basespellpower = basespellpower
         self.baseattack = baseattack
+        self.scalehealth = scalehealth
+        self.scalemana = scalemana
+        self.scaledef = scaledef
+        self.scalespellpower = scalespellpower
+        self.scaleattack = scaleattack
         self.loadout    = CharacterLoadout()
 
         # Default Level is 1 until initialized later #
@@ -113,8 +126,7 @@ class Character:
 
 
         self.img            = f"{self.name}.png"
-        if (self.name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
-        else: self.selectedImg = "selectedCatgirlAnimation"
+        self.selectedImg = f"selected{self.name}Animation"
         self.overworldImg   = f"{self.name}.png"
 
 
@@ -185,11 +197,16 @@ class Character:
         amount *= 1 + self.getBonuses(EffectType.HEALING_PCT)
         self.health.increaseBy(amount)
 
-    def takeDamage(self, amount : int):
+    def takeDamage(self, amount : int) -> int:
         # Add defense to scale this
 
         # Round before decreasing the players HP
         self.health.decreaseBy(int(amount))
+        return amount
+
+        #target is of type character
+    def dealDamage(self, rawDamage : float, damageType : str) -> int:
+        return int(rawDamage)
 
     def recoverMana(self, amount : int):
         amount *= 1 + self.getBonuses(EffectType.MANA_RECOVERY)
@@ -205,16 +222,31 @@ class Character:
     def setXPFormula(self, new_formula):
         self.experience.setFormula(new_formula)
 
+    def changeLevel(self, new_level):
+        self.level = new_level
+        self.update()
+        self.setCurrentHP(self.getMaxHP())
+        self.setCurrentMana(self.getMaxMana())
+
+    def levelUp(self):
+        self.level += 1
+        self.update()
+        self.setCurrentHP(self.getMaxHP())
+        self.setCurrentMana(self.getMaxMana())
+
+
     def update(self):
-        # This is what should be used to update a character's stats at the end
-        # of a turn
+        # This is what should be used to refresh a character's stats when they equip a piece of gear or undergo some change
+        # It refreshes their stats based on buffs and gear
+
+        # This will NOT affect a character's current HP, so this could be used during combat
 
         # Set base values from level
-        flatHP = (20 + self.level) * self.basehealth * 100
-        flatMana = self.level * self.basemana * 100
-        flatAttack = self.level * self.baseattack
-        flatDEF = self.level * self.basedef
-        flatSP = self.level * self.basespellpower
+        flatHP = (self.scalehealth*self.level) + self.basehealth
+        flatMana = (self.scalemana*self.level) + self.basemana
+        flatAttack = (self.scaleattack*self.level) + self.baseattack
+        flatDEF = (self.scaledef*self.level) + self.basedef
+        flatSP = (self.scalespellpower*self.level) + self.basespellpower
 
         # Add Item stats
         for stat, value in self.loadout.getStats().items():
@@ -239,11 +271,11 @@ class Character:
         #self.debuffs.update()
 
         # Set Values
-        self.health.setMaxValue(flatHP)
-        self.mana.setMaxValue(flatMana)
-        self.attack = flatAttack
-        self.defense = flatDEF
-        self.spellpower = flatSP
+        self.health.setMaxValue(int(flatHP))
+        self.mana.setMaxValue(int(flatMana))
+        self.attack = int(flatAttack)
+        self.defense = int(flatDEF)
+        self.spellpower = int(flatSP)
 
     ## Misc ##
     @staticmethod

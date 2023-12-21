@@ -12,6 +12,7 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.Battlefield import Battlefield
 import pygame
 
 def displayEntity(entity, screen):
@@ -55,7 +56,10 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
         for option in entity.optionParagraphs:
             displayEntity(option, screen)
-    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity):
+    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity or type(entity) == Battlefield):
         for item in entity.getItems():
-            if item.isShowing: displayEntity(item, screen)
-        
+            if item.isShowing: 
+                displayEntity(item, screen)
+    elif (type(entity) == list):
+        for item in entity:
+            displayEntity(item, screen)
