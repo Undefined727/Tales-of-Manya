@@ -4,7 +4,8 @@ from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from model.Singleton import Singleton
 
 def attack(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-    characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Physical", enemyData)
+    attack = (characterData.character.attack * skill.motionValue/100)
+    characterData.dealDamage(attack, "Physical", enemyData)
 
 def fireBolt(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
      attack = (characterData.character.attack * skill.motionValue/100)
@@ -12,12 +13,14 @@ def fireBolt(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntit
      characterData.dealDamage(attack, "Blaze", enemyData)
 
 def flameSwathe(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
+    attack = (characterData.character.attack * skill.motionValue/100)
     for allEnemies in gameData.currentEnemies:
-        characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Blaze", allEnemies)
+        characterData.dealDamage(attack, "Blaze", allEnemies)
     if gameData.currentWeatherEffect == "Fog": gameData.currentWeatherEffect = "Mist"
 
 def rock(characterData:CombatCharacterEntity, enemyData:CombatCharacterEntity, gameData:Singleton, skill:Skill):
-    characterData.dealDamage((characterData.character.attack * skill.motionValue/100), "Foundation", enemyData)
+    attack = (characterData.character.attack * skill.motionValue/100)
+    characterData.dealDamage(attack, "Foundation", enemyData)
 
 
 
