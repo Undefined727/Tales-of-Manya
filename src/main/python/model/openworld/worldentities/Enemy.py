@@ -8,6 +8,8 @@ class Enemy:
     spawnY:int
     img:str
     respawnTimer:int
+    changeDirectionTimer:int
+    enemyMoveDirection:str
     worldObject:OpenWorldEntity
     enemyStats:list[Character]
 
@@ -22,6 +24,8 @@ class Enemy:
         self.spawnX, self.spawnY = position
         self.img = img
         self.respawnTimer = 0
+        self.changeDirectionTimer = 0
+        self.enemyMoveDirection = "Up"
         self.enemyID = enemyTypes[0]
         self.worldObject = OpenWorldEntity(img, Circle((self.spawnX, self.spawnY), 0.5), "enemy", "attack")
 

@@ -15,8 +15,14 @@
             33,
             25
         ],
-        "enemyType": ["Slime", "Slime"],
-        "level": [15, 20]
+        "enemyType": [
+            "Slime",
+            "Slime"
+        ],
+        "level": [
+            15,
+            20
+        ]
     },
     {
         "name": "Trapped NPC",
@@ -25,6 +31,23 @@
         "position": [
             22,
             25
+        ]
+    },
+    {
+        "name": "Dummy",
+        "type": "enemy",
+        "image": "dummy.png",
+        "position": [
+            29,
+            16
+        ],
+        "enemyType": [
+            "Dummy",
+            "Dummy"
+        ],
+        "level": [
+            1,
+            2
         ]
     }
 ]

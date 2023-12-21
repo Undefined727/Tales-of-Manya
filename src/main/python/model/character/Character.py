@@ -126,8 +126,7 @@ class Character:
 
 
         self.img            = f"{self.name}.png"
-        if (self.name == "Slime"): self.selectedImg = "selectedSlimeAnimation"
-        else: self.selectedImg = "selectedCatgirlAnimation"
+        self.selectedImg = f"selected{self.name}Animation"
         self.overworldImg   = f"{self.name}.png"
 
 
