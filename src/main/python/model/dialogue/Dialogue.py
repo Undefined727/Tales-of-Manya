@@ -87,6 +87,9 @@ class Dialogue:
         if self.getID() == another_object.getID() and self.getContent() == another_object.getContent():
             return True
 
+    def __hash__(self) -> int:
+        return hash((self.id, self.tag, self.character_id, self.emotion))
+
     def __repr__(self) -> str:
         result = f"ID: {self.getID()}"
         result += f"   Tag: {self.getTag()}\n"

@@ -37,3 +37,6 @@ class Conversation:
     #         max_id = query[0][0]
     #         return max_id + 1
     ## TODO implement
+
+    def __hash__(self) -> int:
+        return hash((self.id, self.name))
