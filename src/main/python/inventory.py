@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.ItemDisplay import ItemDisplay
@@ -70,6 +70,7 @@ def loadInventory(transferredData):
     playerData = gameData.player
     screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
+    FPS = 60
     
     
     loadJson("inventoryScreen.json", screenX, screenY, visualEntities, buttons)
@@ -110,8 +111,12 @@ def loadInventory(transferredData):
 
 
     
-    invSlotChangeDelay = 10
-    equipItemDelay = 20
+    INITIAL_CHANGE_SELECTED_ITEM_DELAY = 40
+    AUTO_CHANGE_ITEM_DELAY = 10
+    swapItemTimer = INITIAL_CHANGE_SELECTED_ITEM_DELAY
+    equipItemDelay = 30
+
+    prev_time = 0
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -127,28 +132,57 @@ def loadInventory(transferredData):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+            ## When the player initially presses a button it will be taken into account here ##
+            if (event.type == pygame.KEYDOWN):
+                if (event.key == pygame.K_LEFT):
+                    currInventorySlot -=1
+                    if (currInventorySlot < 0): currInventorySlot = len(currInventory) - 1
+                    itemDisplay.changeItem(currInventory[currInventorySlot].item)
+                    swapItemTimer = INITIAL_CHANGE_SELECTED_ITEM_DELAY
+                if (event.key == pygame.K_RIGHT):
+                    currInventorySlot +=1
+                    if (currInventorySlot >= len(currInventory)): currInventorySlot = 0
+                    itemDisplay.changeItem(currInventory[currInventorySlot].item)
+                    swapItemTimer = INITIAL_CHANGE_SELECTED_ITEM_DELAY
+            if (event.type == pygame.KEYUP):
+                if (event.key == pygame.K_LEFT):
+                    swapItemTimer = INITIAL_CHANGE_SELECTED_ITEM_DELAY
+                if (event.key == pygame.K_RIGHT):
+                    swapItemTimer = INITIAL_CHANGE_SELECTED_ITEM_DELAY
+
         
-        ### Inputs ###
+        ### Held Inputs ###
         keys = pygame.key.get_pressed()
-        if (invSlotChangeDelay > 0): invSlotChangeDelay -= 1
-        else: 
-            if (keys[pygame.K_LEFT]):
+        if (swapItemTimer > 0): swapItemTimer -= 1
+        if (equipItemDelay > 0): equipItemDelay -= 1
+        
+
+        if (keys[pygame.K_LEFT]):
+            if (swapItemTimer <= 0):
                 currInventorySlot -=1
                 if (currInventorySlot < 0): currInventorySlot = len(currInventory) - 1
                 itemDisplay.changeItem(currInventory[currInventorySlot].item)
-                invSlotChangeDelay = 10
-            elif (keys[pygame.K_RIGHT]):
+                swapItemTimer = AUTO_CHANGE_ITEM_DELAY
+        elif (keys[pygame.K_RIGHT]):
+            if (swapItemTimer <= 0):
                 currInventorySlot +=1
                 if (currInventorySlot >= len(currInventory)): currInventorySlot = 0
                 itemDisplay.changeItem(currInventory[currInventorySlot].item)
-                invSlotChangeDelay = 10
-        
-        if (equipItemDelay > 0): equipItemDelay -= 1
-        else:
-            if (keys[pygame.K_SPACE]):
-                playerData.party[currentCharacter].loadout.equip(currInventory[currInventorySlot].item)
-                playerData.party[currentCharacter].update()
-                characterDisplay.updateCharacter()
+                swapItemTimer = AUTO_CHANGE_ITEM_DELAY
+    
+    
+        if (keys[pygame.K_SPACE]):
+            playerData.party[currentCharacter].loadout.equip(currInventory[currInventorySlot].item)
+            playerData.party[currentCharacter].update()
+            characterDisplay.updateCharacter()
+
+        ## Frame Limiter ##
+        current_time = time.time()
+        dt = current_time - prev_time
+        prev_time = current_time
+        sleep_time = (1. / FPS) - dt
+        if sleep_time > 0:
+            time.sleep(sleep_time)
 
         refreshScreen(screen)
         if (leaveScreen):
