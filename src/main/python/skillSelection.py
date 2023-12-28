@@ -33,14 +33,53 @@ def inventory():
     leaveScreen = True
     gameData.screenOpen = "Inventory"
 
+def refreshPlayerSkills():
+    global gameData
+    global visualEntities
+    global buttons
+    for entity in visualEntities[:]:
+        if "CurrentSkills" in entity.tags:
+            visualEntities.remove(entity)
+    for entity in buttons[:]:
+        if "CurrentSkills" in entity.tags:
+            buttons.remove(entity)
+    currentCharacter = gameData.currentCharacter
+    count = 0
+    for skill in currentCharacter.skills:
+        xPos = 0.71 + 0.1*math.sin(2*math.pi*count/4)
+        yPos = 0.25 + 0.2*math.cos(2*math.pi*count/4)
+        skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], f"elements/{skill.element}.png", "showSkillDetails", [skill], True)
+        skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], skill.name, "mono", 16)
+        skillButton.scale(*gameData.pygameWindow.get_size())
+        skillLabel.scale(*gameData.pygameWindow.get_size())
+        visualEntities.append(skillButton)
+        visualEntities.append(skillLabel)
+        buttons.append(skillButton)
+        count += 1
+
 def showSkillDetails(skill:Skill):
     global visualEntities
+    global buttons
     for entity in visualEntities[:]:
         if "SkillDetails" in entity.tags:
             visualEntities.remove(entity)
+    for entity in buttons[:]:
+        if "SkillDetails" in entity.tags:
+            buttons.remove(entity)    
     desc = Paragraph("description", True, 0.6, 0.6, 0.3, 0.3, ["SkillDetails"], skill.description)
+    equipSkilButton = ImageButton(f"EquipSkillButton", True, 0.8, 0.8, 0.2, 0.2, ["SkillDetails"], f"equipButton.png", "equipSkill", [skill], True)
     desc.scale(*gameData.pygameWindow.get_size())
+    equipSkilButton.scale(*gameData.pygameWindow.get_size())
     visualEntities.append(desc)
+    visualEntities.append(equipSkilButton)
+    buttons.append(equipSkilButton)
+
+def equipSkill(skill:Skill):
+    global gameData
+    gameData.currentCharacter.skills[0] = skill
+    print(gameData.currentCharacter.skills[0].name)
+    refreshPlayerSkills()
+
 
 def loadSkillSelection(transferredData:Singleton):
     global visualEntities
@@ -66,22 +105,8 @@ def loadSkillSelection(transferredData:Singleton):
     characterImg = ImageEntity("Character", True, 0.68, 0.1, 0.15, 0.3, [], f"entities/{gameData.currentCharacter.name}.png", True)
     characterImg.scale(screenX, screenY)
     visualEntities.append(characterImg)
-    for skill in gameData.player.unlockedSkills:
-        pass
-
-    count = 0
-    for skill in currentCharacter.skills:
-        xPos = 0.71 + 0.1*math.sin(2*math.pi*count/4)
-        yPos = 0.25 + 0.2*math.cos(2*math.pi*count/4)
-        skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], f"elements/{skill.element}.png", "showSkillDetails", [skill], True)
-
-        skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], skill.name, "mono", 16)
-        skillButton.scale(screenX, screenY)
-        skillLabel.scale(screenX, screenY)
-        visualEntities.append(skillButton)
-        visualEntities.append(skillLabel)
-        buttons.append(skillButton)
-        count += 1
+    
+    refreshPlayerSkills()
 
     count = 0
     for skill in playerData.unlockedSkills:
@@ -110,6 +135,7 @@ def loadSkillSelection(transferredData:Singleton):
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "inventory"): buttonFunc = inventory
                         if (entity.func == "showSkillDetails"): buttonFunc = showSkillDetails
+                        if (entity.func == "equipSkill"): buttonFunc = equipSkill
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
