@@ -3,21 +3,24 @@ from model.character.Character import Character
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.Animation import Animation
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.DamageNumber import DamageNumber
 from model.Singleton import Singleton
 
 class Battlefield:
     name = "battlefield"
     isShowing = True
     tags = []
+    screenX = 0
+    screenY = 0
 
     enemies:list[CombatCharacterEntity]
     characters:list[CombatCharacterEntity]
     currentWeather:str
     currentWeatherAnimation:Animation
-    damageNumbersTimer:int
-    damageNumbers:list[ImageEntity]
+    damageNumbers:list[DamageNumber]
     attackAnimationTimer:int
     attackAnimation:Animation
+    gameData:Singleton
 
     PLAYER_LINE_START = (0.02, 0.65)
     PLAYER_LINE_END = (0.98, 0.98)
@@ -30,6 +33,7 @@ class Battlefield:
     ENEMY_X_IND_PERCENT = 0.7
 
     def __init__(self, gameData:Singleton):
+        self.screenX, self.screenY = gameData.pygameWindow.get_size()
         self.characters = self.buildCombatEntities(gameData.player.party, self.PLAYER_LINE_START, self.PLAYER_LINE_END, self.PLAYER_X_IND_PERCENT, self.PLAYER_Y_IND_PERCENT, gameData.pygameWindow)
         self.enemies = self.buildCombatEntities(gameData.currentEnemies, self.ENEMY_LINE_START, self.ENEMY_LINE_END, self.ENEMY_X_IND_PERCENT, self.ENEMY_Y_IND_PERCENT, gameData.pygameWindow)
         for enemy in self.enemies:
@@ -38,7 +42,6 @@ class Battlefield:
         self.currentWeatherAnimation.scale(*gameData.pygameWindow.get_size())
         self.currentWeatherAnimation.updateImages(f"weather{gameData.currentWeatherEffect}Animation")
         self.damageNumbers = []
-        self.damageNumbersTimer = 0
         self.attackAnimation = Animation("AttackAnimation")
         self.attackAnimationTimer = 0
 
@@ -94,7 +97,10 @@ class Battlefield:
             if (character.character.getCurrentHP() > 0): items.append(character)
         items.append(self.currentWeatherAnimation)
         items.extend(self.characters)
-        if (self.damageNumbersTimer > 0): items.extend(self.damageNumbers)
+        for number in self.damageNumbers[:]:
+            if number.timer <= 0:
+                self.damageNumbers.remove(number)
+        items.extend(self.damageNumbers)
         if (self.attackAnimationTimer > 0): items.append(self.attackAnimation)
         return items
     
@@ -107,24 +113,16 @@ class Battlefield:
         return buttons
     
     def dealDamage(self, rawDamage : float, damageType : str, damageDealer : Character, attacked : Character):
-        print(f"damage dealer: {damageDealer}")
-        print(f"attacked: {attacked}")
-        for character in self.characters:
-            print(f"character: {character}")
+        allEntities = self.characters + self.enemies
+        for character in allEntities:
             if character.character == damageDealer:
-                for enemy in self.enemies:
-                    if enemy.character == attacked:
-                        character.dealDamage(rawDamage, damageType, enemy)
-                        return
-                
-        for enemy in self.enemies:
-            print(f"enemy: {enemy}")
-            if enemy.character == damageDealer:
-                for character in self.characters:
-                    if character.character == attacked:
-                        enemy.dealDamage(rawDamage, damageType, character)
-                        return
-        print("l")
+                damageDealerEntity = character
+            if character.character == attacked:
+                attackedEntity = character
+        
+        damageDealt = damageDealerEntity.dealDamage(rawDamage, damageType, attackedEntity)
+        self.damageNumbers.append(DamageNumber(damageDealt, damageType, 0, 0, self.screenX, self.screenY))
+
             
     def updateCharacters(self):
         for character in self.characters:

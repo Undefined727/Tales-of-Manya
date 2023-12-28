@@ -1,4 +1,5 @@
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.DamageNumber import DamageNumber
 from view.visualentity.Animation import Animation
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
@@ -42,6 +43,11 @@ def displayEntity(entity, screen):
         displayEntity(entity.buttonVisual(), screen)
     elif (type(entity) == Animation):
         displayEntity(entity.getImage(), screen)
+    elif (type(entity) == DamageNumber):
+        entity.timer -= 1
+        if (entity.timer >= 0):
+            for item in entity.getItems():
+                displayEntity(item, screen)
     elif (type(entity) == TextEntity):
         screen.blit(entity.textLabel, entity.textRect)
     elif (type(entity) == Paragraph):

@@ -569,12 +569,12 @@ def loadOpenWorld(transferredData):
                         if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
                             if (type(entity) == Enemy):
                                 currentQuests = gameData.player.getCurrentQuests()
-                                for quest in currentQuests:
-                                    if (quest.questType == "killQuest"):
-                                        if (quest.questData == entity.enemyID):
-                                            quest.questProgress += 1
-                                            if (quest.questProgress >= quest.questGoal): 
-                                                completeQuest(quest, simulatedObjects)
+                                # for quest in currentQuests:
+                                #     if (quest.questType == "killQuest"):
+                                #         if (quest.questData == entity.enemyID):
+                                #             quest.questProgress += 1
+                                #             if (quest.questProgress >= quest.questGoal): 
+                                #                 completeQuest(quest, simulatedObjects)
                                 combatButton(entity.enemyStats)
                                 entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):

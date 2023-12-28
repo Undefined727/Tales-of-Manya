@@ -20,21 +20,21 @@ def flameSwathe(character:Character, enemy:Character, gameData:Singleton, battle
 
 def rock(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
     attack = (character.attack * skill.motionValue/100)
-    character.dealDamage(attack, "Foundation", enemy)
+    battlefield.dealDamage(attack, "Foundation", character, enemy)
 
+def stare(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
+    pass
 
 
 def useSkill(character:Character, enemy:Character, gameData:Singleton, battlefield:Battlefield, skill:Skill):
     # General things that always happen
     character.spendMana(skill.manaCost)
 
-    # mega switch statement :widegladeline2:
-    # nvm python doesn't have switch statements :youknowicattodoittoem:
-    # add a line for every new skill :thumbeline:
     skillList = { 
         "Attack": attack,
         "Fire Bolt": fireBolt,
         "Flame Swathe": flameSwathe,
         "Rock": rock,
+        "Stare": stare
     }
     skillList[skill.name](character, enemy, gameData, battlefield, skill)
