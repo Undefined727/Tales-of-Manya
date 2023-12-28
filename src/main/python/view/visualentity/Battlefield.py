@@ -1,4 +1,4 @@
-import json, pygame
+import json, pygame, random
 from model.character.Character import Character
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
 from view.visualentity.Animation import Animation
@@ -121,7 +121,9 @@ class Battlefield:
                 attackedEntity = character
         
         damageDealt = damageDealerEntity.dealDamage(rawDamage, damageType, attackedEntity)
-        self.damageNumbers.append(DamageNumber(damageDealt, damageType, 0, 0, self.screenX, self.screenY))
+        damageNumberXPosition = attackedEntity.characterImg.xPosition + random.randint(int(-attackedEntity.characterImg.width), int(attackedEntity.characterImg.width))
+        damageNumberYPosition = attackedEntity.characterImg.yPosition + random.randint(int(-attackedEntity.characterImg.height/2), int(attackedEntity.characterImg.width))
+        self.damageNumbers.append(DamageNumber(damageDealt, damageType, damageNumberXPosition, damageNumberYPosition, self.screenX, self.screenY))
 
             
     def updateCharacters(self):
