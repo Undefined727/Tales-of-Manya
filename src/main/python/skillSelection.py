@@ -19,6 +19,8 @@ gameData:Singleton
 playerData:Player
 screen:pygame.surface
 
+currentSkill = 0
+
 def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
@@ -76,8 +78,14 @@ def showSkillDetails(skill:Skill):
 
 def equipSkill(skill:Skill):
     global gameData
-    gameData.currentCharacter.skills[0] = skill
-    print(gameData.currentCharacter.skills[0].name)
+    global currentSkill
+    gameData.currentCharacter.skills[currentSkill] = skill
+    currentSkill = (currentSkill+1)%4
+    indicX = (0.8 + 0.1*math.sin(2*math.pi*currentSkill/4))*gameData.pygameWindow.get_size()[0]
+    indicY = (0.25 + 0.2*math.cos(2*math.pi*currentSkill/4))*gameData.pygameWindow.get_size()[1]
+    for entity in visualEntities[:]:
+        if "SkillIndicator" in entity.tags:
+            entity.reposition(indicX, indicY)
     refreshPlayerSkills()
 
 
@@ -105,7 +113,11 @@ def loadSkillSelection(transferredData:Singleton):
     characterImg = ImageEntity("Character", True, 0.68, 0.1, 0.15, 0.3, [], f"entities/{gameData.currentCharacter.name}.png", True)
     characterImg.scale(screenX, screenY)
     visualEntities.append(characterImg)
-    
+
+    skillIndicator = ImageEntity("Skill Indicator", True, 0.8 + 0.1*math.sin(2*math.pi*currentSkill/4), 0.25 + 0.2*math.cos(2*math.pi*currentSkill/4), 0.08, 0.08, ["SkillIndicator"], f"change_active_left.png", True)
+    skillIndicator.scale(screenX, screenY)
+    visualEntities.append(skillIndicator)
+
     refreshPlayerSkills()
 
     count = 0
