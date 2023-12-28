@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, time
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.TextEntity import TextEntity
@@ -80,12 +80,6 @@ def equipSkill(skill:Skill):
     global gameData
     global currentSkill
     gameData.currentCharacter.skills[currentSkill] = skill
-    currentSkill = (currentSkill+1)%4
-    indicX = (0.8 + 0.1*math.sin(2*math.pi*currentSkill/4))*gameData.pygameWindow.get_size()[0]
-    indicY = (0.25 + 0.2*math.cos(2*math.pi*currentSkill/4))*gameData.pygameWindow.get_size()[1]
-    for entity in visualEntities[:]:
-        if "SkillIndicator" in entity.tags:
-            entity.reposition(indicX, indicY)
     refreshPlayerSkills()
 
 
@@ -97,6 +91,7 @@ def loadSkillSelection(transferredData:Singleton):
     global screen
     global leaveScreen
     global currentCharacter
+    global currentSkill
     
     leaveScreen = False
     gameData = transferredData
@@ -136,12 +131,13 @@ def loadSkillSelection(transferredData:Singleton):
         buttons.append(skillButton)
         count += 1
     
+    FPS = 60
+    prev_time = 0
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
@@ -152,7 +148,36 @@ def loadSkillSelection(transferredData:Singleton):
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+            if (event.type == pygame.KEYDOWN):
+                if (event.key == pygame.K_LEFT):
+                    currentSkill = 3
+                    indicX = 0.7*screenX
+                    indicY = 0.25*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_RIGHT):
+                    currentSkill = 1
+                    indicX = 0.9*screenX
+                    indicY = 0.25*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_UP):
+                    currentSkill = 2
+                    indicX = 0.8*screenX
+                    indicY = 0.05*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_DOWN):
+                    currentSkill = 0
+                    indicX = 0.8*screenX
+                    indicY = 0.45*screenY
+                    skillIndicator.reposition(indicX, indicY)   
 
+        
+        ## Frame Limiter ##
+        current_time = time.time()
+        dt = current_time - prev_time
+        prev_time = current_time
+        sleep_time = (1. / FPS) - dt
+        if sleep_time > 0:
+            time.sleep(sleep_time)
         refreshScreen(screen)
         if (leaveScreen):
             leaveScreen = False 
