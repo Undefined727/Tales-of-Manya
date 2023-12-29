@@ -120,6 +120,39 @@ class DBCharacter(Base):
         level_stats += f"{self.scalehealth!r:10}  {self.scalemana!r:10}  {self.scaledef!r:10} {self.scalespellpower!r:10} {self.scaleattack!r:10}"
         return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nskill 4: {self.skill4}\n{affinities}\ndescription: {self.description}\nbase stats: {basic_stats}\nscaling stats: {level_stats}\n"
 
+class DBConversation(Base):
+    __tablename__ = "Conversation"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120), unique = True)
+    head_node : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, name: {self.name}, head_node: {self.head_node}"
+
+class DBDialogue(Base):
+    __tablename__ = "Dialogue"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    parent_id : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"), nullable = True)
+    conversation : Mapped[int] = mapped_column(ForeignKey("Conversation.id"))
+    tag : Mapped[str] = mapped_column(String(120))
+    content : Mapped[str] = mapped_column(String(500))
+    character_id : Mapped[int] = mapped_column(Integer)
+    emotion : Mapped[str] = mapped_column(String(120))
+    reward_friendship : Mapped[int] = mapped_column(Integer)
+    reward_xp : Mapped[int] = mapped_column(Integer)
+    reward_items : Mapped[List["DBReward"]] = relationship()
+
+    def __repr__(self):
+        return f"ID: {self.id}, tag: {self.tag}, character_id: {self.character_id}, emotion: {self.emotion}, rewards: {self.reward_friendship} {self.reward_xp}, content: {self.content}"
+
+class DBReward(Base):
+    __tablename__ = "Reward"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    item_id : Mapped[int] = mapped_column(ForeignKey("Item.id"))
+    dialogue_id : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, Item: {self.item_id}, Dialogue: {self.dialogue_id}"
 
 # ## Initialization ###
 from sqlalchemy import create_engine
@@ -130,7 +163,7 @@ engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = Tr
 # Base.metadata.drop_all(engine)
 
 # ## This line creates the database as described in the classes above ###
-# Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)
 
 # # ## Example code to add an Item ###
 # with Session(engine) as session:

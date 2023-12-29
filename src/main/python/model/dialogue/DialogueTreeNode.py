@@ -4,6 +4,7 @@ from model.dialogue.Conversation import Conversation
 from util.IllegalArgumentException import IllegalArgumentException
 
 class DialogueTreeNode:
+    leading_text : str
     main_dialogue : Dialogue
     parent_tree : DialogueTree
     parent_node = None

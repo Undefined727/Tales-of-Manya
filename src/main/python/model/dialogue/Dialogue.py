@@ -14,14 +14,14 @@ class Dialogue:
     reward_items : list [ Item ]
 
     def __init__(self,
-                 id : int = 0,
                  tag : str = "",
                  content : str = "",
                  character_id : int = 0,
                  emotion : str = "",
                  reward_friendship : int = 0,
                  reward_xp : int = 0,
-                 reward_items : list [ Item ] = []):
+                 reward_items : list [ Item ] = [],
+                 id : int = 0):
         if id == 0: self.id = self.generateID()
         else: self.id = id
 

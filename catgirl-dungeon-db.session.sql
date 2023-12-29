@@ -1,1 +1,1 @@
-SELECT * FROM Item
+DROP TABLE Conversation
