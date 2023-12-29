@@ -8,9 +8,10 @@ class Quest:
     region : list [ Region ]
 
     def __init__(self, name : str, description : str):
-        self.name = name
-        self.description = description
+        self.setName(name)
+        self.setDescription(description)
 
+    ## Getters ##
     def getName(self) -> str:
         return self.name
 
@@ -23,12 +24,14 @@ class Quest:
     def getRegions(self) -> list [ Region ]:
         return self.region
 
+    ## Setters ##
     def setName(self, new_name : str):
         self.name = new_name
 
     def setDescription(self, new_description : str):
         self.description = new_description
 
+    ## Misc ##
     def __eq__(self, another_object) -> bool:
         if (type(another_object) != type(self)):
             return False

@@ -26,6 +26,7 @@ class Subquest:
         self.setRewards(rewards)
         self.setFollowUp(follow_up)
 
+    ## Getters ##
     def getName(self) -> str:
         return self.name
 
@@ -56,6 +57,7 @@ class Subquest:
     def getFollowUp(self) -> list:
         return self.follow_up
 
+    ## Setters ##
     def setName(self, new_name : str):
         self.name = new_name
 
@@ -86,6 +88,7 @@ class Subquest:
     def setFollowUp(self, new_follow_up : list):
         self.follow_up = new_follow_up
 
+    ## Misc ##
     def __eq__(self, another_object) -> bool:
         if (type(self) != type(another_object)):
             return False

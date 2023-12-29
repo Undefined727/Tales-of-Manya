@@ -12,9 +12,7 @@ class PlayerAttackObject:
     swing:int
     speed:int
     duration:int
-
     currentDuration = 0
-
 
     def __init__(self, elementType, attackShape, attackSize, attackRatio, swingSpeed, projectileSpeed, duration, img):
         self.elementType = elementType
@@ -40,6 +38,6 @@ class PlayerAttackObject:
 
     def getSprite(self):
         return self.worldObject.getSprite()
-    
+
     def getImagePosition(self):
         return self.worldObject.getImagePosition()

@@ -27,7 +27,6 @@ class NPC:
                 break
 
         self.worldObject = OpenWorldEntity(self.imgPath, Circle((position), 0.5), "npc", "interact")
-    
 
     def updateDialogue(self):
         file = open("src/main/python/npcs/NPCList.json", 'r')
@@ -45,6 +44,6 @@ class NPC:
 
     def getSprite(self):
         return self.worldObject.getSprite()
-    
+
     def getImagePosition(self):
         return self.worldObject.getImagePosition()
