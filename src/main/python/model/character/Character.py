@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
-from src.main.python.model.database.DatabaseModels import engine, DBCharacter
+from model.database.DatabaseModels import engine, DBCharacter
 from model.character.CharacterLoadout import CharacterLoadout
 from model.character.ExperienceStat import ExperienceManager
 from model.character.DynamicStat import DynamicStat
