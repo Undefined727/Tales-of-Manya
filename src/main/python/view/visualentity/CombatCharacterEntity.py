@@ -120,28 +120,12 @@ class CombatCharacterEntity:
         self.updateCharacter()
 
     
-    def dealDamage(self, rawDamage : float, damageType : str, target):
+    def dealDamage(self, rawDamage : float, damageType : str, target) -> int:
         realDamage = self.character.dealDamage(rawDamage, damageType)
-        target.takeDamage(realDamage)
+        return target.takeDamage(realDamage)
 
-    def takeDamage(self, amount : int):
-        self.damageDisplayingTimer = 20
-        self.damageTakenDisplay = []
-        digits = 0
-        damage = self.character.takeDamage(amount)
-
-        counter = damage
-        while(counter > 0):
-            digits += 1
-            counter -= counter%10
-            counter /= 10
-
-        for i in range(digits):
-            digit = int((damage/10**(digits-i-1))%10) 
-            width = self.characterImg.width/digits
-            image = ImageEntity(f"Number{i}", True, self.characterImg.xPosition + width*i, self.characterImg.yPosition, width, self.characterImg.height/4)
-            image.updateImg(f"font/{digit}.png")
-            self.damageTakenDisplay.append(image)
+    def takeDamage(self, amount : int) -> int:
+        return self.character.takeDamage(amount)
 
 
         

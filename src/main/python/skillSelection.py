@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, time
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.TextEntity import TextEntity
@@ -19,6 +19,8 @@ gameData:Singleton
 playerData:Player
 screen:pygame.surface
 
+currentSkill = 0
+
 def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
@@ -33,14 +35,53 @@ def inventory():
     leaveScreen = True
     gameData.screenOpen = "Inventory"
 
+def refreshPlayerSkills():
+    global gameData
+    global visualEntities
+    global buttons
+    for entity in visualEntities[:]:
+        if "CurrentSkills" in entity.tags:
+            visualEntities.remove(entity)
+    for entity in buttons[:]:
+        if "CurrentSkills" in entity.tags:
+            buttons.remove(entity)
+    currentCharacter = gameData.currentCharacter
+    count = 0
+    for skill in currentCharacter.skills:
+        xPos = 0.71 + 0.1*math.sin(2*math.pi*count/4)
+        yPos = 0.25 + 0.2*math.cos(2*math.pi*count/4)
+        skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], f"elements/{skill.element}.png", "showSkillDetails", [skill], True)
+        skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], skill.name, "mono", 16)
+        skillButton.scale(*gameData.pygameWindow.get_size())
+        skillLabel.scale(*gameData.pygameWindow.get_size())
+        visualEntities.append(skillButton)
+        visualEntities.append(skillLabel)
+        buttons.append(skillButton)
+        count += 1
+
 def showSkillDetails(skill:Skill):
     global visualEntities
+    global buttons
     for entity in visualEntities[:]:
         if "SkillDetails" in entity.tags:
             visualEntities.remove(entity)
+    for entity in buttons[:]:
+        if "SkillDetails" in entity.tags:
+            buttons.remove(entity)    
     desc = Paragraph("description", True, 0.6, 0.6, 0.3, 0.3, ["SkillDetails"], skill.description)
+    equipSkilButton = ImageButton(f"EquipSkillButton", True, 0.8, 0.8, 0.2, 0.2, ["SkillDetails"], f"equipButton.png", "equipSkill", [skill], True)
     desc.scale(*gameData.pygameWindow.get_size())
+    equipSkilButton.scale(*gameData.pygameWindow.get_size())
     visualEntities.append(desc)
+    visualEntities.append(equipSkilButton)
+    buttons.append(equipSkilButton)
+
+def equipSkill(skill:Skill):
+    global gameData
+    global currentSkill
+    gameData.currentCharacter.skills[currentSkill] = skill
+    refreshPlayerSkills()
+
 
 def loadSkillSelection(transferredData:Singleton):
     global visualEntities
@@ -50,6 +91,7 @@ def loadSkillSelection(transferredData:Singleton):
     global screen
     global leaveScreen
     global currentCharacter
+    global currentSkill
     
     leaveScreen = False
     gameData = transferredData
@@ -66,22 +108,12 @@ def loadSkillSelection(transferredData:Singleton):
     characterImg = ImageEntity("Character", True, 0.68, 0.1, 0.15, 0.3, [], f"entities/{gameData.currentCharacter.name}.png", True)
     characterImg.scale(screenX, screenY)
     visualEntities.append(characterImg)
-    for skill in gameData.player.unlockedSkills:
-        pass
 
-    count = 0
-    for skill in currentCharacter.skills:
-        xPos = 0.71 + 0.1*math.sin(2*math.pi*count/4)
-        yPos = 0.25 + 0.2*math.cos(2*math.pi*count/4)
-        skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], f"elements/{skill.element}.png", "showSkillDetails", [skill], True)
+    skillIndicator = ImageEntity("Skill Indicator", True, 0.8 + 0.1*math.sin(2*math.pi*currentSkill/4), 0.25 + 0.2*math.cos(2*math.pi*currentSkill/4), 0.08, 0.08, ["SkillIndicator"], f"change_active_left.png", True)
+    skillIndicator.scale(screenX, screenY)
+    visualEntities.append(skillIndicator)
 
-        skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["CurrentSkills"], skill.name, "mono", 16)
-        skillButton.scale(screenX, screenY)
-        skillLabel.scale(screenX, screenY)
-        visualEntities.append(skillButton)
-        visualEntities.append(skillLabel)
-        buttons.append(skillButton)
-        count += 1
+    refreshPlayerSkills()
 
     count = 0
     for skill in playerData.unlockedSkills:
@@ -99,22 +131,53 @@ def loadSkillSelection(transferredData:Singleton):
         buttons.append(skillButton)
         count += 1
     
+    FPS = 60
+    prev_time = 0
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
                         if (entity.func == "inventory"): buttonFunc = inventory
                         if (entity.func == "showSkillDetails"): buttonFunc = showSkillDetails
+                        if (entity.func == "equipSkill"): buttonFunc = equipSkill
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+            if (event.type == pygame.KEYDOWN):
+                if (event.key == pygame.K_LEFT):
+                    currentSkill = 3
+                    indicX = 0.7*screenX
+                    indicY = 0.25*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_RIGHT):
+                    currentSkill = 1
+                    indicX = 0.9*screenX
+                    indicY = 0.25*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_UP):
+                    currentSkill = 2
+                    indicX = 0.8*screenX
+                    indicY = 0.05*screenY
+                    skillIndicator.reposition(indicX, indicY)
+                elif (event.key == pygame.K_DOWN):
+                    currentSkill = 0
+                    indicX = 0.8*screenX
+                    indicY = 0.45*screenY
+                    skillIndicator.reposition(indicX, indicY)   
 
+        
+        ## Frame Limiter ##
+        current_time = time.time()
+        dt = current_time - prev_time
+        prev_time = current_time
+        sleep_time = (1. / FPS) - dt
+        if sleep_time > 0:
+            time.sleep(sleep_time)
         refreshScreen(screen)
         if (leaveScreen):
             leaveScreen = False 
