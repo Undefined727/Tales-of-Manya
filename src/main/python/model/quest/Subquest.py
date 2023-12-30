@@ -3,6 +3,7 @@ from model.item.Item import Item
 from model.dialogue.Conversation import Conversation
 
 class Subquest:
+    id : int
     name : str
     parent : Quest
     conversations : dict [ int : Conversation ]

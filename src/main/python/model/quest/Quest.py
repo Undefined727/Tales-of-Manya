@@ -2,10 +2,11 @@ from model.quest.Subquest import Subquest
 from model.Region import Region
 
 class Quest:
+    id : int
     name : str
     description : str
     subquests : list [ Subquest ]
-    region : list [ Region ]
+    regions : list [ Region ]
 
     def __init__(self, name : str, description : str):
         self.setName(name)
@@ -22,7 +23,7 @@ class Quest:
         return self.subquests
 
     def getRegions(self) -> list [ Region ]:
-        return self.region
+        return self.regions
 
     ## Setters ##
     def setName(self, new_name : str):
@@ -38,11 +39,11 @@ class Quest:
         if (self.getName() != another_object.getName()):
             return False
         obj_subquests = self.getSubquests()
-        anth_subquests = another_object.getSubquests()
-        if (obj_subquests.__len__() != anth_subquests.__len__()):
+        anthr_subquests = another_object.getSubquests()
+        if (obj_subquests.__len__() != anthr_subquests.__len__()):
             return False
         for i in range(obj_subquests.__len__()):
-            if (obj_subquests[i] not in anth_subquests or anth_subquests[i] not in obj_subquests):
+            if (obj_subquests[i] not in anthr_subquests or anthr_subquests[i] not in obj_subquests):
                 return False
         return True
 

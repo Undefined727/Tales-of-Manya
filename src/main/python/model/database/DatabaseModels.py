@@ -85,10 +85,10 @@ class DBCharacter(Base):
     __tablename__ = "Character"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     name : Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    skill1 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
-    skill2 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
-    skill3 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
-    skill4 : Mapped[DBSkill] = mapped_column(Integer, ForeignKey("Skill.name",ondelete="CASCADE"))
+    skill1 : Mapped[DBSkill] = mapped_column(ForeignKey("Skill.name"))
+    skill2 : Mapped[DBSkill] = mapped_column(ForeignKey("Skill.name"))
+    skill3 : Mapped[DBSkill] = mapped_column(ForeignKey("Skill.name"))
+    skill4 : Mapped[DBSkill] = mapped_column(ForeignKey("Skill.name"))
     brilliance : Mapped[int] = mapped_column(Integer, nullable=False)
     surge : Mapped[int] = mapped_column(Integer, nullable=False)
     blaze : Mapped[int] = mapped_column(Integer, nullable=False)
@@ -153,6 +153,78 @@ class DBReward(Base):
 
     def __repr__(self) -> str:
         return f"ID: {self.id}, Item: {self.item_id}, Dialogue: {self.dialogue_id}"
+
+class DBQuest(Base):
+    __tablename__ = "Quest"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120), unique = True)
+    description : Mapped[str] = mapped_column(String(500))
+    subquests : Mapped[List["DBSubquest"]] = relationship(
+        back_populates = "id",
+        cascade = "all, delete-orphan"
+    )
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, name: {self.name}, description: {self.description}"
+
+class DBSubquest(Base):
+    __tablename__ = "Subquest"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[int] = mapped_column(String(120), unique = True)
+    type : Mapped[str] = mapped_column(String(120), nullable = False)
+    data : Mapped[str] = mapped_column(String(500), nullable = False)
+    goal : Mapped[int] = mapped_column(Integer, nullable = False)
+    progress : Mapped[int] = mapped_column(Integer, nullable = False)
+    xp : Mapped[int] = mapped_column(Integer)
+    parent : Mapped[int] = mapped_column(ForeignKey("Quest.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, name: {self.name}, type: {self.type}, data: {self.data}, progress: {self.progress}/{self.goal}, XP: {self.xp}"
+
+class DBSubquestConversation(Base):
+    __tablename__ = "SubquestConversation"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    map_index : Mapped[int] = mapped_column(Integer, nullable = False)
+    parent : Mapped[int] = mapped_column(ForeignKey("Subquest.id"))
+    conversation: Mapped[int] = mapped_column(ForeignKey("Conversation.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, index: {self.map_index}, parent subquest: {self.parent}, conversation ID: {self.conversation}"
+
+class DBSubquestReward(Base):
+    __tablename__ = "SubquestReward"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    item_id : Mapped[int] = mapped_column(ForeignKey("Item.id"))
+    subquest_id : Mapped[int] = mapped_column(ForeignKey("Subquest.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, Item: {self.item_id}, Subquest: {self.subquest_id}"
+
+class DBSubquestFollowup(Base):
+    __tablename__ = "SubquestFollowup"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    parent : Mapped[int] = mapped_column(ForeignKey("Subquest.id"), nullable = False)
+    child : Mapped[int] = mapped_column(ForeignKey("Subquest.id"), nullable = False)
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, parent: {self.parent}, child: {self.child}"
+
+class DBRegion(Base):
+    __table__ = "Region"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120), nullable = False, unique = True)
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, name: {self.name}"
+
+class DBQuestRegion(Base):
+    __tablename__ = "QuestRegion"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    quest : Mapped[int] = mapped_column(ForeignKey("Quest.id"))
+    region : Mapped[int] = mapped_column(ForeignKey("Region.id"))
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, quest: {self.quest}, region: {self.region}"
 
 # ## Initialization ###
 from sqlalchemy import create_engine
