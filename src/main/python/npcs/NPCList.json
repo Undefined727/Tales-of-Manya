@@ -3,7 +3,7 @@
         "NPCID": "Trapped_NPC",
         "NPCName": "Trapped NPC",
         "imgPath": "trapped_npc.png",
-        "defaultDialogue": 2,
-        "currentDialogue": 2
+        "defaultDialogue": 0,
+        "currentDialogue": 0
     }
 ]

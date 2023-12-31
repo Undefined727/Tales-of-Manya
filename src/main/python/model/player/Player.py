@@ -48,6 +48,12 @@ class Player:
     
     def getCurrentSubquests(self):
         return self.currentSubquests
+    
+    def getCurrentChangedDialogue(self):
+        changedDialogue = {}
+        for subquest in reversed(self.currentSubquests):
+            changedDialogue.update(subquest.conversations)
+        return changedDialogue
 
     def addQuest(self, addedQuest):
         duplicateFound = False

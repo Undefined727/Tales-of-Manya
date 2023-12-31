@@ -54,23 +54,20 @@ def inventoryButton():
     quit = True
     gameData.screenOpen = "Inventory"
 
-def continueText(renderedEntities, buttons):
+def continueText(buttons:list):
     global visualNovel
     global currentNPC
     global gameData
 
     result = visualNovel.continueText()
     if (result == "Options"):
-        for button in visualNovel.optionButtons:
-            buttons.append(button)
+        buttons.extend(visualNovel.optionButtons)
     elif (result == "Finished"):
-        currentQuests = gameData.player.getCurrentQuests()
-        for quest in currentQuests:
-            if (quest.questType == "NPCInteractionQuest"):
-                if (quest.questData == currentNPC):
-                    quest.questProgress += 1
-                    if (quest.questProgress >= quest.questGoal): 
-                        completeQuest(quest, renderedEntities)
+        currentSubquests = gameData.player.getCurrentSubquests()
+        for quest in currentSubquests:
+            if (quest.type == "talk"):
+                if (quest.data == currentNPC):
+                    completeQuest(quest)
         visualNovel.isShowing = False
         visualNovel.optionButtons = []
 
@@ -102,35 +99,22 @@ def textOption(optionType, data, renderedEntities, buttons):
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
 
-        updateNPCData(gameData.player.getCurrentSubquests())
-        refreshCurrentNPCDialogue(renderedEntities)
+        refreshCurrentNPCDialogue(gameData)
     elif (optionType == "Dialogue"):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
 
 
-def refreshCurrentNPCDialogue(renderedEntities):
-    for npc in renderedEntities:
+def refreshCurrentNPCDialogue(gameData:Singleton):
+    changedDialogue = gameData.player.getCurrentChangedDialogue()
+    for npc in gameData.renderedMapEntities:
         if (type(npc) == NPC):
-            npc.updateDialogue()
+            if (npc.NPCID in changedDialogue.keys()):
+                npc.setDialogue(changedDialogue[npc.NPCID])
+            else: npc.setDialogue(npc.defaultDialogue)
 
-def updateNPCData(subquests:list[Subquest]):
-    file = open("src/main/python/npcs/NPCList.json", 'r')
-    npcData = json.load(file)
-    file.close()
 
-    for npc in npcData:
-        npc["currentDialogue"] = npc["defaultDialogue"]
-
-    for npc in npcData:
-        for quest in subquests:
-            if (npc['NPCID'] in quest.conversations.keys()):
-                npc["currentDialogue"] = quest.conversations[npc['NPCID']]
-
-    file = open("src/main/python/npcs/NPCList.json", 'w')
-    json.dump(npcData, file, indent=4)
-
-def completeQuest(quest:Quest, renderedEntities):
+def completeQuest(quest:Quest):
     global gameData
     
     for item, count in quest.questItemRewards.items():
@@ -141,8 +125,7 @@ def completeQuest(quest:Quest, renderedEntities):
     for id in quest.followUpQuests: 
         gameData.player.addQuest(id)
 
-    updateNPCData(gameData.player.getCurrentSubquests())
-    refreshCurrentNPCDialogue(renderedEntities)
+    refreshCurrentNPCDialogue(gameData)
 
     
 
@@ -193,6 +176,9 @@ def loadOpenWorld(transferredData):
     file =  open(f'src/main/python/maps/{gameData.currentMap}/entityData.json', 'r')
     entitydata = json.load(file)
 
+    file = open("src/main/python/npcs/NPCList.json", 'r')
+    npcdata = json.load(file)
+
     spawnX = 0
     spawnY = 0
     allEntities = []
@@ -205,8 +191,11 @@ def loadOpenWorld(transferredData):
             enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
-            npc = NPC(entity['NPCID'], entity['position'])
-            allEntities.append(npc)
+            for npcRow in npcdata:
+                if (npcRow['NPCID'] == entity['NPCID']):
+                    npc = NPC(entity['NPCID'], entity['position'], npcRow['NPCName'], npcRow['imgPath'], gameData.database_factory.fetchConversation(npcRow['defaultDialogue']))
+                    allEntities.append(npc)
+                    break
 
 
     if (gameData.renderedMapEntities is None):
@@ -232,8 +221,7 @@ def loadOpenWorld(transferredData):
 
     
 
-    updateNPCData(gameData.player.getCurrentSubquests())
-    refreshCurrentNPCDialogue(simulatedObjects)
+    refreshCurrentNPCDialogue(gameData)
 
     file = open("src/main/python/maps/tileIndex.json", 'r')
     tiledata = json.load(file)
@@ -471,7 +459,7 @@ def loadOpenWorld(transferredData):
         if keys[pygame.K_SPACE]:
             if (continueTextCooldown <= 0):
                 if (visualNovel.isShowing):
-                    continueText(simulatedObjects, buttons)
+                    continueText(buttons)
                     continueTextCooldown += 20
         if (continueTextCooldown > 0): continueTextCooldown -= 1
 
@@ -583,7 +571,7 @@ def loadOpenWorld(transferredData):
                                 combatButton(trigger.enemyStats)
                                 trigger.respawnTimer = 120
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.currentDialogue)
+                                visualNovel.updateDialogue(entity.currentDialogue.dialogues)
                                 visualNovel.isShowing = True
                                 currentNPC = entity.NPCID
                                  
