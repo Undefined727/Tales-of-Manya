@@ -9,6 +9,7 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
+from model.dialogue.DialogueTreeNode import DialogueTreeNode
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
 from model.quest.Quest import Quest
@@ -60,6 +61,12 @@ def continueText(buttons:list):
     global gameData
 
     result = visualNovel.continueText()
+
+    if (visualNovel.currentDialogue.follow_up is not None):
+        gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
+
+    # Add friendship and xp handling here later
+
     if (result == "Options"):
         buttons.extend(visualNovel.optionButtons)
     elif (result == "Finished"):
@@ -71,8 +78,9 @@ def continueText(buttons:list):
         visualNovel.isShowing = False
         visualNovel.optionButtons = []
 
-def textOption(optionType, data, renderedEntities, buttons):
+def textOption(data:DialogueTreeNode, buttons):
     global visualNovel
+    global visualEntities
     global gameData
 
     for optionButton in visualNovel.optionButtons:
@@ -81,11 +89,8 @@ def textOption(optionType, data, renderedEntities, buttons):
     visualNovel.hideOptions()
     visualNovel.isShowing = False
     
-
-    if (optionType == "End"):
-        pass
-    elif (optionType == "Quest"):
-        gameData.player.addQuest(data)
+    if (data.main_dialogue.follow_up is not None):
+        gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
         for entity in visualEntities:
             if entity.name == "CurrentQuestListing":
                 currentQuests = gameData.player.getCurrentQuests()
@@ -98,11 +103,14 @@ def textOption(optionType, data, renderedEntities, buttons):
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
-
         refreshCurrentNPCDialogue(gameData)
-    elif (optionType == "Dialogue"):
+
+    # Add friendship and xp handling here later
+
+    if (data.main_dialogue.content is not None):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
+
 
 
 def refreshCurrentNPCDialogue(gameData:Singleton):
@@ -338,7 +346,7 @@ def loadOpenWorld(transferredData):
                                 inventoryButton()
                                 break
                             if (entity.func == "textOption"): 
-                                textOption(*entity.args, simulatedObjects, buttons)
+                                textOption(*entity.args, buttons)
                                 break
                             if (entity.func == "continueText"): 
                                 continueText(simulatedObjects, buttons)

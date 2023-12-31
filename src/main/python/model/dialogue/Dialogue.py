@@ -13,7 +13,7 @@ class Dialogue:
     reward_friendship : int
     reward_xp : int
     reward_items : list [ Item ]
-    # follow_up : Quest
+    follow_up = None
 
     def __init__(self,
                  id : int = 0,

@@ -5,7 +5,6 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
-from model.dialogue.DialogueTree import DialogueTree
 from model.dialogue.DialogueTreeNode import DialogueTreeNode
 from model.dialogue.Dialogue import Dialogue
 

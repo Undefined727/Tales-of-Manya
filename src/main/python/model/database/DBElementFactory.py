@@ -256,7 +256,8 @@ class DBElementFactory:
                             dialogue_row.reward_friendship,
                             dialogue_row.reward_xp,
                             )
-
+        if (dialogue_row.quest is not None):
+            dialogue.follow_up = self.fetchQuest(dialogue_row.quest)
         dialogue.reward_items = self.fetchDialogueItemRewards(id)
         connection.close()
         return dialogue
