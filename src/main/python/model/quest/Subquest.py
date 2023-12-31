@@ -1,11 +1,10 @@
-from model.quest.Quest import Quest
 from model.item.Item import Item
 from model.dialogue.Conversation import Conversation
 
 class Subquest:
     id : int
     name : str
-    parent : Quest
+    parent = None
     conversations : dict [ int : Conversation ]
     type : str
     data : str
@@ -15,7 +14,7 @@ class Subquest:
     rewards : list [ Item ]
     follow_up : list
 
-    def __init__(self, name : str, parent : Quest, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0):
+    def __init__(self, name : str, parent, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0):
         self.setName(name)
         self.setParent(parent)
         self.setType(type)
@@ -24,15 +23,11 @@ class Subquest:
         self.setProgress(progress)
         self.setXP(xp)
 
-        self.setConversations(conversations)
-        self.setRewards(rewards)
-        self.setFollowUp(follow_up)
-
     ## Getters ##
     def getName(self) -> str:
         return self.name
 
-    def getParent(self) -> Quest:
+    def getParent(self):
         return self.parent
 
     def getConversations(self) ->  dict [ int : Conversation ]:
@@ -63,7 +58,7 @@ class Subquest:
     def setName(self, new_name : str):
         self.name = new_name
 
-    def setParent(self, new_parent : Quest):
+    def setParent(self, new_parent):
         self.parent = new_parent
 
     def setConversations(self, new_convos : dict):

@@ -1,6 +1,5 @@
 from model.item.Item import Item
 from sqlalchemy.orm import Session
-from model.quest.Quest import Quest
 from sqlalchemy.sql.expression import func
 from model.database.DatabaseModels import engine, DBDialogue
 
@@ -14,7 +13,7 @@ class Dialogue:
     reward_friendship : int
     reward_xp : int
     reward_items : list [ Item ]
-    follow_up : Quest
+    # follow_up : Quest
 
     def __init__(self,
                  id : int = 0,
@@ -64,7 +63,7 @@ class Dialogue:
     def getItemRewards(self) -> list [ Item ]:
         return self.reward_items
 
-    def getFollowUpQuest(self) -> Quest:
+    def getFollowUpQuest(self):
         return self.follow_up
 
     ## Setters ##
@@ -92,7 +91,7 @@ class Dialogue:
     def setXPRewards(self, new_xp : int):
         self.reward_xp = new_xp
 
-    def setFollowUpQuest(self, new_quest : Quest):
+    def setFollowUpQuest(self, new_quest):
         self.follow_up = new_quest
 
     ## Misc ##

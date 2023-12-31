@@ -108,12 +108,12 @@ class DBElementFactory:
 
     def fetchAllRegions(self, parent_quest_id):
         connection = self.engine.connect()
-        statement = select(DBRegion).where(DBRegion.parent == parent_quest_id)
+        statement = select(DBQuestRegion).where(DBQuestRegion.quest == parent_quest_id)
         regionsData = connection.execute(statement)
 
         regionsList = []
         for region in regionsData:
-            regionsList.append(Region.valueOf(region.name))
+            regionsList.append(Region.valueOf(region.region))
 
         connection.close()
         return regionsList
@@ -130,7 +130,7 @@ class DBElementFactory:
                                 subquestRow.type,
                                 subquestRow.data,
                                 subquestRow.goal,
-                                subquestRow.progress,
+                                0,
                                 subquestRow.xp
                                 )
 
@@ -177,7 +177,7 @@ class DBElementFactory:
 
     def fetchSubquestRewards(self, subquest_id : int):
         connection = self.engine.connect()
-        statement = select(DBSubquestReward).where(DBSubquestReward.parent == subquest_id)
+        statement = select(DBSubquestReward).where(DBSubquestReward.subquest_id == subquest_id)
         subquest_rewards_data = connection.execute(statement)
 
         subquest_rewards_list = []

@@ -5,14 +5,14 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
-from model.player.Dialogue import Dialogue
+from model.dialogue.DialogueTree import DialogueTree
 
 class VisualNovel(VisualEntity):
     paragraph:Paragraph
     continueButton:ImageButton
     frame:ImageEntity
     backgroundBox:ShapeEntity
-    dialogue:Dialogue
+    dialogue:DialogueTree
     name:TextEntity
     currentTextPosition:int
     text:str
@@ -21,10 +21,10 @@ class VisualNovel(VisualEntity):
     optionParagraphs:list
 
 
-    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = 0):
+    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.currentTextPosition = 0
-        self.dialogue = Dialogue(dialogue)
+        self.dialogue = dialogue
         self.text = self.dialogue.text[self.currentTextPosition][1]
         self.isShowingOptions = False
         self.optionParagraphs = []
@@ -42,10 +42,10 @@ class VisualNovel(VisualEntity):
         self.reposition(self.xPosition, self.yPosition)
         self.resize(self.width, self.height)
 
-    def updateDialogue(self, dialogueID):
+    def updateDialogue(self, dialogue):
         if (self.isShowingOptions): self.hideOptions()
         self.currentTextPosition = 0
-        self.dialogue = Dialogue(dialogueID)
+        self.dialogue = dialogue
         self.text = self.dialogue.text[self.currentTextPosition][1]
         self.updateText(self.text)
 

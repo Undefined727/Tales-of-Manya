@@ -11,7 +11,8 @@ import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
-from model.player.Quest import Quest
+from model.quest.Quest import Quest
+from model.quest.Subquest import Subquest
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
@@ -101,7 +102,7 @@ def textOption(optionType, data, renderedEntities, buttons):
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
 
-        updateNPCData(gameData.player.getCurrentQuests())
+        updateNPCData(gameData.player.getCurrentSubquests())
         refreshCurrentNPCDialogue(renderedEntities)
     elif (optionType == "Dialogue"):
         visualNovel.isShowing = True
@@ -113,7 +114,7 @@ def refreshCurrentNPCDialogue(renderedEntities):
         if (type(npc) == NPC):
             npc.updateDialogue()
 
-def updateNPCData(quests):
+def updateNPCData(subquests:list[Subquest]):
     file = open("src/main/python/npcs/NPCList.json", 'r')
     npcData = json.load(file)
     file.close()
@@ -122,9 +123,9 @@ def updateNPCData(quests):
         npc["currentDialogue"] = npc["defaultDialogue"]
 
     for npc in npcData:
-        for quest in quests:
-            if (npc['NPCID'] in quest.NPCDialogue.keys()):
-                npc["currentDialogue"] = quest.NPCDialogue[npc['NPCID']]
+        for quest in subquests:
+            if (npc['NPCID'] in quest.conversations.keys()):
+                npc["currentDialogue"] = quest.conversations[npc['NPCID']]
 
     file = open("src/main/python/npcs/NPCList.json", 'w')
     json.dump(npcData, file, indent=4)
@@ -140,7 +141,7 @@ def completeQuest(quest:Quest, renderedEntities):
     for id in quest.followUpQuests: 
         gameData.player.addQuest(id)
 
-    updateNPCData(gameData.player.getCurrentQuests())
+    updateNPCData(gameData.player.getCurrentSubquests())
     refreshCurrentNPCDialogue(renderedEntities)
 
     
@@ -231,7 +232,7 @@ def loadOpenWorld(transferredData):
 
     
 
-    updateNPCData(gameData.player.getCurrentQuests())
+    updateNPCData(gameData.player.getCurrentSubquests())
     refreshCurrentNPCDialogue(simulatedObjects)
 
     file = open("src/main/python/maps/tileIndex.json", 'r')

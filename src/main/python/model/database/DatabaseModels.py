@@ -161,10 +161,6 @@ class DBQuest(Base):
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     name : Mapped[str] = mapped_column(String(120), unique = True)
     description : Mapped[str] = mapped_column(String(500))
-    subquests : Mapped[List["DBSubquest"]] = relationship(
-        back_populates = "id",
-        cascade = "all, delete-orphan"
-    )
 
     def __repr__(self) -> str:
         return f"ID: {self.id}, name: {self.name}, description: {self.description}"
@@ -176,12 +172,11 @@ class DBSubquest(Base):
     type : Mapped[str] = mapped_column(String(120), nullable = False)
     data : Mapped[str] = mapped_column(String(500), nullable = False)
     goal : Mapped[int] = mapped_column(Integer, nullable = False)
-    progress : Mapped[int] = mapped_column(Integer, nullable = False)
     xp : Mapped[int] = mapped_column(Integer)
     parent : Mapped[int] = mapped_column(ForeignKey("Quest.id"))
 
     def __repr__(self) -> str:
-        return f"ID: {self.id}, name: {self.name}, type: {self.type}, data: {self.data}, progress: {self.progress}/{self.goal}, XP: {self.xp}"
+        return f"ID: {self.id}, name: {self.name}, type: {self.type}, data: {self.data}, XP: {self.xp}"
 
 class DBSubquestConversation(Base):
     __tablename__ = "SubquestConversation"

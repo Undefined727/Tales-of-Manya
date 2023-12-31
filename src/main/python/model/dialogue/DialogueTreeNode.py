@@ -1,18 +1,16 @@
 from model.dialogue.Dialogue import Dialogue
-from model.dialogue.DialogueTree import DialogueTree
-from model.dialogue.Conversation import Conversation
 from util.IllegalArgumentException import IllegalArgumentException
 
 class DialogueTreeNode:
     main_dialogue : Dialogue
-    parent_tree : DialogueTree
-    parent_conversation : Conversation
+    parent_tree = None
+    parent_conversation = None
     children : set() # { DialogueTreeNode }
 
     def __init__(self,
                  main_dialogue : Dialogue,
-                 parent_tree : DialogueTree = None,
-                 parent_conversation : Conversation = None,
+                 parent_tree = None,
+                 parent_conversation = None,
                  children : set = {}
                  ):
         self.setMainDialogue(main_dialogue)
@@ -24,10 +22,10 @@ class DialogueTreeNode:
     def getMainDialogue(self) -> Dialogue:
         return self.main_dialogue
 
-    def getParentTree(self) -> DialogueTree:
+    def getParentTree(self):
         return self.parent_tree
 
-    def getParentConversation(self) -> Conversation:
+    def getParentConversation(self):
         return self.parent_conversation
 
     def getChildren(self) -> list:
@@ -57,12 +55,12 @@ class DialogueTreeNode:
     def setParentNode(self, new_node):
         self.parent_node = new_node
 
-    def setParentTree(self, new_tree : DialogueTree):
+    def setParentTree(self, new_tree):
         self.parent_tree = new_tree
         for child in self.getChildren():
             child.setParentTree(new_tree)
 
-    def setParentConversation(self, new_conversation : Conversation):
+    def setParentConversation(self, new_conversation):
         self.parent_conversation = new_conversation
 
     def setChildren(self, new_children : dict):
@@ -86,7 +84,7 @@ class DialogueTreeNode:
         child_node.detachSelf()
         return child_node
 
-    def attachSelf(self, new_conversation : Conversation, new_tree : DialogueTree):
+    def attachSelf(self, new_conversation, new_tree):
         self.setParentConversation(new_conversation)
         self.setParentTree(new_tree)
         for child in self.getChildren():

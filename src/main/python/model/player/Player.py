@@ -1,4 +1,5 @@
-from model.player.Quest import Quest
+from model.quest.Quest import Quest
+from model.quest.Subquest import Subquest
 from model.character.Character import Character
 from model.character.Inventory import Inventory
 from model.character.Skill import Skill
@@ -8,13 +9,18 @@ from model.item.ItemSlotType import ItemSlotType
 class Player:
 
     currentQuests:list[Quest]
+    currentSubquests:list[Subquest]
     party:list[Character]
     inventory:Inventory
     unlockedSkills:list[Skill]
 
     def __init__(self, database, fileName = None):
         # This will pull from a file in the future
-        self.currentQuests = [Quest(0)]
+        self.currentQuests = [database.fetchQuest(1)]
+        self.currentSubquests = []
+        for quest in self.currentQuests:
+            self.currentSubquests.append(quest.subquests[0])
+        
         self.party = [database.fetchCharacter(2), database.fetchCharacter(3), database.fetchCharacter(4)]
         self.party[0].changeLevel(10)
         self.party[1].changeLevel(15)
@@ -39,10 +45,16 @@ class Player:
 
     def getCurrentQuests(self):
         return self.currentQuests
+    
+    def getCurrentSubquests(self):
+        return self.currentSubquests
 
     def addQuest(self, addedQuest):
         duplicateFound = False
         for quest in self.currentQuests:
             if ((quest.questName == addedQuest or quest.questID == addedQuest)):
                 duplicateFound = True
-        if (not duplicateFound): self.currentQuests.append(Quest(addedQuest))
+        if (not duplicateFound): 
+            quest = Quest(addedQuest)
+            self.currentQuests.append(quest)
+            self.currentSubquests.append(quest.subquests[0])
