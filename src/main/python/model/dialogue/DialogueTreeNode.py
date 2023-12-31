@@ -5,13 +5,13 @@ class DialogueTreeNode:
     main_dialogue : Dialogue
     parent_tree = None
     parent_conversation = None
-    children : set() = {}# { DialogueTreeNode }
+    children : list = None # [DialogueTreeNode]
 
     def __init__(self,
                  main_dialogue : Dialogue,
                  parent_tree = None,
                  parent_conversation = None,
-                 children : set = {}
+                 children : list = []
                  ):
         self.setMainDialogue(main_dialogue)
         self.setParentTree(parent_tree)
@@ -28,7 +28,7 @@ class DialogueTreeNode:
     def getParentConversation(self):
         return self.parent_conversation
 
-    def getChildren(self) -> set:
+    def getChildren(self) -> list:
         return self.children
 
     def getNodeHeight(self) -> int:
@@ -64,7 +64,7 @@ class DialogueTreeNode:
     def setParentConversation(self, new_conversation):
         self.parent_conversation = new_conversation
 
-    def setChildren(self, new_children : set):
+    def setChildren(self, new_children : list):
         self.children = new_children
         # for child in self.children:
         #     child.attachSelf(self.getParentConversation(), self.getParentTree())

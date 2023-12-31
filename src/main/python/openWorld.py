@@ -571,7 +571,7 @@ def loadOpenWorld(transferredData):
                                 combatButton(trigger.enemyStats)
                                 trigger.respawnTimer = 120
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.currentDialogue.dialogues)
+                                visualNovel.updateDialogue(entity.currentDialogue.dialogues.head)
                                 visualNovel.isShowing = True
                                 currentNPC = entity.NPCID
                                  

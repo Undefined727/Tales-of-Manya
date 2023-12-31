@@ -135,7 +135,7 @@ class DBDialogue(Base):
     parent_id : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"), nullable = True)
     conversation : Mapped[int] = mapped_column(ForeignKey("Conversation.id"), nullable = True)
     tag : Mapped[str] = mapped_column(String(120), nullable = True)
-    leading_text : Mapped[str] = mapped_column(String(500))
+    leading_text : Mapped[str] = mapped_column(String(500), nullable = True)
     content : Mapped[str] = mapped_column(String(500))
     character_id : Mapped[int] = mapped_column(Integer)
     emotion : Mapped[str] = mapped_column(String(120))

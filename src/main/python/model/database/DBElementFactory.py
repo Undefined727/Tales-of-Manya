@@ -234,9 +234,11 @@ class DBElementFactory:
             connection.close()
             return node
 
-        children = {}
+        children = []
         for child in rows:
-            children.add(self.fetchDialogueTreeNode(child.id, tree, conversation))
+            children.append(self.fetchDialogueTreeNode(child.id, tree, conversation))
+
+        node.setChildren(children)
 
         connection.close()
         return node

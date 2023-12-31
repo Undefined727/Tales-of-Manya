@@ -14,7 +14,6 @@ class VisualNovel(VisualEntity):
     continueButton:ImageButton
     frame:ImageEntity
     backgroundBox:ShapeEntity
-    dialogue:DialogueTree
     currentDialogueNode:DialogueTreeNode
     currentDialogue:Dialogue
     name:TextEntity
@@ -24,7 +23,7 @@ class VisualNovel(VisualEntity):
     optionParagraphs:list
 
 
-    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue:DialogueTree = None):
+    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue:DialogueTreeNode = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.currentTextPosition = 0
         self.dialogue = dialogue
@@ -47,10 +46,10 @@ class VisualNovel(VisualEntity):
         self.reposition(self.xPosition, self.yPosition)
         self.resize(self.width, self.height)
 
-    def updateDialogue(self, dialogue:DialogueTree):
+    def updateDialogue(self, dialogue:DialogueTreeNode = None):
         if (self.isShowingOptions): self.hideOptions()
-        self.dialogue = dialogue
-        self.currentDialogueNode = dialogue.head
+        if (dialogue is not None):
+            self.currentDialogueNode = dialogue
         self.currentDialogue = self.currentDialogueNode.main_dialogue
         self.text = self.currentDialogue.content
         self.updateText(self.text)
@@ -63,10 +62,12 @@ class VisualNovel(VisualEntity):
         if (self.isShowingOptions):
             return "ShowingOptions"
         
+        # print(self.currentDialogueNode.children)
         if (len(self.currentDialogueNode.children) == 0):
             return "Finished"
         elif (len(self.currentDialogueNode.children) == 1):
-            self.currentDialogueNode = list(self.currentDialogueNode.children)[0]
+            self.currentDialogueNode = self.currentDialogueNode.children[0]
+            self.updateDialogue()
         else:
             self.backgroundBox.reposition(self.xPosition, self.yPosition + self.height/4 - 3*self.height/4)
             self.frame.reposition(self.xPosition, self.yPosition - 3*self.height/4)
