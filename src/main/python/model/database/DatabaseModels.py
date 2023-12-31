@@ -133,8 +133,8 @@ class DBDialogue(Base):
     __tablename__ = "Dialogue"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     parent_id : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"), nullable = True)
-    conversation : Mapped[int] = mapped_column(ForeignKey("Conversation.id"))
-    tag : Mapped[str] = mapped_column(String(120))
+    conversation : Mapped[int] = mapped_column(ForeignKey("Conversation.id"), nullable = True)
+    tag : Mapped[str] = mapped_column(String(120), nullable = True)
     leading_text : Mapped[str] = mapped_column(String(500))
     content : Mapped[str] = mapped_column(String(500))
     character_id : Mapped[int] = mapped_column(Integer)
@@ -142,7 +142,7 @@ class DBDialogue(Base):
     reward_friendship : Mapped[int] = mapped_column(Integer)
     reward_xp : Mapped[int] = mapped_column(Integer)
     reward_items : Mapped[List["DBReward"]] = relationship()
-    quest : Mapped[int] = mapped_column(ForeignKey("Quest.id"))
+    quest : Mapped[int] = mapped_column(ForeignKey("Quest.id"), nullable = True)
 
     def __repr__(self):
         return f"ID: {self.id}, tag: {self.tag}, character_id: {self.character_id}, emotion: {self.emotion}, rewards: {self.reward_friendship} {self.reward_xp}, content: {self.content}"

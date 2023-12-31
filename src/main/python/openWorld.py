@@ -264,7 +264,8 @@ def loadOpenWorld(transferredData):
 
 
     loadJson("openWorldScreen.json", screenX, screenY, visualEntities, buttons)
-    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
+    emptyConversation = gameData.database_factory.fetchConversation(0)
+    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], emptyConversation.dialogues)
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
     visualNovel.isShowing = False
@@ -277,8 +278,8 @@ def loadOpenWorld(transferredData):
                     listingString = ""
                     first = True
                     for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
+                        if (first): listingString = listingString + "- " + quest.name
+                        else: listingString = listingString + "%/n%- " + quest.name
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
@@ -640,12 +641,6 @@ def loadOpenWorld(transferredData):
                         entity.respawnTimer = 0
                         entity.setCenter((entity.spawnX, entity.spawnY))
                         simulatedObjects.append(entity)
-
-
-        currentQuests = gameData.player.getCurrentQuests()
-        for quest in currentQuests:
-            if (quest.questType == "freeQuest"):
-                completeQuest(quest, simulatedObjects)
 
 
         ## Display ##

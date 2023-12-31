@@ -6,6 +6,8 @@ from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
 from model.dialogue.DialogueTree import DialogueTree
+from model.dialogue.DialogueTreeNode import DialogueTreeNode
+from model.dialogue.Dialogue import Dialogue
 
 class VisualNovel(VisualEntity):
     paragraph:Paragraph
@@ -13,19 +15,22 @@ class VisualNovel(VisualEntity):
     frame:ImageEntity
     backgroundBox:ShapeEntity
     dialogue:DialogueTree
+    currentDialogueNode:DialogueTreeNode
+    currentDialogue:Dialogue
     name:TextEntity
-    currentTextPosition:int
     text:str
     isShowingOptions:bool
     optionButtons:list
     optionParagraphs:list
 
 
-    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = None):
+    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue:DialogueTree = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.currentTextPosition = 0
         self.dialogue = dialogue
-        self.text = self.dialogue.text[self.currentTextPosition][1]
+        self.currentDialogueNode = dialogue.head
+        self.currentDialogue = self.currentDialogueNode.main_dialogue
+        self.text = self.currentDialogue.content
         self.isShowingOptions = False
         self.optionParagraphs = []
         self.optionButtons = []
@@ -42,11 +47,12 @@ class VisualNovel(VisualEntity):
         self.reposition(self.xPosition, self.yPosition)
         self.resize(self.width, self.height)
 
-    def updateDialogue(self, dialogue):
+    def updateDialogue(self, dialogue:DialogueTree):
         if (self.isShowingOptions): self.hideOptions()
-        self.currentTextPosition = 0
         self.dialogue = dialogue
-        self.text = self.dialogue.text[self.currentTextPosition][1]
+        self.currentDialogueNode = dialogue.head
+        self.currentDialogue = self.currentDialogueNode.main_dialogue
+        self.text = self.currentDialogue.content
         self.updateText(self.text)
 
     def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):

@@ -24,9 +24,8 @@ class Dialogue:
                  emotion : str = "",
                  reward_friendship : int = 0,
                  reward_xp : int = 0):
-        if id == 0: self.id = self.generateID()
-        else: self.id = id
-
+        
+        self.id = id
         self.setTag(tag)
         self.setLeadingText(leading_text)
         self.setContent(content)

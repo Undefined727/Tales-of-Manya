@@ -201,12 +201,15 @@ class DBElementFactory:
 
     def fetchConversation(self, conversation_id):
         connection = self.engine.connect()
-        if type(id) == int:
+        if type(conversation_id) == int:
             statement = select(DBConversation).where(DBConversation.id == conversation_id)
         else:
             statement = select(DBConversation).where(DBConversation.name == conversation_id)
-
         row = connection.execute(statement).first()
+        if (row == None): 
+            connection.close()
+            raise IllegalArgumentException("The item is not in the database")
+        
         conversation = Conversation(row.name)
         conversation.dialogues = self.fetchDialogueTree(row.head_node, conversation)
         connection.close()
