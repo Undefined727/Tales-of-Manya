@@ -4,22 +4,18 @@ from model.dialogue.Conversation import Conversation
 from util.IllegalArgumentException import IllegalArgumentException
 
 class DialogueTreeNode:
-    leading_text : str
     main_dialogue : Dialogue
     parent_tree : DialogueTree
-    parent_node = None
     parent_conversation : Conversation
-    children : dict() # { DialogueTreeNode }
+    children : set() # { DialogueTreeNode }
 
     def __init__(self,
                  main_dialogue : Dialogue,
-                 parent_tree : DialogueTree,
-                 parent_node = None,
+                 parent_tree : DialogueTree = None,
                  parent_conversation : Conversation = None,
-                 children : dict = {}
+                 children : set = {}
                  ):
         self.setMainDialogue(main_dialogue)
-        self.setParentNode(parent_node)
         self.setParentTree(parent_tree)
         self.setParentConversation(parent_conversation)
         self.setChildren(children)
@@ -27,9 +23,6 @@ class DialogueTreeNode:
     ## Getters ##
     def getMainDialogue(self) -> Dialogue:
         return self.main_dialogue
-
-    def getParentNode(self):
-        return self.parent_node
 
     def getParentTree(self) -> DialogueTree:
         return self.parent_tree

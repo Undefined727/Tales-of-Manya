@@ -3,7 +3,7 @@ from model.dialogue.DialogueTreeNode import DialogueTreeNode
 class DialogueTree:
     head : DialogueTreeNode
 
-    def __init__(self, head):
+    def __init__(self, head = None):
         self.setHead(head)
 
     ## Getters ##

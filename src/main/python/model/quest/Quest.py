@@ -12,6 +12,9 @@ class Quest:
         self.setName(name)
         self.setDescription(description)
 
+        self.subquests = []
+        self.regions = []
+
     ## Getters ##
     def getName(self) -> str:
         return self.name

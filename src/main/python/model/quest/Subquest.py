@@ -15,15 +15,16 @@ class Subquest:
     rewards : list [ Item ]
     follow_up : list
 
-    def __init__(self, name : str, parent : Quest, conversations : dict, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0, rewards : list [ Item ] = [], follow_up = []):
+    def __init__(self, name : str, parent : Quest, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0):
         self.setName(name)
         self.setParent(parent)
-        self.setConversations(conversations)
         self.setType(type)
         self.setData(data)
         self.setGoal(goal)
         self.setProgress(progress)
         self.setXP(xp)
+
+        self.setConversations(conversations)
         self.setRewards(rewards)
         self.setFollowUp(follow_up)
 

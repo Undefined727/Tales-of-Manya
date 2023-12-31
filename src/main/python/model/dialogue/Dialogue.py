@@ -7,6 +7,7 @@ from model.database.DatabaseModels import engine, DBDialogue
 class Dialogue:
     id : int
     tag : str
+    leading_text : str
     content : str
     character_id : int
     emotion : str
@@ -16,24 +17,24 @@ class Dialogue:
     follow_up : Quest
 
     def __init__(self,
+                 id : int = 0,
                  tag : str = "",
+                 leading_text : str = "",
                  content : str = "",
                  character_id : int = 0,
                  emotion : str = "",
                  reward_friendship : int = 0,
-                 reward_xp : int = 0,
-                 reward_items : list [ Item ] = [],
-                 id : int = 0):
+                 reward_xp : int = 0):
         if id == 0: self.id = self.generateID()
         else: self.id = id
 
         self.setTag(tag)
+        self.setLeadingText(leading_text)
         self.setContent(content)
         self.setCharacterID(character_id)
         self.setEmotion(emotion)
         self.setFriendshipRewards(reward_friendship)
         self.setXPRewards(reward_xp)
-        self.setItemRewards(reward_items)
 
     ## Getters ##
     def getID(self) -> int:
@@ -44,6 +45,9 @@ class Dialogue:
 
     def getContent(self) -> str:
         return self.content
+    
+    def getLeadingText(self) -> str:
+        return self.leading_text
 
     def getCharacterID(self) -> str:
         return self.character
@@ -66,6 +70,9 @@ class Dialogue:
     ## Setters ##
     def setTag(self, new_tag : str):
         self.tag = new_tag
+
+    def setLeadingText(self, leading_text : str):
+        self.leading_text = leading_text    
 
     def setContent(self, new_content : str):
         self.content = new_content

@@ -1,6 +1,7 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
 from src.main.python.model.character.Character import Character
+from src.main.python.model.Region import Region
 from src.main.python.model.character.Skill import Skill
 from src.main.python.model.item.Item import Item
 from src.main.python.model.item.ItemSlotType import ItemSlotType
@@ -9,7 +10,12 @@ from src.main.python.model.item.ItemTag import ItemTag
 import src.main.python.model.effect.Effect as Effect
 from src.main.python.model.effect.EffectType import EffectType
 from src.main.python.model.effect.EffectTag import EffectTag
-from src.main.python.model.player.Quest import Quest
+from src.main.python.model.quest.Quest import Quest
+from src.main.python.model.quest.Subquest import Subquest
+from src.main.python.model.dialogue.Conversation import Conversation
+from src.main.python.model.dialogue.DialogueTree import DialogueTree
+from src.main.python.model.dialogue.Dialogue import Dialogue
+from src.main.python.model.dialogue.DialogueTreeNode import DialogueTreeNode
 from src.main.python.model.database.DatabaseModels import *
 from src.main.python.util.IllegalArgumentException import IllegalArgumentException
 from sqlalchemy import create_engine
@@ -80,6 +86,187 @@ class DBElementFactory:
 
         connection.close()
         return skill
+    
+    def fetchQuest(self, id):
+        connection = self.engine.connect()
+        if type(id) == int:
+            statement = select(DBQuest).where(DBQuest.id == id)
+        else:
+            statement = select(DBQuest).where(DBQuest.name == id)
+        row = connection.execute(statement).first()
+        if row is None: 
+            connection.close()
+            raise IllegalArgumentException("The item is not in the database")
+
+        quest = Quest(row.name, row.description)
+        connection.close()
+
+        quest.regions = self.fetchAllRegions(id)
+        quest.subquests = self.fetchAllSubquests(id)
+
+        return quest
+
+    def fetchAllRegions(self, parent_quest_id):
+        connection = self.engine.connect()
+        statement = select(DBRegion).where(DBRegion.parent == parent_quest_id)
+        regionsData = connection.execute(statement)
+
+        regionsList = []
+        for region in regionsData:
+            regionsList.append(Region.valueOf(region.name))
+
+        connection.close()
+        return regionsList
+
+    def fetchAllSubquests(self, parent_quest_id):
+        connection = self.engine.connect()
+        statement = select(DBSubquest).where(DBSubquest.parent == parent_quest_id)
+        subquestData = connection.execute(statement)
+
+        subquestList = []
+        for subquestRow in subquestData:
+            subquest = Subquest(subquestRow.name,
+                                subquestRow.parent,
+                                subquestRow.type,
+                                subquestRow.data,
+                                subquestRow.goal,
+                                subquestRow.progress,
+                                subquestRow.xp
+                                )
+
+            subquest.conversations = self.fetchSubquestConversations(subquestRow.id)
+            subquest.rewards = self.fetchSubquestRewards(subquestRow.id)
+            subquest.follow_up = self.fetchSubquestFollowUp(subquestRow.id)
+            subquestList.append(subquest)
+
+        connection.close()
+        return subquestList
+
+    def fetchSubquest(self, subquest_id):
+        connection = self.engine.connect()
+        statement = select(DBSubquest).where(DBSubquest.id == subquest_id)
+        subquestRow = connection.execute(statement).first()
+
+        subquest = Subquest(subquestRow.name,
+                            subquestRow.parent,
+                            subquestRow.type,
+                            subquestRow.data,
+                            subquestRow.goal,
+                            subquestRow.progress,
+                            subquestRow.xp
+                            )
+
+        subquest.conversations = self.fetchSubquestConversations(subquestRow.id)
+        subquest.rewards = self.fetchSubquestRewards(subquestRow.id)
+        subquest.follow_up = self.fetchSubquestFollowUp(subquestRow.id)
+
+        connection.close()
+        return subquest
+
+    def fetchSubquestConversations(self, subquest_id : int):
+        connection = self.engine.connect()
+        statement = select(DBSubquestConversation).where(DBSubquestConversation.parent == subquest_id)
+        subquest_conversation_data = connection.execute(statement)
+
+        subquest_conversation_dict = {}
+        for row in subquest_conversation_data:
+            subquest_conversation_dict.update({row.map_index: row.conversation})
+
+        connection.close()
+        return subquest_conversation_dict
+
+    def fetchSubquestRewards(self, subquest_id : int):
+        connection = self.engine.connect()
+        statement = select(DBSubquestReward).where(DBSubquestReward.parent == subquest_id)
+        subquest_rewards_data = connection.execute(statement)
+
+        subquest_rewards_list = []
+        for reward in subquest_rewards_data:
+            subquest_rewards_list.append(self.fetchItemByID(reward.item_id))
+
+        connection.close()
+        return subquest_rewards_list
+
+    def fetchSubquestFollowUp(self, subquest_id : int):
+        connection = self.engine.connect()
+        statement = select(DBSubquestFollowup).where(DBSubquestFollowup.parent == subquest_id)
+        subquest_followup_data = connection.execute(statement)
+
+        subquest_followup_list = []
+        for row in subquest_followup_data:
+            subquest_followup_list.append(self.fetchSubquest(row.child))
+
+        connection.close()
+        return subquest_followup_list
+
+    def fetchConversation(self, conversation_id):
+        connection = self.engine.connect()
+        if type(id) == int:
+            statement = select(DBConversation).where(DBConversation.id == conversation_id)
+        else:
+            statement = select(DBConversation).where(DBConversation.name == conversation_id)
+
+        row = connection.execute(statement).first()
+        conversation = Conversation(row.name)
+        conversation.dialogues = self.fetchDialogueTree(row.head_node, conversation)
+        connection.close()
+        return conversation
+
+    def fetchDialogueTree(self, head_node, conversation):
+        tree = DialogueTree()
+        head = self.fetchDialogueTreeNode(head_node, tree, conversation)
+        tree.setHead(head)
+        return tree
+
+    def fetchDialogueTreeNode(self, node_id, tree, conversation):
+        node = DialogueTreeNode(self.fetchDialogue(node_id),
+                                tree,
+                                conversation)
+
+        connection = self.engine.connect()
+        statement = select(DBDialogue).where(DBDialogue.parent_id == node_id)
+        rows = connection.execute(statement)
+
+        if not rows: 
+            connection.close()
+            return node
+
+        children = {}
+        for child in rows:
+            children.add(self.fetchDialogueTreeNode(child.id, tree, conversation))
+
+        connection.close()
+        return node
+
+    def fetchDialogue(self, id):
+        connection = self.engine.connect()
+        statement = select(DBDialogue).where(DBDialogue.id == id)
+        dialogue_row = connection.execute(statement).first()
+        dialogue = Dialogue(id,
+                            dialogue_row.tag,
+                            dialogue_row.leading_text,
+                            dialogue_row.content,
+                            dialogue_row.character_id,
+                            dialogue_row.emotion,
+                            dialogue_row.reward_friendship,
+                            dialogue_row.reward_xp,
+                            )
+
+        dialogue.reward_items = self.fetchDialogueItemRewards(id)
+        connection.close()
+        return dialogue
+
+    def fetchDialogueItemRewards(self, dialogue_id):
+        connection = self.engine.connect()
+        statement = select(DBReward).where(DBReward.dialogue_id == dialogue_id)
+        dialogue_rewards = connection.execute(statement)
+
+        dialogue_rewards_list = []
+        for reward in dialogue_rewards:
+            dialogue_rewards_list.append(self.fetchItemByID(reward.item_id))
+
+        connection.close()
+        return dialogue_rewards_list
 
     def fetchCharacter(self, id):
         connection = self.engine.connect()
@@ -91,7 +278,7 @@ class DBElementFactory:
         if row is None: 
             connection.close()
             raise IllegalArgumentException("The item is not in the database")
-        
+
         character = Character(row.name, row.description,
                               row.brilliance, row.surge, row.blaze, row.passage, row.clockwork,
                               row.void, row.foundation, row.frost, row.flow, row.abundance,
@@ -108,7 +295,6 @@ class DBElementFactory:
         connection.close()
         return character
 
-    
 
     def buildEffect(self, row) -> Effect:
         effect = Effect(row.name,
