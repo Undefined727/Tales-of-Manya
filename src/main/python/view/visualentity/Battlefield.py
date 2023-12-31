@@ -34,6 +34,7 @@ class Battlefield:
 
     def __init__(self, gameData:Singleton):
         self.screenX, self.screenY = gameData.pygameWindow.get_size()
+        self.gameData = gameData
         self.characters = self.buildCombatEntities(gameData.player.party, self.PLAYER_LINE_START, self.PLAYER_LINE_END, self.PLAYER_X_IND_PERCENT, self.PLAYER_Y_IND_PERCENT, gameData.pygameWindow)
         self.enemies = self.buildCombatEntities(gameData.currentEnemies, self.ENEMY_LINE_START, self.ENEMY_LINE_END, self.ENEMY_X_IND_PERCENT, self.ENEMY_Y_IND_PERCENT, gameData.pygameWindow)
         for enemy in self.enemies:
@@ -114,6 +115,7 @@ class Battlefield:
     
     def dealDamage(self, rawDamage : float, damageType : str, damageDealer : Character, attacked : Character):
         allEntities = self.characters + self.enemies
+        attackingEnemy = False
         for character in allEntities:
             if character.character == damageDealer:
                 damageDealerEntity = character
@@ -124,6 +126,15 @@ class Battlefield:
         damageNumberXPosition = attackedEntity.characterImg.xPosition + random.randint(int(-attackedEntity.characterImg.width), int(attackedEntity.characterImg.width))
         damageNumberYPosition = attackedEntity.characterImg.yPosition + random.randint(int(-attackedEntity.characterImg.height/2), int(attackedEntity.characterImg.width))
         self.damageNumbers.append(DamageNumber(damageDealt, damageType, damageNumberXPosition, damageNumberYPosition, self.screenX, self.screenY))
+
+        if (attackedEntity.character.health.getCurrentValue() <= 0 and attackedEntity.isEnemy):
+            subQuests = self.gameData.player.getCurrentSubquests()
+            for subquest in subQuests:
+                if (subquest.type == "kill" and subquest.data == attackedEntity.character.name):
+                    subquest.progress += 1
+                    if (subquest.progress >= subquest.goal):
+                        self.gameData.player.completeSubquest(subquest)
+            
 
             
     def updateCharacters(self):

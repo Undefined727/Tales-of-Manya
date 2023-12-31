@@ -8,7 +8,8 @@ class Quest:
     subquests : list [ Subquest ]
     regions : list [ Region ]
 
-    def __init__(self, name : str, description : str):
+    def __init__(self, id: int, name : str, description : str):
+        self.setID(id)
         self.setName(name)
         self.setDescription(description)
 
@@ -29,6 +30,9 @@ class Quest:
         return self.regions
 
     ## Setters ##
+    def setID(self, new_id : str):
+        self.id = new_id
+
     def setName(self, new_name : str):
         self.name = new_name
 

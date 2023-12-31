@@ -61,6 +61,9 @@ def loadCombat(transferredData):
         character.setCurrentMana(character.mana.max_value)
         character.hasActed = False
 
+    for character in enemies:
+        character.health.setCurrentValue(character.health.getMaxValue())
+
     visualEntities = []
     buttons = []
     loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)

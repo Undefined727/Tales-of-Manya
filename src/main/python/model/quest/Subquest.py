@@ -11,10 +11,11 @@ class Subquest:
     goal : int
     progress : int
     xp : int
-    rewards : list [ Item ]
+    rewards : dict [ Item : int ]
     follow_up : list
 
-    def __init__(self, name : str, parent, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0):
+    def __init__(self, id: int,  name : str, parent : int, type : str, data : str = "", goal : int = 0, progress : int = 0, xp : int = 0):
+        self.id = id
         self.setName(name)
         self.setParent(parent)
         self.setType(type)
@@ -48,7 +49,7 @@ class Subquest:
     def getXP(self) -> int:
         return self.xp
 
-    def getRewards(self) -> list [ Item ]:
+    def getRewards(self) -> dict [ Item : int ]:
         return self.rewards
 
     def getFollowUp(self) -> list:
@@ -79,7 +80,7 @@ class Subquest:
     def setXP(self, new_xp : int):
         self.xp = new_xp
 
-    def setRewards(self, new_rewards : list [ Item ]):
+    def setRewards(self, new_rewards : dict [ Item : int ]):
         self.rewards = new_rewards
 
     def setFollowUp(self, new_follow_up : list):

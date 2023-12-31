@@ -24,7 +24,7 @@ class Inventory:
                 currentAmount += currentSlot.count
         return currentAmount
 
-    def addItem(self, item, count:int) -> bool:
+    def addItem(self, item, count:int = 1) -> bool:
         if (not type(item) == Item): 
             item = databaseFactory.fetchItem(item)
             if (item == None): 

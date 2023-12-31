@@ -12,7 +12,7 @@ class Dialogue:
     emotion : str
     reward_friendship : int
     reward_xp : int
-    reward_items : list [ Item ]
+    reward_items : dict [ Item : int ]
     follow_up = None
 
     def __init__(self,
@@ -59,7 +59,7 @@ class Dialogue:
     def getXPRewards(self) -> int:
         return self.reward_xp
 
-    def getItemRewards(self) -> list [ Item ]:
+    def getItemRewards(self) -> dict [ Item : int ]:
         return self.reward_items
 
     def getFollowUpQuest(self):
@@ -84,7 +84,7 @@ class Dialogue:
     def setFriendshipRewards(self, new_friendship_value : int):
         self.friendship = new_friendship_value
 
-    def setItemRewards(self, new_items : list [ Item ]):
+    def setItemRewards(self, new_items : dict [ Item : int ]):
         self.reward_items = new_items
 
     def setXPRewards(self, new_xp : int):

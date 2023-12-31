@@ -98,7 +98,7 @@ class DBElementFactory:
             connection.close()
             raise IllegalArgumentException("The item is not in the database")
 
-        quest = Quest(row.name, row.description)
+        quest = Quest(row.id, row.name, row.description)
         connection.close()
 
         quest.regions = self.fetchAllRegions(id)
@@ -125,7 +125,8 @@ class DBElementFactory:
 
         subquestList = []
         for subquestRow in subquestData:
-            subquest = Subquest(subquestRow.name,
+            subquest = Subquest(subquestRow.id,
+                                subquestRow.name,
                                 subquestRow.parent,
                                 subquestRow.type,
                                 subquestRow.data,
@@ -147,12 +148,13 @@ class DBElementFactory:
         statement = select(DBSubquest).where(DBSubquest.id == subquest_id)
         subquestRow = connection.execute(statement).first()
 
-        subquest = Subquest(subquestRow.name,
+        subquest = Subquest(subquestRow.id,
+                            subquestRow.name,
                             subquestRow.parent,
                             subquestRow.type,
                             subquestRow.data,
                             subquestRow.goal,
-                            subquestRow.progress,
+                            0,
                             subquestRow.xp
                             )
 
@@ -180,9 +182,9 @@ class DBElementFactory:
         statement = select(DBSubquestReward).where(DBSubquestReward.subquest_id == subquest_id)
         subquest_rewards_data = connection.execute(statement)
 
-        subquest_rewards_list = []
+        subquest_rewards_list = {}
         for reward in subquest_rewards_data:
-            subquest_rewards_list.append(self.fetchItemByID(reward.item_id))
+            subquest_rewards_list.update({self.fetchItemByID(reward.item_id) : reward.count})
 
         connection.close()
         return subquest_rewards_list
@@ -267,9 +269,9 @@ class DBElementFactory:
         statement = select(DBReward).where(DBReward.dialogue_id == dialogue_id)
         dialogue_rewards = connection.execute(statement)
 
-        dialogue_rewards_list = []
+        dialogue_rewards_list = {}
         for reward in dialogue_rewards:
-            dialogue_rewards_list.append(self.fetchItemByID(reward.item_id))
+            dialogue_rewards_list.update({self.fetchItemByID(reward.item_id) : reward.count})
 
         connection.close()
         return dialogue_rewards_list

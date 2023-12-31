@@ -21,6 +21,7 @@ class Player:
         for quest in self.currentQuests:
             self.currentSubquests.append(quest.subquests[0])
         
+
         self.party = [database.fetchCharacter(2), database.fetchCharacter(3), database.fetchCharacter(4)]
         self.party[0].changeLevel(10)
         self.party[1].changeLevel(15)
@@ -36,12 +37,12 @@ class Player:
 
         self.inventory = Inventory()
         self.inventory.addItem("Purrveyor of the Nyaight", 5)
-        self.inventory.addItem("Flower Crown", 1)
-        self.inventory.addItem("Plate Mail Skirt", 1)
-        self.inventory.addItem("Shark Tooth Necklace", 1)
-        self.inventory.addItem("Stone Ring", 1)
-        self.inventory.addItem("Leather Boots", 1)
-        self.inventory.addItem("Warrior Helmet", 1)
+        self.inventory.addItem("Flower Crown")
+        self.inventory.addItem("Plate Mail Skirt")
+        self.inventory.addItem("Shark Tooth Necklace")
+        self.inventory.addItem("Stone Ring")
+        self.inventory.addItem("Leather Boots")
+        self.inventory.addItem("Warrior Helmet")
 
     def getCurrentQuests(self):
         return self.currentQuests
@@ -54,6 +55,16 @@ class Player:
         for subquest in reversed(self.currentSubquests):
             changedDialogue.update(subquest.conversations)
         return changedDialogue
+    
+    def completeSubquest(self, subquest:Subquest):
+        for currentsubquest in self.currentSubquests[:]:
+            if subquest.id == currentsubquest.id:
+                self.currentSubquests.remove(currentsubquest)
+
+        self.currentSubquests.extend(subquest.follow_up)
+        for item, count in subquest.rewards.items():
+            self.inventory.addItem(item, count)
+        # Add xp later
 
     def addQuest(self, addedQuest:Quest):
         if (addedQuest == None): return
@@ -64,3 +75,6 @@ class Player:
         if (not duplicateFound): 
             self.currentQuests.append(addedQuest)
             self.currentSubquests.append(addedQuest.subquests[0])
+
+        for subquest in self.currentSubquests:
+            print(subquest.name)

@@ -152,9 +152,10 @@ class DBReward(Base):
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     item_id : Mapped[int] = mapped_column(ForeignKey("Item.id"))
     dialogue_id : Mapped[int] = mapped_column(ForeignKey("Dialogue.id"))
+    count : Mapped[int] = mapped_column(Integer)
 
     def __repr__(self) -> str:
-        return f"ID: {self.id}, Item: {self.item_id}, Dialogue: {self.dialogue_id}"
+        return f"ID: {self.id}, Item: {self.item_id}, Dialogue: {self.dialogue_id}, Count: {self.count}"
 
 class DBQuest(Base):
     __tablename__ = "Quest"
@@ -193,9 +194,10 @@ class DBSubquestReward(Base):
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     item_id : Mapped[int] = mapped_column(ForeignKey("Item.id"))
     subquest_id : Mapped[int] = mapped_column(ForeignKey("Subquest.id"))
+    count : Mapped[int] = mapped_column(Integer)
 
     def __repr__(self) -> str:
-        return f"ID: {self.id}, Item: {self.item_id}, Subquest: {self.subquest_id}"
+        return f"ID: {self.id}, Item: {self.item_id}, Subquest: {self.subquest_id}, Count: {self.count}"
 
 class DBSubquestFollowup(Base):
     __tablename__ = "SubquestFollowup"

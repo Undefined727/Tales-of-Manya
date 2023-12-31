@@ -94,6 +94,7 @@ def textOption(data:DialogueTreeNode, buttons):
         for entity in visualEntities:
             if entity.name == "CurrentQuestListing":
                 currentQuests = gameData.player.getCurrentQuests()
+                currentSubquests = gameData.player.getCurrentSubquests()
                 if (len(gameData.player.getCurrentQuests()) > 0):
                     listingString = ""
                     first = True
@@ -101,6 +102,14 @@ def textOption(data:DialogueTreeNode, buttons):
                         if (first): listingString = listingString + "- " + quest.name
                         else: listingString = listingString + "%/n%- " + quest.name
                         first = False
+                        for subquest in currentSubquests:
+                            if subquest.parent == quest.id:
+                                if (subquest.type == "kill"):
+                                    listingString = f"{listingString} %/n%     - Kill {subquest.progress}/{subquest.goal} {subquest.data}"
+                                    if (subquest.goal > 1):
+                                        listingString = f"{listingString}s"
+                                if (subquest.type == "talk"):
+                                    listingString = f"{listingString} %/n%     - Talk to {subquest.data}"
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
         refreshCurrentNPCDialogue(gameData)
@@ -120,37 +129,6 @@ def refreshCurrentNPCDialogue(gameData:Singleton):
             if (npc.NPCID in changedDialogue.keys()):
                 npc.setDialogue(changedDialogue[npc.NPCID])
             else: npc.setDialogue(npc.defaultDialogue)
-
-
-def completeQuest(quest:Quest):
-    global gameData
-    
-    for item, count in quest.questItemRewards.items():
-        gameData.player.inventory.addItem(item, count)
-    
-    gameData.player.currentQuests.remove(quest)
-    
-    for id in quest.followUpQuests: 
-        gameData.player.addQuest(id)
-
-    refreshCurrentNPCDialogue(gameData)
-
-    
-
-    for entity in visualEntities:
-            if entity.name == "CurrentQuestListing":
-                currentQuests = gameData.player.getCurrentQuests()
-                if (len(gameData.player.getCurrentQuests()) > 0):
-                    listingString = ""
-                    first = True
-                    for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
-                        first = False
-                else: listingString = "No current quests :/"
-                entity.updateText(listingString)
-
-        
 
 def loadOpenWorld(transferredData):
     global quit
@@ -268,8 +246,9 @@ def loadOpenWorld(transferredData):
     buttons.append(visualNovel.continueButton)
 
     for entity in visualEntities:
-        if entity.name == "CurrentQuestListing":
+            if entity.name == "CurrentQuestListing":
                 currentQuests = gameData.player.getCurrentQuests()
+                currentSubquests = gameData.player.getCurrentSubquests()
                 if (len(gameData.player.getCurrentQuests()) > 0):
                     listingString = ""
                     first = True
@@ -277,6 +256,14 @@ def loadOpenWorld(transferredData):
                         if (first): listingString = listingString + "- " + quest.name
                         else: listingString = listingString + "%/n%- " + quest.name
                         first = False
+                        for subquest in currentSubquests:
+                            if subquest.parent == quest.id:
+                                if (subquest.type == "kill"):
+                                    listingString = f"{listingString} %/n%     - Kill {subquest.progress}/{subquest.goal} {subquest.data}"
+                                    if (subquest.goal > 1):
+                                        listingString = f"{listingString}s"
+                                if (subquest.type == "talk"):
+                                    listingString = f"{listingString} %/n%     - Talk to {subquest.data}"
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)
 
@@ -566,13 +553,6 @@ def loadOpenWorld(transferredData):
                     if (trigger.worldObject.entityType == entity.worldObject.trigger):
                         if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
                             if (type(entity) == Enemy):
-                                currentQuests = gameData.player.getCurrentQuests()
-                                # for quest in currentQuests:
-                                #     if (quest.questType == "killQuest"):
-                                #         if (quest.questData == entity.enemyID):
-                                #             quest.questProgress += 1
-                                #             if (quest.questProgress >= quest.questGoal): 
-                                #                 completeQuest(quest, simulatedObjects)
                                 combatButton(entity.enemyStats)
                                 entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):
