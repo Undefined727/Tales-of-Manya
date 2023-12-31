@@ -62,7 +62,7 @@ def continueText(buttons:list):
 
     result = visualNovel.continueText()
 
-    if (visualNovel.currentDialogue.follow_up is not None):
+    if (result != "Finished" and visualNovel.currentDialogue.follow_up is not None):
         gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
 
     # Add friendship and xp handling here later
@@ -90,7 +90,7 @@ def textOption(data:DialogueTreeNode, buttons):
     visualNovel.isShowing = False
     
     if (data.main_dialogue.follow_up is not None):
-        gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
+        gameData.player.addQuest(data.main_dialogue.follow_up)
         for entity in visualEntities:
             if entity.name == "CurrentQuestListing":
                 currentQuests = gameData.player.getCurrentQuests()
@@ -98,8 +98,8 @@ def textOption(data:DialogueTreeNode, buttons):
                     listingString = ""
                     first = True
                     for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
+                        if (first): listingString = listingString + "- " + quest.name
+                        else: listingString = listingString + "%/n%- " + quest.name
                         first = False
                 else: listingString = "No current quests :/"
                 entity.updateText(listingString)

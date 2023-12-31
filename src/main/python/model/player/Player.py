@@ -16,7 +16,7 @@ class Player:
 
     def __init__(self, database, fileName = None):
         # This will pull from a file in the future
-        self.currentQuests = [database.fetchQuest(1)]
+        self.currentQuests = []
         self.currentSubquests = []
         for quest in self.currentQuests:
             self.currentSubquests.append(quest.subquests[0])
@@ -55,12 +55,12 @@ class Player:
             changedDialogue.update(subquest.conversations)
         return changedDialogue
 
-    def addQuest(self, addedQuest):
+    def addQuest(self, addedQuest:Quest):
+        if (addedQuest == None): return
         duplicateFound = False
         for quest in self.currentQuests:
-            if ((quest.questName == addedQuest or quest.questID == addedQuest)):
+            if ((quest.name == addedQuest.name or quest.id == addedQuest.id)):
                 duplicateFound = True
         if (not duplicateFound): 
-            quest = Quest(addedQuest)
-            self.currentQuests.append(quest)
-            self.currentSubquests.append(quest.subquests[0])
+            self.currentQuests.append(addedQuest)
+            self.currentSubquests.append(addedQuest.subquests[0])
