@@ -56,12 +56,22 @@ class Player:
             changedDialogue.update(subquest.conversations)
         return changedDialogue
     
+    def completeQuest(self, questID):
+        if (type(questID) == Quest): questID = questID.id
+
+        for quest in self.currentQuests[:]:
+            if quest.id == questID:
+                self.currentQuests.remove(quest)
+    
     def completeSubquest(self, subquest:Subquest):
         for currentsubquest in self.currentSubquests[:]:
             if subquest.id == currentsubquest.id:
                 self.currentSubquests.remove(currentsubquest)
 
-        self.currentSubquests.extend(subquest.follow_up)
+        follow_up_quests = subquest.follow_up
+        if (len(follow_up_quests) == 0): self.completeQuest(subquest.parent)
+        else: self.currentSubquests.extend(follow_up_quests)
+
         for item, count in subquest.rewards.items():
             self.inventory.addItem(item, count)
         # Add xp later

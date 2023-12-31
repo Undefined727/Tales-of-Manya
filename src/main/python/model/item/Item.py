@@ -6,7 +6,7 @@ from model.item.ItemTag import ItemTag
 from model.item.ItemStatType import ItemStatType
 
 class Item:
-    id : str
+    id : int
     name : str
     type : ItemSlotType
     tags : list[ ItemTag ]
@@ -23,7 +23,7 @@ class Item:
                  tags : list[ ItemTag ] = None,
                  stats : dict[ ItemStatType, int ] = None,
                  item_set : str = None,
-                 id : str = None):
+                 id : int = None):
         self.setName(name)
         self.setType(type)
         self.setDescription(description)
@@ -31,12 +31,10 @@ class Item:
         self.setTags(tags)
         self.setItemSet(item_set)
         self.setStats(stats)
-
-        if id is None: self.setID(self.generateID())
-        else: self.setID(id)
+        self.setID(id)
 
     ## Getters ##
-    def getID(self) -> str:
+    def getID(self) -> int:
         return self.id
 
     def getName(self) -> str:
@@ -61,7 +59,7 @@ class Item:
         return self.item_set
 
     ## Setters ##
-    def setID(self, new_id : str):
+    def setID(self, new_id : int):
         self.id = new_id
 
     def setName(self, new_name : str):
@@ -98,6 +96,7 @@ class Item:
 
     def __repr__(self):
         return f"Name: {self.getName()}; Type: {self.getType()}; Tags: {self.getTags()}; Stats: {self.getStats()}; Set: {self.getStats()}; Description: {self.getDescription()}; Path: {self.getPath()}"
+
 
     @staticmethod
     def generateID() -> int:

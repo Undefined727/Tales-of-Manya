@@ -35,6 +35,7 @@ class DBElementFactory:
 
     def fetchItem(self, name : str):
         connection = self.engine.connect()
+        print(name)
         statement = select(DBItem).where(DBItem.name == name)
         row = connection.execute(statement).first()
         connection.close()
@@ -184,7 +185,7 @@ class DBElementFactory:
 
         subquest_rewards_list = {}
         for reward in subquest_rewards_data:
-            subquest_rewards_list.update({self.fetchItemByID(reward.item_id) : reward.count})
+            subquest_rewards_list.update({int(reward.item_id) : reward.count})
 
         connection.close()
         return subquest_rewards_list
@@ -271,7 +272,7 @@ class DBElementFactory:
 
         dialogue_rewards_list = {}
         for reward in dialogue_rewards:
-            dialogue_rewards_list.update({self.fetchItemByID(reward.item_id) : reward.count})
+            dialogue_rewards_list.update({int(reward.item_id) : reward.count})
 
         connection.close()
         return dialogue_rewards_list
