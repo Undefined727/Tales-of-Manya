@@ -99,5 +99,17 @@
         "path": "change_active_right.png",
         "func": "changeCharacter",
         "args": []
+    },{
+        "name": "skillSelectionButton",
+        "isShowing": true,
+        "xPosition": 0.9,
+        "yPosition": 0.5,
+        "width": 0.07,
+        "height": 0.07,
+        "tags": [],
+        "entityType": "ImageButton",
+        "path": "skillSelectionButton.png",
+        "func": "skillSelection",
+        "args": []
     }
 ]

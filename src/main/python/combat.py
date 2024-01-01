@@ -1,29 +1,28 @@
 import pygame, math, random, json
+from view.visualentity.Battlefield import Battlefield
 from view.visualentity.CombatCharacterEntity import CombatCharacterEntity
+from view.visualentity.ImageButton import ImageButton
+from view.visualentity.Animation import Animation
+from view.visualentity.TextEntity import TextEntity
 from view.visualentity.HoverShapeButton import HoverShapeButton
-from model.skill.Skill import Skill
 from model.character.Character import Character
+from model.character.Skill import Skill
+import model.character.SkillFunctions as SkillFunctions
 from model.player.Player import Player
 from model.item.Item import Item
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 
-
 visualEntities = []
-partyVisuals = []
 buttons = []
 quit = False
-newSceneData = []
-inventory = []
+battlefield:Battlefield
 
 playerData:Player
 screen:pygame.surface
 gameData:Singleton
-
 party:list
-
-
 
 def openWorld():
     global quit
@@ -31,77 +30,46 @@ def openWorld():
     quit = True
     gameData.screenOpen = "Open World"
 
-
 def refreshScreen(screen):
     # Fill the background
     global visualEntities
     for entity in visualEntities:
          if entity.isShowing:
             displayEntity(entity, screen)
-    for entity in partyVisuals:
-        ls = entity.getItems()
-        for item in ls:
-            if item.isShowing:
-                displayEntity(item, screen)
-
     pygame.display.flip()
-
-# activeCharacter is an int showing which character in the party acted, enemies is an array of enemies, selectedEnemy is an int showing which enemy was selected, skill is the Skill that was used.
-# Reminder that AoE effects do NOT include the target of an ability
-# This does NOT verify that an ability can/should be used and simply executes the effects
-def useSkill(enemies, selectedEnemy, activeCharacter, skill):
-    global party
-    if (len(enemies) == 0): return
-    party[activeCharacter].mana = party[activeCharacter].mana - skill.manaCost
-
-    party[activeCharacter].setCurrentHP(party[activeCharacter].getCurrentHP() + skill.healing*party[activeCharacter].magic/100)
-    for character in range(0, len(party)):
-        if (character != activeCharacter): party[character].setCurrentHP(party[character].getCurrentHP() + skill.aoeHealing*party[activeCharacter].magic/100)
-    
-    enemies[selectedEnemy].setCurrentHP(enemies[selectedEnemy].getCurrentHP() - (skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[selectedEnemy].DEF/250))
-    for enemy in range(0, len(enemies)):
-        if (enemy != selectedEnemy): 
-            enemies[enemy].setCurrentHP(enemies[enemy].getCurrentHP() - ((skill.aoeDamage*party[activeCharacter].ATK/100)*math.pow(0.6, enemies[enemy].DEF/250)))
-
-    # Special code for individual skills with unique effects will go here
-    if (skill.name == "Berserk"):
-        party[activeCharacter].setCurrentHP(party[activeCharacter].getCurrentHP() - ((skill.damage*party[activeCharacter].ATK/100)*math.pow(0.6, party[activeCharacter].DEF/250)))
-
-
-    party[activeCharacter].hasActed = True
 
 def loadCombat(transferredData):
     global visualEntities
     global party
-    global partyVisuals
     global quit
     global playerData
     global screen
     global gameData
     global buttons
+    global battlefield
     gameData = transferredData
     screen = gameData.pygameWindow
     screenX, screenY = screen.get_size()
     enemies = gameData.currentEnemies
     playerData = gameData.player
     party = playerData.party
-    activeCharacter = 1
-    skillSelected = 0
     skillsShowing = False
-    enemySelectionShowing = False
     currSelectedChar = None
+    currSelectedEnemy = None
 
-    
+    for character in party:
+        character.setCurrentMana(character.mana.max_value)
+        character.hasActed = False
+
+    for character in enemies:
+        character.health.setCurrentValue(character.health.getMaxValue())
+
     visualEntities = []
     buttons = []
     loadJson("combatScreen.json", screenX, screenY, visualEntities, buttons)
-    counter = 0
-    for entity in visualEntities:
-        if type(entity) == CombatCharacterEntity:
-            entity.changeCharacter(party[counter], False)
-            counter += 1
-            if (counter > len(party)): break
-
+    battlefield = Battlefield(gameData)
+    visualEntities.append(battlefield)
+    buttons.extend(battlefield.getButtons())
 
     pygame.mixer.init()
     randInt = random.randint(1, 200)
@@ -113,121 +81,116 @@ def loadCombat(transferredData):
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
-    def updateCharacters():
+    def skillMenu():
         global visualEntities
-        nonlocal enemies
-        for entity in visualEntities[:]:
-            if type(entity) == CombatCharacterEntity:
-                if (entity.character is not None and entity.character.health.current_value <= 0):
+        global buttons
+        nonlocal currSelectedChar
+        nonlocal skillsShowing
+        if(currSelectedChar == None): return
+
+        # Add animation in the future
+        if (not skillsShowing):
+            count = 0
+            for skill in currSelectedChar.character.skills:
+                xPos = 0.61 + 0.1*math.sin(2*math.pi*count/len(currSelectedChar.character.skills))
+                yPos = 0.45 + 0.1*math.cos(2*math.pi*count/len(currSelectedChar.character.skills))
+                skillButton = ImageButton(f"Skill{count}_Button", True, xPos, yPos, 0.08, 0.08, ["SkillMenu"], "attackButton.png", "useSkill", [skill], True)
+                skillLabel = TextEntity(f"Skill{count}_Name", True, xPos, yPos, 0.08, 0.08, ["SkillMenu"], skill.name, "mono", 16)
+                skillButton.scale(screenX, screenY)
+                skillLabel.scale(screenX, screenY)
+                visualEntities.append(skillButton)
+                visualEntities.append(skillLabel)
+                buttons.append(skillButton)
+                count += 1
+        else:
+            for entity in visualEntities[:]:
+                if "SkillMenu" in entity.tags:
                     visualEntities.remove(entity)
-                elif(entity.character is not None):
-                    entity.updateCharacter()
+            for entity in buttons[:]:
+                if "SkillMenu" in entity.tags:
+                    buttons.remove(entity)
+        skillsShowing = not skillsShowing
 
     def buttonExit():
         pygame.quit()
 
-    def characterSelection(selectedChar):
+    def characterSelection(selectedChar:CombatCharacterEntity):
         nonlocal currSelectedChar
-        if (currSelectedChar is not None): currSelectedChar.isSelected = False
-        currSelectedChar = selectedChar
-        currSelectedChar.isSelected = True
-        updateCharacters()
+        nonlocal currSelectedEnemy
+        global battlefield
+        print(selectedChar.isEnemy)
+        if (selectedChar.isEnemy):
+            if (currSelectedEnemy is not None): currSelectedEnemy.isSelected = False
+            currSelectedEnemy = selectedChar
+            currSelectedEnemy.isSelected = True
+        else:
+            if (currSelectedChar is not None): currSelectedChar.isSelected = False
+            currSelectedChar = selectedChar
+            currSelectedChar.isSelected = True
+            if (skillsShowing): 
+                skillMenu()
+                skillMenu()
+        battlefield.updateCharacters()
 
-    def enemySelection(selectedChar:CombatCharacterEntity):
-        nonlocal skillSelected
-        enemySelected = args[0]
-        global visualEntities
-        nonlocal enemies
-        nonlocal enemySelectionShowing
-        nonlocal skillsShowing
-        nonlocal activeCharacter
-        if enemySelectionShowing:
-            useSkill(enemies, enemySelected, activeCharacter-1, party, party[activeCharacter-1].skills[skillSelected])
-            party[activeCharacter-1].hasActed = True
-            updateCharacters()
-            for entity in visualEntities:
-                if (("Enemy Selection" in entity.tags) or ("Skill Selection" in entity.tags)):
-                    entity.isShowing = False
-            skillsShowing = False
-            enemySelectionShowing = False
+    def useSkill(skill):
+        global gameData
+        nonlocal currSelectedChar
+        nonlocal currSelectedEnemy
+        global battlefield
+        if((currSelectedChar == None) or (currSelectedEnemy == None)): return
+        if(currSelectedChar.character.hasActed): return
 
-    def skillButtonFunction():
-        nonlocal skillsShowing
-        global visualEntities
-        skillsShowing = not skillsShowing
-        for entity in visualEntities:
-            if ("Skill Selection" in entity.tags):
-                entity.isShowing = not entity.isShowing
-    
+        SkillFunctions.useSkill(currSelectedChar.character, currSelectedEnemy.character, gameData, battlefield, skill)
+
+        currSelectedChar.character.hasActed = True
+        currSelectedEnemy.isSelected = False
+        currSelectedEnemy = None
+        currSelectedChar.isSelected = False
+        currSelectedChar = None
+        battlefield.updateCharacters()
+        skillMenu()
 
     def attack():
-        nonlocal enemies
         nonlocal currSelectedChar
-        if(currSelectedChar == None): return
-        counter = 0 
-        while (enemies[counter].getCurrentHP() <= 0):
-            if (counter >= len(enemies)): break
-            else: counter += 1
-        enemies[counter].takeDamage(currSelectedChar.character.attack)
-        currSelectedChar.character.hasActed = True
-        updateCharacters()
+        nonlocal currSelectedEnemy
+        if((currSelectedChar == None) or (currSelectedEnemy == None)): return
+        if(currSelectedChar.character.hasActed): return
 
+        useSkill(currSelectedChar.character.skills[0])
 
-    def addEnemies():
-        nonlocal enemies
-        enemyLeftPadding = 0.4
-        enemyRightPadding = 0.2
-        enemiesWidth = 1-(enemyLeftPadding+enemyRightPadding)
-        enemySpacing = enemiesWidth/(1+len(enemies)*2)
+    
 
-        count = 0
-        for enemy in enemies:
-            print(enemy)
-            currEnemyX = enemyLeftPadding + enemySpacing*(2*count+1)
-
-            entityDetails = {
-                "name": enemy.name,
-                "HPBorderXPosition": currEnemyX-0.1,
-                "HPBorderYPosition": 0.1,
-                "imgXPosition": currEnemyX,
-                "imgYPosition": 0.1,
-                "imgWidth": enemySpacing,
-                "imgHeight": 0.2
-            }
-            entityDetails = json.loads(json.dumps(entityDetails))
-
-            displayedEnemy = CombatCharacterEntity.createFrom(entityDetails)
-            displayedEnemy.scale(screenX, screenY)
-            displayedEnemy.changeCharacter(enemy, True)
-            visualEntities.append(displayedEnemy)
-            if(displayedEnemy.getButtons() is not None): buttons.append(displayedEnemy.getButtons())
-            count = count+1
-
-
-    addEnemies()
-    updateCharacters()
-
-
-
-
-
-    buttonFunc = updateCharacters
+    battlefield.updateCharacters()
     while True:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
+                buttonPressed = False
                 for entity in buttons:
                     if entity.mouseInRegion(mouse):
+                        buttonPressed = True
                         if (entity.func == "exit"): buttonFunc = buttonExit
                         elif (entity.func == "openWorld"): buttonFunc = openWorld
                         elif (entity.func == "characterSelection"): buttonFunc = characterSelection
                         elif (entity.func == "attack"): buttonFunc = attack
+                        elif (entity.func == "skillMenu"): buttonFunc = skillMenu
+                        elif (entity.func == "useSkill"): buttonFunc = useSkill
+                        else: break
                         if (len(entity.args) == 0): buttonFunc()
                         elif (len(entity.args) == 1): buttonFunc(entity.args[0])
                         else: buttonFunc(entity.args)
                         break
+                if (not buttonPressed):
+                    # Code for clicking out
+                    if skillsShowing: skillMenu()
+                    if (currSelectedChar is not None): 
+                        currSelectedChar.isSelected = False
+                        currSelectedChar = None
+                    if (currSelectedEnemy is not None): 
+                        currSelectedEnemy.isSelected = False
+                        currSelectedEnemy = None   
             
         ### Make Hover Buttons shine funny color
         for button in buttons:
@@ -236,24 +199,24 @@ def loadCombat(transferredData):
 
         isEnemyTurn = True
         for character in party:
-            if not character.hasActed:
+            if (not character.hasActed and character.getCurrentHP() > 0):
                 isEnemyTurn = False
         if (isEnemyTurn):
             for enemy in enemies:
-                party[random.randint(1, len(party))-1].takeDamage(enemy.attack)
+                SkillFunctions.useSkill(enemy, party[random.randint(1, len(party))-1], gameData, battlefield, enemy.skills[0])
             for character in party:
                 character.hasActed = False
-            updateCharacters()
+            battlefield.updateCharacters()
 
         enemiesDead = True  
         for enemy in enemies:
             if (enemy.getCurrentHP() > 0):
                 enemiesDead = False
                 break
+        
         if (enemiesDead):
             for enemy in enemies:
                 enemy.setCurrentHP(character.getMaxHP())
-
             openWorld()
 
         refreshScreen(screen)

@@ -1,4 +1,5 @@
 from view.visualentity.ImageEntity import ImageEntity
+from view.visualentity.DamageNumber import DamageNumber
 from view.visualentity.Animation import Animation
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.TextEntity import TextEntity
@@ -12,6 +13,7 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.ImageButton import ImageButton
 from view.visualentity.DynamicStatEntity import DynamicStatEntity
+from view.visualentity.Battlefield import Battlefield
 import pygame
 
 def displayEntity(entity, screen):
@@ -41,6 +43,11 @@ def displayEntity(entity, screen):
         displayEntity(entity.buttonVisual(), screen)
     elif (type(entity) == Animation):
         displayEntity(entity.getImage(), screen)
+    elif (type(entity) == DamageNumber):
+        entity.timer -= 1
+        if (entity.timer >= 0):
+            for item in entity.getItems():
+                displayEntity(item, screen)
     elif (type(entity) == TextEntity):
         screen.blit(entity.textLabel, entity.textRect)
     elif (type(entity) == Paragraph):
@@ -55,7 +62,10 @@ def displayEntity(entity, screen):
             displayEntity(option, screen)
         for option in entity.optionParagraphs:
             displayEntity(option, screen)
-    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity):
+    elif (type(entity) == ItemDisplay or type(entity) == InventoryCharacterEntity or type(entity) == CombatCharacterEntity or type(entity) == DynamicStatEntity or type(entity) == Battlefield):
         for item in entity.getItems():
-            if item.isShowing: displayEntity(item, screen)
-        
+            if item.isShowing: 
+                displayEntity(item, screen)
+    elif (type(entity) == list):
+        for item in entity:
+            displayEntity(item, screen)

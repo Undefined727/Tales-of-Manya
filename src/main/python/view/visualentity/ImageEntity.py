@@ -2,18 +2,24 @@ from view.visualentity.VisualEntity import VisualEntity
 import pygame
 
 class ImageEntity(VisualEntity):
-    img = pygame.image.load("sprites/" + "nekoarc.png")
+    img = pygame.image.load("src/main/python/sprites/" + "nekoarc.png")
     path = "nekoarc.png"
     keepQuality = False
 
     def __init__(self, name = "Default_Image", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], path = "nekoarc.png", keepQuality = False):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
-        self.img = pygame.image.load("sprites/" + path)
+        try:
+            self.img = pygame.image.load(f"src/main/python/sprites/{path}")
+        except:
+            self.img = pygame.image.load("src/main/python/sprites/nekoarc.png")
         self.keepQuality = keepQuality
 
     def updateImg(self, path):
         self.path = path
-        self.img = pygame.image.load("sprites/" + path)
+        try:
+            self.img = pygame.image.load(f"src/main/python/sprites/{path}")
+        except:
+            self.img = pygame.image.load("src/main/python/sprites/nekoarc.png")
         if self.keepQuality: self.img = pygame.transform.smoothscale(self.img, (self.width, self.height))
         else: self.img = pygame.transform.scale(self.img, (self.width, self.height))
         
@@ -42,5 +48,8 @@ class ImageEntity(VisualEntity):
     def createFrom(json_object):
         newObject = ImageEntity()
         newObject.__dict__.update(json_object)
-        newObject.img = pygame.image.load("sprites/" + newObject.path)
+        try:
+             newObject.img = pygame.image.load(f"src/main/python/sprites/{newObject.path}")
+        except:
+             newObject.img = pygame.image.load("src/main/python/sprites/nekoarc.png")
         return newObject

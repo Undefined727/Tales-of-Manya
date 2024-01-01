@@ -24,12 +24,14 @@ class Inventory:
                 currentAmount += currentSlot.count
         return currentAmount
 
-    def addItem(self, item, count:int) -> bool:
+    def addItem(self, item, count:int = 1) -> bool:
+        print(item)
         if (not type(item) == Item): 
-            item = databaseFactory.fetchItem(item)
-        if (not type(item) == Item):
-            print("Could not find item")
-            return False
+            if (type(item) == int): item = databaseFactory.fetchItemByID(item)
+            else: item = databaseFactory.fetchItem(item)
+            if (item == None): 
+                print("Could not find item")
+                return False
         for i in range(count):
             added = False
             for currentSlot in self.slots:

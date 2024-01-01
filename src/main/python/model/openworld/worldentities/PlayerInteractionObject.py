@@ -17,6 +17,6 @@ class PlayerInteractionObject:
 
     def getSprite(self):
         return self.worldObject.getSprite()
-    
+
     def getImagePosition(self):
         return self.worldObject.getImagePosition()

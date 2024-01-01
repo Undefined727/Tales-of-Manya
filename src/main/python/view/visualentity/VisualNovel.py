@@ -5,27 +5,30 @@ from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ShapeEntity import ShapeEntity
 from view.visualentity.VisualEntity import VisualEntity
-from model.player.Dialogue import Dialogue
+from model.dialogue.DialogueTreeNode import DialogueTreeNode
+from model.dialogue.Dialogue import Dialogue
 
 class VisualNovel(VisualEntity):
     paragraph:Paragraph
     continueButton:ImageButton
     frame:ImageEntity
     backgroundBox:ShapeEntity
-    dialogue:Dialogue
+    currentDialogueNode:DialogueTreeNode
+    currentDialogue:Dialogue
     name:TextEntity
-    currentTextPosition:int
     text:str
     isShowingOptions:bool
     optionButtons:list
     optionParagraphs:list
 
 
-    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue = 0):
+    def __init__(self, name = "Default_Text", isShowing = True, xPosition = 0, yPosition = 0, width = 0, height = 0, tags = [], dialogue:DialogueTreeNode = None):
         super().__init__(name, isShowing, xPosition, yPosition, width, height, tags)
         self.currentTextPosition = 0
-        self.dialogue = Dialogue(dialogue)
-        self.text = self.dialogue.text[self.currentTextPosition][1]
+        self.dialogue = dialogue
+        self.currentDialogueNode = dialogue.head
+        self.currentDialogue = self.currentDialogueNode.main_dialogue
+        self.text = self.currentDialogue.content
         self.isShowingOptions = False
         self.optionParagraphs = []
         self.optionButtons = []
@@ -42,11 +45,12 @@ class VisualNovel(VisualEntity):
         self.reposition(self.xPosition, self.yPosition)
         self.resize(self.width, self.height)
 
-    def updateDialogue(self, dialogueID):
+    def updateDialogue(self, dialogue:DialogueTreeNode = None):
         if (self.isShowingOptions): self.hideOptions()
-        self.currentTextPosition = 0
-        self.dialogue = Dialogue(dialogueID)
-        self.text = self.dialogue.text[self.currentTextPosition][1]
+        if (dialogue is not None):
+            self.currentDialogueNode = dialogue
+        self.currentDialogue = self.currentDialogueNode.main_dialogue
+        self.text = self.currentDialogue.content
         self.updateText(self.text)
 
     def updateText(self, text, font = None, fontSize = None, fontColor = None, highlightColor = None):
@@ -57,36 +61,35 @@ class VisualNovel(VisualEntity):
         if (self.isShowingOptions):
             return "ShowingOptions"
         
-        self.currentTextPosition += 1
-        if (self.currentTextPosition < len(self.dialogue.text)):
-            self.updateText(self.dialogue.text[self.currentTextPosition][1])
-            print("test")
-            return "Text"
+        # print(self.currentDialogueNode.children)
+        if (len(self.currentDialogueNode.children) == 0):
+            return "Finished"
+        elif (len(self.currentDialogueNode.children) == 1):
+            self.currentDialogueNode = self.currentDialogueNode.children[0]
+            self.updateDialogue()
         else:
-            if (len(self.dialogue.options) > 0 and not self.isShowingOptions):
-                self.backgroundBox.reposition(self.xPosition, self.yPosition + self.height/4 - 3*self.height/4)
-                self.frame.reposition(self.xPosition, self.yPosition - 3*self.height/4)
-                self.continueButton.reposition(self.xPosition + 0.85*self.width, self.yPosition - 3*self.height/4 + 6*self.height/16)
-                self.paragraph.reposition(self.xPosition + self.width/5, self.yPosition - 3*self.height/4 + 6*self.height/16)
-                self.backgroundBox.resize(self.width, 6*self.height/4)
-                self.isShowingOptions = True
-                self.optionParagraphs = []
-                self.optionButtons = []
-                counter = -1
-                for option in self.dialogue.options:
-                    counter += 1
-                    height = self.yPosition + 6*self.height/16 + counter*((3*self.height/5)/len(self.dialogue.options))
-                    optionParagraph = Paragraph("option", True, self.xPosition + self.width/5, height, 0.4*self.width, ((3*self.height/5)/len(self.dialogue.options)), self.tags, ">> " + option[0], "mono", 24)
-                    optionParagraph.align = "Left"
-                    optionParagraph.scaled = True
-                    optionParagraph.updateText(optionParagraph.text)
-                    self.optionParagraphs.append(optionParagraph)
-                    optionButton = HoverShapeButton("option_button", True, self.xPosition, height, 0.4*self.width, ((3*self.height/5)/len(self.dialogue.options)), self.tags, (0, 0, 0, 0), (0, 80, 255, 190), "rectangle", "textOption", [option[1], option[2]], True)
-                    self.optionButtons.append(optionButton)
-                return "Options"
-            else: 
-                print("test2")
-                return "Finished"
+            self.backgroundBox.reposition(self.xPosition, self.yPosition + self.height/4 - 3*self.height/4)
+            self.frame.reposition(self.xPosition, self.yPosition - 3*self.height/4)
+            self.continueButton.reposition(self.xPosition + 0.85*self.width, self.yPosition - 3*self.height/4 + 6*self.height/16)
+            self.paragraph.reposition(self.xPosition + self.width/5, self.yPosition - 3*self.height/4 + 6*self.height/16)
+            self.backgroundBox.resize(self.width, 6*self.height/4)
+            self.isShowingOptions = True
+            self.optionParagraphs = []
+            self.optionButtons = []
+            counter = -1
+            for option in self.currentDialogueNode.children:
+                counter += 1
+                height = self.yPosition + 6*self.height/16 + counter*((3*self.height/5)/len(self.currentDialogueNode.children))
+                optionParagraph = Paragraph("option", True, self.xPosition + self.width/5, height, 0.4*self.width, ((3*self.height/5)/len(self.currentDialogueNode.children)), self.tags, ">> " + option.main_dialogue.leading_text, "mono", 24)
+                optionParagraph.align = "Left"
+                optionParagraph.scaled = True
+                optionParagraph.updateText(optionParagraph.text)
+                self.optionParagraphs.append(optionParagraph)
+                optionButton = HoverShapeButton("option_button", True, self.xPosition, height, 0.4*self.width, ((3*self.height/5)/len(self.currentDialogueNode.children)), self.tags, (0, 0, 0, 0), (0, 80, 255, 190), "rectangle", "textOption", [option], True)
+                self.optionButtons.append(optionButton)
+            return "Options"
+        
+        
 
     
     def resize(self, width, height):

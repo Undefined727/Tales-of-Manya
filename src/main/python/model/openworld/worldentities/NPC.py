@@ -1,40 +1,27 @@
-from model.openworld.openWorldEntity import OpenWorldEntity
+from model.openworld.OpenWorldEntity import OpenWorldEntity
 from model.openworld.Circle import Circle
+from model.dialogue.Conversation import Conversation
 import json
 
 class NPC:
-    NPCID:int
+    NPCID:str
     NPCName:str
     worldObject:OpenWorldEntity
 
-    defaultDialogue:int
-    currentDialogue:int
+    defaultDialogue:Conversation
+    currentDialogue:Conversation
 
-    def __init__(self, NPCID, position):
-        if (type(NPCID) == str): self.NPCName = NPCID
-        else: self.NPCID = NPCID
-
-        file = open("npcs/NPCList.json", 'r')
-        data = json.load(file)
-
-        for NPCEntry in data:
-            if (NPCEntry['NPCID'] == NPCID or NPCEntry['NPCName'] == NPCID):
-                self.NPCID = NPCEntry['NPCID']
-                self.NPCName = NPCEntry['NPCName']
-                self.imgPath = f"entities/{NPCEntry['imgPath']}"
-                self.defaultDialogue = NPCEntry['defaultDialogue']
-                self.currentDialogue = NPCEntry['currentDialogue']
-                break
+    def __init__(self, NPCID, position, name, img, conversation):
+        self.NPCID = NPCID
+        self.NPCName = name
+        self.imgPath = f"entities/{img}"
+        self.defaultDialogue = conversation
+        self.currentDialogue = conversation
 
         self.worldObject = OpenWorldEntity(self.imgPath, Circle((position), 0.5), "npc", "interact")
-    
 
-    def updateDialogue(self):
-        file = open("npcs/NPCList.json", 'r')
-        data = json.load(file)
-        for NPCEntry in data:
-            if (NPCEntry['NPCID'] == self.NPCID):
-                self.currentDialogue = NPCEntry['currentDialogue']
+    def setDialogue(self, dialogue):
+        self.currentDialogue = dialogue
 
 
     def setCenter(self, point):
@@ -45,6 +32,6 @@ class NPC:
 
     def getSprite(self):
         return self.worldObject.getSprite()
-    
+
     def getImagePosition(self):
         return self.worldObject.getImagePosition()

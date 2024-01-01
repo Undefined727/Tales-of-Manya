@@ -9,13 +9,16 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
+from model.dialogue.DialogueTreeNode import DialogueTreeNode
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
-from model.player.Quest import Quest
+from model.quest.Quest import Quest
+from model.quest.Subquest import Subquest
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 import numpy as np
+import sys
 import math, pygame, time, random, json
 from PIL import Image
 
@@ -52,28 +55,59 @@ def inventoryButton():
     quit = True
     gameData.screenOpen = "Inventory"
 
-def continueText(renderedEntities, buttons):
+
+def refreshQuestListing():
+    global visualEntities
+    for entity in visualEntities:
+        if entity.name == "CurrentQuestListing":
+            currentQuests = gameData.player.getCurrentQuests()
+            currentSubquests = gameData.player.getCurrentSubquests()
+            if (len(gameData.player.getCurrentQuests()) > 0):
+                listingString = ""
+                first = True
+                for quest in currentQuests:
+                    if (first): listingString = listingString + "- " + quest.name
+                    else: listingString = listingString + "%/n%- " + quest.name
+                    first = False
+                    for subquest in currentSubquests:
+                        if subquest.parent == quest.id:
+                            if (subquest.type == "kill"):
+                                listingString = f"{listingString} %/n%     - Kill {subquest.progress}/{subquest.goal} {subquest.data}"
+                                if (subquest.goal > 1):
+                                    listingString = f"{listingString}s"
+                            if (subquest.type == "talk"):
+                                listingString = f"{listingString} %/n%     - {subquest.name}"
+            else: listingString = "No current quests :/"
+            entity.updateText(listingString)
+            
+
+def continueText(buttons:list):
     global visualNovel
     global currentNPC
     global gameData
 
     result = visualNovel.continueText()
+
+    if (result != "Finished" and visualNovel.currentDialogue.follow_up is not None):
+        gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
+
+    # Add friendship and xp handling here later
+
     if (result == "Options"):
-        for button in visualNovel.optionButtons:
-            buttons.append(button)
+        buttons.extend(visualNovel.optionButtons)
     elif (result == "Finished"):
-        currentQuests = gameData.player.getCurrentQuests()
-        for quest in currentQuests:
-            if (quest.questType == "NPCInteractionQuest"):
-                if (quest.questData == currentNPC):
-                    quest.questProgress += 1
-                    if (quest.questProgress >= quest.questGoal): 
-                        completeQuest(quest, renderedEntities)
+        currentSubquests = gameData.player.getCurrentSubquests()
+        for quest in currentSubquests:
+            if (quest.type == "talk"):
+                if (quest.data == currentNPC):
+                    gameData.player.completeSubquest(quest)
+                    refreshQuestListing()
         visualNovel.isShowing = False
         visualNovel.optionButtons = []
 
-def textOption(optionType, data, renderedEntities, buttons):
+def textOption(data:DialogueTreeNode, buttons):
     global visualNovel
+    global visualEntities
     global gameData
 
     for optionButton in visualNovel.optionButtons:
@@ -82,82 +116,26 @@ def textOption(optionType, data, renderedEntities, buttons):
     visualNovel.hideOptions()
     visualNovel.isShowing = False
     
+    if (data.main_dialogue.follow_up is not None):
+        gameData.player.addQuest(data.main_dialogue.follow_up)
+        refreshQuestListing()
+        refreshCurrentNPCDialogue(gameData)
 
-    if (optionType == "End"):
-        pass
-    elif (optionType == "Quest"):
-        gameData.player.addQuest(data)
-        for entity in visualEntities:
-            if entity.name == "CurrentQuestListing":
-                currentQuests = gameData.player.getCurrentQuests()
-                if (len(gameData.player.getCurrentQuests()) > 0):
-                    listingString = ""
-                    first = True
-                    for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
-                        first = False
-                else: listingString = "No current quests :/"
-                entity.updateText(listingString)
+    # Add friendship and xp handling here later
 
-        updateNPCData(gameData.player.getCurrentQuests())
-        refreshCurrentNPCDialogue(renderedEntities)
-    elif (optionType == "Dialogue"):
+    if (data.main_dialogue.content is not None):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
 
 
-def refreshCurrentNPCDialogue(renderedEntities):
-    for npc in renderedEntities:
+
+def refreshCurrentNPCDialogue(gameData:Singleton):
+    changedDialogue = gameData.player.getCurrentChangedDialogue()
+    for npc in gameData.renderedMapEntities:
         if (type(npc) == NPC):
-            npc.updateDialogue()
-
-def updateNPCData(quests):
-    file = open("npcs/NPCList.json", 'r')
-    npcData = json.load(file)
-    file.close()
-
-    for npc in npcData:
-        npc["currentDialogue"] = npc["defaultDialogue"]
-
-    for npc in npcData:
-        for quest in quests:
-            if (npc['NPCID'] in quest.NPCDialogue.keys()):
-                npc["currentDialogue"] = quest.NPCDialogue[npc['NPCID']]
-
-    file = open("npcs/NPCList.json", 'w')
-    json.dump(npcData, file, indent=4)
-
-def completeQuest(quest:Quest, renderedEntities):
-    global gameData
-    
-    for item, count in quest.questItemRewards.items():
-        gameData.player.inventory.addItem(item, count)
-    
-    gameData.player.currentQuests.remove(quest)
-    
-    for id in quest.followUpQuests: 
-        gameData.player.addQuest(id)
-
-    updateNPCData(gameData.player.getCurrentQuests())
-    refreshCurrentNPCDialogue(renderedEntities)
-
-    
-
-    for entity in visualEntities:
-            if entity.name == "CurrentQuestListing":
-                currentQuests = gameData.player.getCurrentQuests()
-                if (len(gameData.player.getCurrentQuests()) > 0):
-                    listingString = ""
-                    first = True
-                    for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
-                        first = False
-                else: listingString = "No current quests :/"
-                entity.updateText(listingString)
-
-        
+            if (npc.NPCID in changedDialogue.keys()):
+                npc.setDialogue(changedDialogue[npc.NPCID])
+            else: npc.setDialogue(npc.defaultDialogue)
 
 def loadOpenWorld(transferredData):
     global quit
@@ -172,11 +150,14 @@ def loadOpenWorld(transferredData):
     FPS = 60
     screenX, screenY = screen.get_size()
     prev_time = time.time()
-    img = Image.open(f"maps/{gameData.currentMap}/map.png")
+    img = Image.open(f"src/main/python/maps/{gameData.currentMap}/map.png")
     npArray = np.array(img)
     height, width, dim = npArray.shape
     tiles = []
     TILE_SIZE = 48
+
+    visualEntities = []
+    buttons = []
 
     pygame.mixer.init()
     randInt = random.randint(1, 200)
@@ -184,12 +165,15 @@ def loadOpenWorld(transferredData):
         song = "nyan_cat.mp3"
     else: 
         song = "zelda_lost_woods.mp3"
-    pygame.mixer.music.load(f"audio/music/{song}")
+    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 
-    file =  open(f'maps/{gameData.currentMap}/entityData.json', 'r')
+    file =  open(f'src/main/python/maps/{gameData.currentMap}/entityData.json', 'r')
     entitydata = json.load(file)
+
+    file = open("src/main/python/npcs/NPCList.json", 'r')
+    npcdata = json.load(file)
 
     spawnX = 0
     spawnY = 0
@@ -200,11 +184,14 @@ def loadOpenWorld(transferredData):
             spawnX = entity['position'][0]
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
-            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'])
+            enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
-            npc = NPC(entity['NPCID'], entity['position'])
-            allEntities.append(npc)
+            for npcRow in npcdata:
+                if (npcRow['NPCID'] == entity['NPCID']):
+                    npc = NPC(entity['NPCID'], entity['position'], npcRow['NPCName'], npcRow['imgPath'], gameData.database_factory.fetchConversation(npcRow['defaultDialogue']))
+                    allEntities.append(npc)
+                    break
 
 
     if (gameData.renderedMapEntities is None):
@@ -230,15 +217,14 @@ def loadOpenWorld(transferredData):
 
     
 
-    updateNPCData(gameData.player.getCurrentQuests())
-    refreshCurrentNPCDialogue(simulatedObjects)
+    refreshCurrentNPCDialogue(gameData)
 
-    file = open("maps/tileIndex.json", 'r')
+    file = open("src/main/python/maps/tileIndex.json", 'r')
     tiledata = json.load(file)
     tileImages = {}
 
     for tile in tiledata:
-        img = pygame.image.load(f"sprites/tiles/{tile['image']}").convert()
+        img = pygame.image.load(f"src/main/python/sprites/tiles/{tile['image']}").convert()
         img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
         tileImages.update({tile['name']:img})
 
@@ -256,30 +242,20 @@ def loadOpenWorld(transferredData):
             if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight, True))
 
     backgroundHeight = 3*screenY
-    backgroundFog = pygame.image.load("sprites/tiles/Gofhres.png").convert()
+    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
     backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
     
 
 
     loadJson("openWorldScreen.json", screenX, screenY, visualEntities, buttons)
-    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], 0)
+    emptyConversation = gameData.database_factory.fetchConversation(0)
+    visualNovel = VisualNovel("vn", True, 0, 0.6, 1, 0.4, [], emptyConversation.dialogues)
     visualEntities.append(visualNovel)
     visualNovel.scale(screenX, screenY)
     visualNovel.isShowing = False
     buttons.append(visualNovel.continueButton)
 
-    for entity in visualEntities:
-        if entity.name == "CurrentQuestListing":
-                currentQuests = gameData.player.getCurrentQuests()
-                if (len(gameData.player.getCurrentQuests()) > 0):
-                    listingString = ""
-                    first = True
-                    for quest in currentQuests:
-                        if (first): listingString = listingString + "- " + quest.questName
-                        else: listingString = listingString + "%/n%- " + quest.questName
-                        first = False
-                else: listingString = "No current quests :/"
-                entity.updateText(listingString)
+    refreshQuestListing()
 
 
     FRICTION_GRASS = 0.005
@@ -295,8 +271,8 @@ def loadOpenWorld(transferredData):
     
     movementSpeed = 0.1
     character.worldObject.currentHeight = tiles[math.floor(character.getCenter()[0]) + math.floor(character.getCenter()[1])*width].height
-    
 
+    
     def convertToScreen(xValue, yValue):
         nonlocal cameraX
         nonlocal cameraY
@@ -325,7 +301,6 @@ def loadOpenWorld(transferredData):
 
 
     lastInput = "Right"
-    changeEnemyDirection = 0
     frameCounter = 0
     continueTextCooldown = 20
     keyboardMode = False
@@ -337,6 +312,7 @@ def loadOpenWorld(transferredData):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+                sys.exit()
             if (event.type == pygame.MOUSEBUTTONDOWN):
                 for entity in buttons:
                     if (not ("MenuButton" in entity.tags and visualNovel.isShowing)):
@@ -347,7 +323,7 @@ def loadOpenWorld(transferredData):
                                 inventoryButton()
                                 break
                             if (entity.func == "textOption"): 
-                                textOption(*entity.args, simulatedObjects, buttons)
+                                textOption(*entity.args, buttons)
                                 break
                             if (entity.func == "continueText"): 
                                 continueText(simulatedObjects, buttons)
@@ -468,7 +444,7 @@ def loadOpenWorld(transferredData):
         if keys[pygame.K_SPACE]:
             if (continueTextCooldown <= 0):
                 if (visualNovel.isShowing):
-                    continueText(simulatedObjects, buttons)
+                    continueText(buttons)
                     continueTextCooldown += 20
         if (continueTextCooldown > 0): continueTextCooldown -= 1
 
@@ -504,6 +480,7 @@ def loadOpenWorld(transferredData):
                 scannedTiles = []
                 for y in range(0, scannedHeight):
                     for x in range(0, scannedWidth):
+                        # corner1 = entity.getCorner1() + (x, y)
                         corner1 = np.array([(math.floor(minX)-1 + x), (math.floor(minY)-1 + y)])
                         corner2 = np.array([(math.floor(minX) + x), (math.floor(minY)-1 + y)])
                         corner3 = np.array([(math.floor(minX)-1 + x), (math.floor(minY) + y)])
@@ -519,11 +496,10 @@ def loadOpenWorld(transferredData):
                             movedXVector[0] = 0
                         if (collisionTile(entity, tile, movedYVector)):
                             movedYVector[1] = 0
-                        if (movedXVector[0] == 0 and movedYVector[1] == 0): 
+                        if (movedXVector[0] == 0 and movedYVector[1] == 0):
                             break
-                    else:
-                        continue
-                    break
+                        else:
+                            continue
 
 
             movedVector = movedXVector + movedYVector
@@ -541,7 +517,6 @@ def loadOpenWorld(transferredData):
         ## Update Camera Position ##
         cameraY = character.getCenter()[1]
         cameraX = character.getCenter()[0]
-        
 
 
         ## If the character is stuck respawn them ##
@@ -568,65 +543,65 @@ def loadOpenWorld(transferredData):
                     if (trigger.worldObject.entityType == entity.worldObject.trigger):
                         if (ShapeMath.collides(trigger.worldObject.shape, entity.worldObject.shape)):
                             if (type(entity) == Enemy):
-                                currentQuests = gameData.player.getCurrentQuests()
-                                for quest in currentQuests:
-                                    if (quest.questType == "killQuest"):
-                                        if (quest.questData == entity.enemyID):
-                                            quest.questProgress += 1
-                                            if (quest.questProgress >= quest.questGoal): 
-                                                completeQuest(quest, simulatedObjects)
                                 combatButton(entity.enemyStats)
                                 entity.respawnTimer = 120
                             if (type(entity) == PlayerObject):
                                 combatButton(trigger.enemyStats)
                                 trigger.respawnTimer = 120
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.currentDialogue)
+                                visualNovel.updateDialogue(entity.currentDialogue.dialogues.head)
                                 visualNovel.isShowing = True
                                 currentNPC = entity.NPCID
                                  
 
         ## Move Enemies ##
-        if (changeEnemyDirection <= 0):
-            enemyMoveDirection = random.randint(1, 9)
-            changeEnemyDirection += random.randint(90, 180)
-        else: changeEnemyDirection -= 1
+        
         for entity in simulatedObjects:
                 if type(entity) == Enemy:
+                    if (entity.changeDirectionTimer <= 0):
+                        enemyMoveDirection = random.randint(1, 9)
+                        if enemyMoveDirection == 1: entity.enemyMoveDirection = "Up"
+                        elif enemyMoveDirection == 2: entity.enemyMoveDirection = "UpRight"
+                        elif enemyMoveDirection == 3: entity.enemyMoveDirection = "Right"
+                        elif enemyMoveDirection == 4: entity.enemyMoveDirection = "DownRight"
+                        elif enemyMoveDirection == 5: entity.enemyMoveDirection = "Down"
+                        elif enemyMoveDirection == 6: entity.enemyMoveDirection = "DownLeft"
+                        elif enemyMoveDirection == 7: entity.enemyMoveDirection = "Left"
+                        elif enemyMoveDirection == 8: entity.enemyMoveDirection = "UpLeft"
+                        entity.changeDirectionTimer += random.randint(90, 180)
+                    else: entity.changeDirectionTimer -= 1
+
                     enemyMovementSpeed = 0.015
-                    if (enemyMoveDirection == 1):
-                        entity.worldObject.speedX = 0
-                        entity.worldObject.speedY = enemyMovementSpeed
-                    elif (enemyMoveDirection == 2):
-                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 3):
-                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 4):
-                        entity.worldObject.speedX = enemyMovementSpeed
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 5):
-                        entity.worldObject.speedX = -enemyMovementSpeed
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 6):
-                        entity.worldObject.speedX = 0
-                        entity.worldObject.speedY = 0
-                    elif (enemyMoveDirection == 7):
-                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
-                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
-                    elif (enemyMoveDirection == 8):
+                    if (entity.enemyMoveDirection == "Up"):
                         entity.worldObject.speedX = 0
                         entity.worldObject.speedY = -enemyMovementSpeed
-                    elif (enemyMoveDirection == 9):
+                    elif (entity.enemyMoveDirection == "UpRight"):
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = -0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Right"):
+                        entity.worldObject.speedX = enemyMovementSpeed
+                        entity.worldObject.speedY = 0
+                    elif (entity.enemyMoveDirection == "DownRight"):
+                        entity.worldObject.speedX = 0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Down"):
+                        entity.worldObject.speedX = 0
+                        entity.worldObject.speedY = enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "DownLeft"):
+                        entity.worldObject.speedX = -0.707*enemyMovementSpeed
+                        entity.worldObject.speedY = 0.707*enemyMovementSpeed
+                    elif (entity.enemyMoveDirection == "Left"):
+                        entity.worldObject.speedX = -enemyMovementSpeed
+                        entity.worldObject.speedY = 0
+                    elif (entity.enemyMoveDirection == "UpLeft"):
                         entity.worldObject.speedX = -0.707*enemyMovementSpeed
                         entity.worldObject.speedY = -0.707*enemyMovementSpeed
-        
+                        
 
         ## Respawn Enemies ##
         for entity in allEntities:
             if (type(entity) == Enemy):
-                if (not entity.respawnTimer == 0):
+                if (entity.respawnTimer > 0 and ShapeMath.distanceBetweenPoints((entity.spawnX, entity.spawnY), character.getCenter()) > 10):
                     entity.respawnTimer -= 1
                     if (entity.respawnTimer <= 0):
                         entity.respawnTimer = 0
@@ -634,17 +609,11 @@ def loadOpenWorld(transferredData):
                         simulatedObjects.append(entity)
 
 
-        currentQuests = gameData.player.getCurrentQuests()
-        for quest in currentQuests:
-            if (quest.questType == "freeQuest"):
-                completeQuest(quest, simulatedObjects)
-
-
         ## Display ##
         screen.fill((0, 0, 0))
         fogParallax = 0.2
-        ratio = ((frameCounter%6000)/6000)
-        bgY = (ratio*backgroundHeight) - fogParallax*cameraY*TILE_SIZE
+        ratio = ((frameCounter % 6000)/ 6000)
+        bgY = (ratio * backgroundHeight) - fogParallax * cameraY*TILE_SIZE
         bgY2 = bgY - backgroundHeight
         bgY3 = bgY + backgroundHeight
 
@@ -671,7 +640,6 @@ def loadOpenWorld(transferredData):
         # pygame.draw.line(screen,  (255, 0, 0),  convertToScreen(*corners[3]), convertToScreen(*corners[0]))
         # pygame.draw.polygon(screen, (0, 255, 0), convertToScreen(corners))
 
-            
         refreshMenu(screen)
 
         ## Frame Limiter ##
@@ -682,7 +650,6 @@ def loadOpenWorld(transferredData):
         sleep_time = (1. / FPS) - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
-        
 
         ## Quit ##
         if (quit):
