@@ -10,6 +10,9 @@ class Player:
 
     currentQuests:list[Quest]
     currentSubquests:list[Subquest]
+    completedQuests:list[Quest]
+    # Stores final subquest from quest tree, type "final" that just changes npc dialogue
+    completedSubquests:list[Subquest]
     party:list[Character]
     inventory:Inventory
     unlockedSkills:list[Skill]
@@ -18,8 +21,9 @@ class Player:
         # This will pull from a file in the future
         self.currentQuests = []
         self.currentSubquests = []
-        for quest in self.currentQuests:
-            self.currentSubquests.append(quest.subquests[0])
+        self.completedQuests = []
+        self.completedSubquests = []
+        
         
 
         self.party = [database.fetchCharacter(2), database.fetchCharacter(3), database.fetchCharacter(4)]

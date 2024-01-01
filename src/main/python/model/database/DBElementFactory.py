@@ -173,7 +173,7 @@ class DBElementFactory:
 
         subquest_conversation_dict = {}
         for row in subquest_conversation_data:
-            subquest_conversation_dict.update({row.map_index: row.conversation})
+            subquest_conversation_dict.update({row.npcID: self.fetchConversation(row.conversation)})
 
         connection.close()
         return subquest_conversation_dict

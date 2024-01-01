@@ -182,12 +182,12 @@ class DBSubquest(Base):
 class DBSubquestConversation(Base):
     __tablename__ = "SubquestConversation"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
-    map_index : Mapped[int] = mapped_column(Integer, nullable = False)
+    npcID : Mapped[int] = mapped_column(String(120), nullable = False)
     parent : Mapped[int] = mapped_column(ForeignKey("Subquest.id"))
     conversation: Mapped[int] = mapped_column(ForeignKey("Conversation.id"))
 
     def __repr__(self) -> str:
-        return f"ID: {self.id}, index: {self.map_index}, parent subquest: {self.parent}, conversation ID: {self.conversation}"
+        return f"ID: {self.id}, index: {self.npcID}, parent subquest: {self.parent}, conversation ID: {self.conversation}"
 
 class DBSubquestReward(Base):
     __tablename__ = "SubquestReward"
