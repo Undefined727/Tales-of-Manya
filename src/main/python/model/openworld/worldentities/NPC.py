@@ -4,7 +4,7 @@ from model.dialogue.Conversation import Conversation
 import json
 
 class NPC:
-    NPCID:int
+    NPCID:str
     NPCName:str
     worldObject:OpenWorldEntity
 
