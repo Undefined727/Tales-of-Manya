@@ -25,7 +25,6 @@ class Inventory:
         return currentAmount
 
     def addItem(self, item, count:int = 1) -> bool:
-        print(item)
         if (not type(item) == Item): 
             if (type(item) == int): item = databaseFactory.fetchItemByID(item)
             else: item = databaseFactory.fetchItem(item)

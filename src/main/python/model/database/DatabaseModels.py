@@ -244,7 +244,7 @@ engine = create_engine("sqlite:///src/main/python/catgirl-dungeon.db", echo = Tr
 # Base.metadata.drop_all(engine)
 
 # ## This line creates the database as described in the classes above ###
-Base.metadata.create_all(engine)
+#Base.metadata.create_all(engine)
 
 # # ## Example code to add an Item ###
 # with Session(engine) as session:

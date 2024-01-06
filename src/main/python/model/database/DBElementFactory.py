@@ -36,7 +36,6 @@ class DBElementFactory:
 
     def fetchItem(self, name : str):
         connection = self.engine.connect()
-        print(name)
         statement = select(DBItem).where(DBItem.name == name)
         row = connection.execute(statement).first()
         connection.close()
