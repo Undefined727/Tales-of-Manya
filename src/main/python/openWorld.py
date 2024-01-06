@@ -183,6 +183,7 @@ def loadOpenWorld(transferredData):
             spawnY = entity['position'][1]
         elif(entity['type'] == "enemy"):
             enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
+            enemy.move((0.5, 0.5))
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
             npc = gameData.database_factory.fetchNPC(entity['id'])
