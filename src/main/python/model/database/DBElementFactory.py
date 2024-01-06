@@ -1,23 +1,24 @@
 import os, sys
 sys.path.append(os.path.abspath("."))
-from src.main.python.model.character.Character import Character
-from src.main.python.model.Region import Region
-from src.main.python.model.character.Skill import Skill
-from src.main.python.model.item.Item import Item
-from src.main.python.model.item.ItemSlotType import ItemSlotType
-from src.main.python.model.item.ItemStatType import ItemStatType
-from src.main.python.model.item.ItemTag import ItemTag
-import src.main.python.model.effect.Effect as Effect
-from src.main.python.model.effect.EffectType import EffectType
-from src.main.python.model.effect.EffectTag import EffectTag
-from src.main.python.model.quest.Quest import Quest
-from src.main.python.model.quest.Subquest import Subquest
-from src.main.python.model.dialogue.Conversation import Conversation
-from src.main.python.model.dialogue.DialogueTree import DialogueTree
-from src.main.python.model.dialogue.Dialogue import Dialogue
-from src.main.python.model.dialogue.DialogueTreeNode import DialogueTreeNode
-from src.main.python.model.database.DatabaseModels import *
-from src.main.python.util.IllegalArgumentException import IllegalArgumentException
+from model.character.Character import Character
+from model.Region import Region
+from model.character.Skill import Skill
+from model.item.Item import Item
+from model.item.ItemSlotType import ItemSlotType
+from model.item.ItemStatType import ItemStatType
+from model.item.ItemTag import ItemTag
+import model.effect.Effect as Effect
+from model.effect.EffectType import EffectType
+from model.effect.EffectTag import EffectTag
+from model.quest.Quest import Quest
+from model.quest.Subquest import Subquest
+from model.dialogue.Conversation import Conversation
+from model.dialogue.DialogueTree import DialogueTree
+from model.dialogue.Dialogue import Dialogue
+from model.dialogue.DialogueTreeNode import DialogueTreeNode
+from model.openworld.worldentities.NPC import NPC
+from model.database.DatabaseModels import *
+from util.IllegalArgumentException import IllegalArgumentException
 from sqlalchemy import create_engine
 from sqlalchemy import text
 from sqlalchemy import select
@@ -118,6 +119,16 @@ class DBElementFactory:
 
         connection.close()
         return regionsList
+    
+    def fetchNPC(self, npc_ID):
+        connection = self.engine.connect()
+        statement = select(DBNPC).where(DBNPC.id == npc_ID)
+        npcdata = connection.execute(statement).first()
+
+        npc = NPC(npc_ID, npcdata.name, npcdata.img, self.fetchConversation(npcdata.defaultDialogue))
+
+        connection.close()
+        return npc
 
     def fetchAllSubquests(self, parent_quest_id):
         connection = self.engine.connect()

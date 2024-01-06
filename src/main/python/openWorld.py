@@ -172,8 +172,6 @@ def loadOpenWorld(transferredData):
     file =  open(f'src/main/python/maps/{gameData.currentMap}/entityData.json', 'r')
     entitydata = json.load(file)
 
-    file = open("src/main/python/npcs/NPCList.json", 'r')
-    npcdata = json.load(file)
 
     spawnX = 0
     spawnY = 0
@@ -187,11 +185,9 @@ def loadOpenWorld(transferredData):
             enemy = Enemy(entity['enemyType'], entity['level'], f"entities/{entity['image']}", entity['position'], gameData.database_factory)
             allEntities.append(enemy)
         elif(entity['type'] == "npc"):
-            for npcRow in npcdata:
-                if (npcRow['NPCID'] == entity['NPCID']):
-                    npc = NPC(entity['NPCID'], entity['position'], npcRow['NPCName'], npcRow['imgPath'], gameData.database_factory.fetchConversation(npcRow['defaultDialogue']))
-                    allEntities.append(npc)
-                    break
+            npc = gameData.database_factory.fetchNPC(entity['id'])
+            npc.setPosition(entity['position'])
+            allEntities.append(npc)
 
 
     if (gameData.renderedMapEntities is None):

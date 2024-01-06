@@ -120,6 +120,16 @@ class DBCharacter(Base):
         level_stats += f"{self.scalehealth!r:10}  {self.scalemana!r:10}  {self.scaledef!r:10} {self.scalespellpower!r:10} {self.scaleattack!r:10}"
         return f"id: {self.id}\nname: {self.name}\nskill 1: {self.skill1}\nskill 2: {self.skill2}\nskill 3: {self.skill3}\nskill 4: {self.skill4}\n{affinities}\ndescription: {self.description}\nbase stats: {basic_stats}\nscaling stats: {level_stats}\n"
 
+class DBNPC(Base):
+    __tablename__ = "NPC"
+    id : Mapped[int] = mapped_column(Integer, primary_key = True)
+    name : Mapped[str] = mapped_column(String(120), nullable = False)
+    img : Mapped[str] = mapped_column(String(120), nullable = False)
+    defaultDialogue : Mapped[int] = mapped_column(ForeignKey("Conversation.id"), nullable = False)
+
+    def __repr__(self) -> str:
+        return f"ID: {self.id}, name: {self.name}, image: {self.img}, Default_Dialogue: {self.defaultDialogue}"
+
 class DBConversation(Base):
     __tablename__ = "Conversation"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)

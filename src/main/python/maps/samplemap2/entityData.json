@@ -19,9 +19,8 @@
         "level": [15, 20]
     },
     {
-        "name": "NPC",
         "type": "npc",
-        "NPCID": "Trapped_NPC",
+        "id": "1",
         "position": [
             36,
             39

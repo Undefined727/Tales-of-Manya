@@ -77,7 +77,7 @@ def loadCombat(transferredData):
         song = "nyan_cat.mp3"
     else: 
         song = "zelda_lost_woods.mp3"
-    pygame.mixer.music.load(f"audio/music/{song}")
+    pygame.mixer.music.load(f"src/main/python/audio/music/{song}")
     pygame.mixer.music.set_volume(0.2)
     pygame.mixer.music.play(-1)
 

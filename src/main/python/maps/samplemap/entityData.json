@@ -25,15 +25,6 @@
         ]
     },
     {
-        "name": "Trapped NPC",
-        "type": "npc",
-        "NPCID": "Trapped_NPC",
-        "position": [
-            22,
-            25
-        ]
-    },
-    {
         "name": "Dummy",
         "type": "enemy",
         "image": "dummy.png",
@@ -48,6 +39,14 @@
         "level": [
             1,
             2
+        ]
+    },
+    {
+        "type": "npc",
+        "id": "1",
+        "position": [
+            22,
+            25
         ]
     }
 ]
