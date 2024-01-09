@@ -1,5 +1,5 @@
 [{
-    "name": "BackButtonHover",
+    "name": "NPCCreationButtonHover",
     "isShowing": true,
     "xPosition": 0.8875,
     "yPosition": 0.0375,
@@ -10,11 +10,11 @@
     "primaryColor": "blue",
     "secondaryColor": "cyan",
     "shape": "ellipse",
-    "func": "back",
+    "func": "NPCCreation",
     "args": []
 },
 {
-    "name": "BackButtonImage",
+    "name": "NPCCreationButtonImage",
     "isShowing": true,
     "xPosition": 0.9,
     "yPosition": 0.05,

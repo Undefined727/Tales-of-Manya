@@ -5,6 +5,7 @@ from model.Singleton import Singleton
 from view.displayHandler import displayEntity
 from view.JSONParser import loadJson
 from mapEditor import loadMapEditor
+from npcCreation import loadNPCCreation
 
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -77,6 +78,7 @@ def switchScreens(gameData):
     refreshScreen()
 
     if (gameData.screenOpen == "Map Editor"): gameData = loadMapEditor(gameData)
+    elif (gameData.screenOpen == "NPC Creation"): gameData = loadNPCCreation(gameData)
     switchScreens(gameData)
 
 

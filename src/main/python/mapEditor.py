@@ -37,6 +37,12 @@ def npcSelectionMenuButton():
         if (Tag.EDITOR_NPC_SELECTION in entity.tags):
             entity.isShowing = not entity.isShowing
 
+def npcCreationButton():
+    global quit
+    global gameData
+    quit = True
+    gameData.screenOpen = "NPC Creation"
+
 def loadMapEditor(importedData:Singleton):
     global quit
     global visualEntities
@@ -416,6 +422,7 @@ def loadMapEditor(importedData:Singleton):
                         if button.mouseInRegion(mouse):
                             buttonPressed = True
                             if (button.func == "exit"): buttonFunc = exitButton
+                            elif (button.func == "NPCCreation"): buttonFunc = npcCreationButton
                             elif (button.func == "tileSelection"): buttonFunc = tileSelectionMenuButton
                             elif (button.func == "npcSelection"): buttonFunc = npcSelectionMenuButton
                             elif (button.func == "equipTile"): buttonFunc = equipTile
@@ -674,3 +681,9 @@ def loadMapEditor(importedData:Singleton):
         sleep_time = (1. / FPS) - dt
         if sleep_time > 0:
             time.sleep(sleep_time)
+
+        ## Quit ##
+        if (quit):
+            quit = False
+            break
+    return gameData
