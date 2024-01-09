@@ -3,11 +3,12 @@ sys.path.append(os.path.abspath("."))
 
 from model.Singleton import Singleton
 from view.displayHandler import displayEntity
+from view.JSONParser import loadJson
 from openWorld import loadOpenWorld
 from combat import loadCombat
 from inventory import loadInventory
 from skillSelection import loadSkillSelection
-from view.JSONParser import loadJson
+
 
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 pygame.init()

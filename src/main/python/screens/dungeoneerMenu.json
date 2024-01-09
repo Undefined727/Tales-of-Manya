@@ -1,0 +1,25 @@
+[
+    {
+        "name": "Background",
+        "isShowing": true,
+        "xPosition": 0,
+        "yPosition": 0,
+        "width": 1,
+        "height": 1,
+        "tags": [],
+        "entityType": "Image",
+        "path": "mainMenu.png"
+    },{
+        "name": "StartButton",
+        "isShowing": true,
+        "xPosition": 0.11,
+        "yPosition": 0.70,
+        "width": 0.26,
+        "height": 0.26,
+        "tags": [],
+        "entityType": "ImageButton",
+        "path": "mapEditorButton.png",
+        "func": "mapEditor",
+        "args": []
+    }
+]

@@ -128,6 +128,18 @@ class DBElementFactory:
 
         connection.close()
         return npc
+    
+    def fetchAllNPCs(self) -> list[NPC]:
+        connection = self.engine.connect()
+        statement = select(DBNPC)
+        npcdata = connection.execute(statement)
+
+        npc_list = []
+        for npc_row in npcdata:
+            npc_list.append(NPC(npc_row.id, npc_row.name, npc_row.img, self.fetchConversation(npc_row.defaultDialogue)))
+
+        connection.close()
+        return npc_list
 
     def fetchAllSubquests(self, parent_quest_id):
         connection = self.engine.connect()
