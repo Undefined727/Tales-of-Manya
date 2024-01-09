@@ -1,5 +1,5 @@
 [{
-    "name": "ExitButton",
+    "name": "BackButtonHover",
     "isShowing": true,
     "xPosition": 0.8875,
     "yPosition": 0.0375,
@@ -10,11 +10,11 @@
     "primaryColor": "blue",
     "secondaryColor": "cyan",
     "shape": "ellipse",
-    "func": "exit",
+    "func": "back",
     "args": []
 },
 {
-    "name": "CombatImg",
+    "name": "BackButtonImage",
     "isShowing": true,
     "xPosition": 0.9,
     "yPosition": 0.05,
@@ -22,7 +22,7 @@
     "height": 0.05,
     "tags": [],
     "entityType": "Image",
-    "path": "settingsIcon.png"
+    "path": "change_active_right.png"
 },
 {
     "name": "TileSelectionButton",

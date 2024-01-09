@@ -12,6 +12,7 @@ from view.visualentity.ScrollBar import ScrollBar
 from view.visualentity.Tag import Tag
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.Singleton import Singleton
+from model.openworld.worldentities.NPC import NPC
 
 visualEntities = []
 buttons = []
@@ -19,6 +20,22 @@ buttons = []
 quit = False
 gameData:Singleton
 currentSceneData:list
+
+def refreshMenu():
+    global visualEntities
+    for entity in visualEntities:
+        if entity.isShowing:
+            displayEntity(entity, gameData.pygameWindow)
+    pygame.display.flip()
+
+def exitButton():
+    pygame.quit()
+
+def npcSelectionMenuButton():
+    global visualEntities
+    for entity in visualEntities:
+        if (Tag.EDITOR_NPC_SELECTION in entity.tags):
+            entity.isShowing = not entity.isShowing
 
 def loadMapEditor(importedData:Singleton):
     global quit
@@ -56,10 +73,7 @@ def loadMapEditor(importedData:Singleton):
     entitydata = json.load(file)
     file.close()
 
-
     npcdata = database.fetchAllNPCs()
-
-
     entityImages = {}
     entityImagesDisplayed = {}
 
@@ -101,125 +115,10 @@ def loadMapEditor(importedData:Singleton):
         img2 = pygame.transform.scale(img, (tileSize, tileSize))
         tileImagesDisplayed.update({tile['name']:img2})
 
-    ### Fill tiles variable with tile information by combining map data and tile data ###
-    for y in range(0, height):
-        for x in range(0, width):
-            tileFound = False
-            tileColor = savedMap[y, x][:3]
-            tileHeight = savedMap[y, x][3]
-            for tile in tiledata:
-                if ((tileColor == tile['color']).all()): 
-                    tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
-                    tileFound = True
-                    break
-            if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight,  True))
-
-
-    ### Pull Menu Structure ###
-    loadJson("catgirlDungeoneer.json", screenX, screenY, visualEntities, buttons)
-
-    # Add Fog #
-    backgroundHeight = 3*screenY
-    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
-    backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
-
-
-    ## Set Camera Location ##
-    cameraX = spawnX
-    cameraY = spawnY
-
-
-    ## Current Entity attached to the mouse for dragging them around ##
-    equippedEntityData = None
-    equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/spawn.png")
-    equippedEntityImage.scale(screenX, screenY)
-    visualEntities.append(equippedEntityImage)
-
-    ## Current Tile attached to the mouse for dragging them around ##
-    equippedTileName = None
-    equippedTileImage = ImageEntity("Equipped_Tile_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
-    equippedTileImage.scale(screenX, screenY)
-    equippedTileColor = tiledata[0]['color']
-    equippedTileSolid = tiledata[0]['defaultSolid']
-    visualEntities.append(equippedTileImage)
-
-    ## Current Elevation attached to the mouse for dragging around ##
-    equippedTileElevation = 0
-    elevationOffsetMode = True
-    elevationOffset = 0
-    for entity in visualEntities:
-        if (entity.name == "Current_Elevation_Label"):
-            currentElevationLabel = entity
-            break
-    for entity in buttons:
-        if (entity.name == "ElevationToggleButton"):
-            elevationToggleButton = entity
-            break
-
-
-
-    ## Tile Selection Menu Revealed By Button ##
-    menuHeight = 0.3
-    visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
-
-    # Save all tile images to be cycled with the scroll bar #
-    tileSelectionImages = []
-    counter = 0
-    for tile in tiledata:
-        if (tile['name'] == "tileNotFound"): break
-        tileSelectionImages.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", True, 0.11, 0.095, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION, Tag.EDITOR_MENU_ENTRY], f"tiles/{tile['image']}"))
-        tileSelectionImages[counter].scale(screenX, screenY)
-        counter += 1
-
-    # Create static menu objects TODO: (move to json later) #
-    button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
-    visualEntities.append(button)
-    buttons.append(button)
-    visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
-
-    # Initialize Scroll Bar in Tile Selection menu #
-    scrollBarRatio = 0.5
-    tileScrollBar = ScrollBar("Tile_Selection_ScrollBar", False, 0.135, 0.09, 0.01, menuHeight-0.05, [Tag.EDITOR_TILE_SELECTION], scrollBarRatio)
-    buttons.insert(0, tileScrollBar)
-    visualEntities.append(tileScrollBar)
-
-    # Scale created objects for the tile selection menu (this would normally be done in jsonParser but isn't here) #
-    for entity in visualEntities:
-        if (Tag.EDITOR_TILE_SELECTION in entity.tags):
-            entity.scale(screenX, screenY)
-
-
-
-    ## Entity Selection Menu (see Tile Selection Menu) ##
-    menuHeight = (1+len(npcdata))*0.05
-    visualEntities.append(ShapeEntity("NPC_Selection_Background", False, 0.155, 0.09, 0.12, menuHeight, [Tag.EDITOR_NPC_SELECTION], "White", False, "rectangle"))
-    counter = 0
-    for npc in npcdata:
-        button = HoverShapeButton(f"NPC_Selection_Button_Entry{counter}", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", [npc])
-        visualEntities.append(button)
-        buttons.append(button)
-        visualEntities.append(TextEntity(f"NPC_Selection_Text_Entry{counter}", False, 0.1925, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_NPC_SELECTION], npc.NPCName, "mono", 20))
-        visualEntities.append(ImageEntity(f"NPC_Selection_Image_Entry{counter}", False, 0.24, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_NPC_SELECTION], npc.imgPath))
-        counter += 1
-    button = HoverShapeButton(f"Add_NPC_Selection_Button", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", ["npcNotFound"])
-    visualEntities.append(button)
-    buttons.append(button)
-    visualEntities.append(TextEntity(f"Add_NPC_Selection_Text", False, 0.215, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "Add NPC", "mono", 20))
-    for entity in visualEntities:
-        if (Tag.EDITOR_NPC_SELECTION in entity.tags):
-            entity.scale(screenX, screenY)
-
-
 
 
     ## Common Functions ##
-    def refreshMenu():
-        global visualEntities
-        nonlocal screen
-        for entity in visualEntities:
-            if entity.isShowing:
-                displayEntity(entity, screen)
-        pygame.display.flip()
+    
 
     def convertToScreen(xValue, yValue):
         nonlocal cameraX
@@ -261,29 +160,29 @@ def loadMapEditor(importedData:Singleton):
                 equippedTileImage.updateImg(f"tiles/{tile['image']}")
                 break
 
-    def equipNPC(selectedNPCData):
+    def equipNPC(selectedNPCData:NPC):
         nonlocal equippedEntityData
         nonlocal equippedEntityImage
         nonlocal entitydata
 
-        equippedEntityImage.updateImg(f"entities/{selectedNPCData['imgPath']}")
+        equippedEntityImage.updateImg(selectedNPCData.imgPath)
         equippedEntityImage.isShowing = True
         foundEntity = False
         for entityDataEntry in entitydata:
             if (entityDataEntry['type'] == 'npc'):
-                if (entityDataEntry['id'] == selectedNPCData['id']):
+                if (entityDataEntry['id'] == selectedNPCData.NPCID):
                     equippedEntityData = entityDataEntry
                     foundEntity = True
         if (not foundEntity):
             jsonAddition = {
-            "name": selectedNPCData['NPCName'],
+            "name": selectedNPCData.NPCName,
             "type": "npc",
-            "id": selectedNPCData['id'],
+            "id": selectedNPCData.NPCID,
             "position": [0,0]
             }
             entitydata.append(jsonAddition)
 
-            img = pygame.image.load(f"src/main/python/sprites/entities/{selectedNPCData['imgPath']}")
+            img = pygame.image.load(f"src/main/python/sprites/{selectedNPCData.imgPath}")
             entityImages.update({jsonAddition['name']:img})
             img2 = pygame.transform.scale(img, (tileSize, tileSize))
             entityImagesDisplayed.update({jsonAddition['name']:img2})
@@ -352,11 +251,7 @@ def loadMapEditor(importedData:Singleton):
         #    for y in range(0, height):
 
 
-
     ## Button Functions ##
-    def exitButton():
-        pygame.quit()
-
     def tileSelectionMenuButton():
         nonlocal currentScrolledTile
         displayed = False
@@ -367,12 +262,6 @@ def loadMapEditor(importedData:Singleton):
         if (displayed): 
             print("test")
             updateDisplayedTiles(currentScrolledTile)
-
-    def npcSelectionMenuButton():
-        for entity in visualEntities:
-            if (Tag.EDITOR_NPC_SELECTION in entity.tags):
-                entity.isShowing = not entity.isShowing
-
 
     # Scroll Button Function, works with any scroll bar TODO: invidiualize to fix this jank #
     currentlyScrolling = None
@@ -393,6 +282,121 @@ def loadMapEditor(importedData:Singleton):
                 break
 
 
+
+
+
+
+
+
+
+
+
+    ### Fill tiles variable with tile information by combining map data and tile data ###
+    for y in range(0, height):
+        for x in range(0, width):
+            tileFound = False
+            tileColor = savedMap[y, x][:3]
+            tileHeight = savedMap[y, x][3]
+            for tile in tiledata:
+                if ((tileColor == tile['color']).all()): 
+                    tiles.append(Tile(tile['name'], tileHeight, tile['defaultSolid']))
+                    tileFound = True
+                    break
+            if (not tileFound): tiles.append(Tile("tileNotFound", tileHeight,  True))
+
+
+    ### Pull Menu Structure ###
+    loadJson("catgirlDungeoneer.json", screenX, screenY, visualEntities, buttons)
+
+    # Add Fog #
+    backgroundHeight = 3*screenY
+    backgroundFog = pygame.image.load("src/main/python/sprites/tiles/Gofhres.png").convert()
+    backgroundFog = pygame.transform.scale(backgroundFog, (screenX, backgroundHeight))
+
+
+    ## Set Camera Location ##
+    cameraX = spawnX
+    cameraY = spawnY
+
+
+    ## Current Entity attached to the mouse for dragging them around ##
+    equippedEntityData = None
+    equippedEntityImage = ImageEntity("Equipped_Entity_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"entities/spawn.png")
+    equippedEntityImage.scale(screenX, screenY)
+    visualEntities.append(equippedEntityImage)
+
+    ## Current Tile attached to the mouse for dragging them around ##
+    equippedTileName = None
+    equippedTileImage = ImageEntity("Equipped_Tile_Image", False, 0, 0, 0.04*screenY/screenX, 0.04, [], f"tiles/{tiledata[0]['image']}")
+    equippedTileImage.scale(screenX, screenY)
+    equippedTileColor = tiledata[0]['color']
+    equippedTileSolid = tiledata[0]['defaultSolid']
+    visualEntities.append(equippedTileImage)
+
+    ## Current Elevation attached to the mouse for dragging around ##
+    equippedTileElevation = 0
+    elevationOffsetMode = True
+    elevationOffset = 0
+    for entity in visualEntities:
+        if (entity.name == "Current_Elevation_Label"):
+            currentElevationLabel = entity
+            break
+    for entity in buttons:
+        if (entity.name == "ElevationToggleButton"):
+            elevationToggleButton = entity
+            break
+
+
+    ## Tile Selection Menu Revealed By Button ##
+    menuHeight = 0.3
+    visualEntities.append(ShapeEntity("Tile_Selection_Background", False, 0.025, 0.09, 0.12, menuHeight, [Tag.EDITOR_TILE_SELECTION], "White", False, "rectangle"))
+
+    # Save all tile images to be cycled with the scroll bar #
+    tileSelectionImages = []
+    counter = 0
+    for tile in tiledata:
+        if (tile['name'] == "tileNotFound"): break
+        tileSelectionImages.append(ImageEntity(f"Tile_Selection_Image_Entry{counter}", True, 0.11, 0.095, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_TILE_SELECTION, Tag.EDITOR_MENU_ENTRY], f"tiles/{tile['image']}"))
+        tileSelectionImages[counter].scale(screenX, screenY)
+        counter += 1
+
+    # Create static menu objects TODO: (move to json later) #
+    button = HoverShapeButton(f"Empty_Tile_Selection_Button", False, 0.025, 0.09 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "white", "cyan", "rectangle", "equipTile", ["tileNotFound"])
+    visualEntities.append(button)
+    buttons.append(button)
+    visualEntities.append(TextEntity(f"Empty_Tile_Selection_Text", False, 0.085, 0.115 + 0.25, 0.12, 0.05, [Tag.EDITOR_TILE_SELECTION], "Remove Tile", "mono", 20))
+
+    # Initialize Scroll Bar in Tile Selection menu #
+    scrollBarRatio = 0.5
+    tileScrollBar = ScrollBar("Tile_Selection_ScrollBar", False, 0.135, 0.09, 0.01, menuHeight-0.05, [Tag.EDITOR_TILE_SELECTION], scrollBarRatio)
+    buttons.insert(0, tileScrollBar)
+    visualEntities.append(tileScrollBar)
+
+    # Scale created objects for the tile selection menu (this would normally be done in jsonParser but isn't here) #
+    for entity in visualEntities:
+        if (Tag.EDITOR_TILE_SELECTION in entity.tags):
+            entity.scale(screenX, screenY)
+
+
+
+    ## Entity Selection Menu (see Tile Selection Menu) ##
+    menuHeight = (1+len(npcdata))*0.05
+    visualEntities.append(ShapeEntity("NPC_Selection_Background", False, 0.155, 0.09, 0.12, menuHeight, [Tag.EDITOR_NPC_SELECTION], "White", False, "rectangle"))
+    counter = 0
+    for npc in npcdata:
+        button = HoverShapeButton(f"NPC_Selection_Button_Entry{counter}", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", [npc])
+        visualEntities.append(button)
+        buttons.append(button)
+        visualEntities.append(TextEntity(f"NPC_Selection_Text_Entry{counter}", False, 0.1925, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_NPC_SELECTION], npc.NPCName, "mono", 20))
+        visualEntities.append(ImageEntity(f"NPC_Selection_Image_Entry{counter}", False, 0.24, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_NPC_SELECTION], npc.imgPath))
+        counter += 1
+    button = HoverShapeButton(f"Add_NPC_Selection_Button", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", ["npcNotFound"])
+    visualEntities.append(button)
+    buttons.append(button)
+    visualEntities.append(TextEntity(f"Add_NPC_Selection_Text", False, 0.215, 0.115 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "Add NPC", "mono", 20))
+    for entity in visualEntities:
+        if (Tag.EDITOR_NPC_SELECTION in entity.tags):
+            entity.scale(screenX, screenY)
 
 
     ### Running Editor ###
