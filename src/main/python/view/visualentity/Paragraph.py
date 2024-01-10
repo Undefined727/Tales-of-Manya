@@ -62,7 +62,7 @@ class Paragraph(VisualEntity):
                 charCount = currentEndIndex-currentTextIndex+1
 
                 textWidth = self.width
-                textX = self.xPosition
+                textX = self.xPosition + self.width/2
                 textY = self.yPosition + (currentLineCounter+yPadding)*textHeight
                 if (self.align == "Left"):
                     textX -= (2 + lettersPerLine-charCount)*fontSize*0.5*fontRatio

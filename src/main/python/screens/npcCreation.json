@@ -6,20 +6,42 @@
         "yPosition": 0,
         "width": 1,
         "height": 1,
-        "tags": [],
         "entityType": "Image",
-        "path": "mainMenu.png"
+        "keepQuality": true,
+        "path": "black_hole.png"
     },{
-        "name": "StartButton",
+        "name": "DonutMan",
         "isShowing": true,
-        "xPosition": 0.11,
-        "yPosition": 0.70,
-        "width": 0.26,
-        "height": 0.26,
-        "tags": [],
-        "entityType": "ImageButton",
-        "path": "startButton.png",
-        "func": "openWorld",
-        "args": []
+        "xPosition": 0.6,
+        "yPosition": 0.25,
+        "width": 0.2,
+        "height": 0.5,
+        "entityType": "Animation",
+        "path": "donutScreen",
+        "delay": 15
+    },{
+        "name": "TextEntryBar",
+        "isShowing": true,
+        "xPosition": 0.1,
+        "yPosition": 0.25,
+        "width": 0.2,
+        "height": 0.055,
+        "entityType": "Shape",
+        "color": "white",
+        "isBorder": false,
+        "shape": "rectangle"
+    },{
+        "name": "NPCNameEntryParagraph",
+        "isShowing": true,
+        "xPosition": 0.1,
+        "yPosition": 0.25,
+        "width": 0.2,
+        "height": 0.075,
+        "entityType": "Paragraph",
+        "text": "Donut Man",
+        "font": "mono",
+        "fontSize": 24,
+        "fontColor": "black",
+        "align": "Left"
     }
 ]

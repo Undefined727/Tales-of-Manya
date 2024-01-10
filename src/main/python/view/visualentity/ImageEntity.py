@@ -14,7 +14,8 @@ class ImageEntity(VisualEntity):
             self.img = pygame.image.load("src/main/python/sprites/nekoarc.png")
         self.keepQuality = keepQuality
 
-    def updateImg(self, path):
+    def updateImg(self, path = None):
+        if path is None: path = self.path
         self.path = path
         try:
             self.img = pygame.image.load(f"src/main/python/sprites/{path}")
