@@ -49,5 +49,14 @@
             21,
             24
         ]
+    },
+    {
+        "name": "Donut Man",
+        "type": "npc",
+        "id": 2,
+        "position": [
+            35,
+            21
+        ]
     }
 ]

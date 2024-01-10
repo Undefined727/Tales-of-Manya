@@ -131,10 +131,13 @@ def textOption(data:DialogueTreeNode, buttons):
 
 def refreshCurrentNPCDialogue(gameData:Singleton):
     changedDialogue = gameData.player.getCurrentChangedDialogue()
+    print(changedDialogue)
     for npc in gameData.renderedMapEntities:
         if (type(npc) == NPC):
+            print(npc.NPCID)
             if (npc.NPCID in changedDialogue.keys()):
                 npc.setDialogue(changedDialogue[npc.NPCID])
+                print("Matching NPC Found")
             else: npc.setDialogue(npc.defaultDialogue)
 
 def loadOpenWorld(transferredData):
