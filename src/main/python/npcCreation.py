@@ -1,6 +1,7 @@
 import pygame, time
 from view.visualentity.ImageEntity import ImageEntity
 from view.visualentity.ImageButton import ImageButton
+from view.visualentity.HoverShapeButton import HoverShapeButton
 from view.visualentity.TextEntity import TextEntity
 from view.visualentity.Paragraph import Paragraph
 from model.Singleton import Singleton
@@ -14,6 +15,8 @@ leaveScreen = False
 gameData:Singleton
 screen:pygame.surface
 
+selectedTextEntry = None
+
 def refreshScreen(screen):
     global visualEntities
     for entity in visualEntities:
@@ -22,6 +25,14 @@ def refreshScreen(screen):
 
     pygame.display.flip()
 
+def selectTextEntry(selectedEntry):
+    global selectedTextEntry
+    global visualEntities
+    print(selectedEntry)
+    for entity in visualEntities:
+        print(entity.name)
+        if entity.name == selectedEntry:
+            selectedTextEntry = entity
 
 def loadNPCCreation(transferredData:Singleton):
     global visualEntities
@@ -29,6 +40,7 @@ def loadNPCCreation(transferredData:Singleton):
     global gameData
     global screen
     global leaveScreen
+    global selectedTextEntry
 
     visualEntities = []
     buttons = []
@@ -40,11 +52,8 @@ def loadNPCCreation(transferredData:Singleton):
 
     loadJson("npcCreation.json", screenX, screenY, visualEntities, buttons)
 
-    for entity in visualEntities:
-        if entity.name == "NPCNameEntryParagraph":
-            npcTextEntryParagraph = entity
-            break
-
+    
+    selectedTextEntry = None
     delCharacterTimer = 40
     prev_time = time.time()
     while True:
@@ -52,22 +61,38 @@ def loadNPCCreation(transferredData:Singleton):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if (event.type == pygame.MOUSEBUTTONDOWN):
+                selectedTextEntry = None
+                for entity in buttons:
+                    if (entity.isActive and entity.mouseInRegion(mouse)):
+                        if (entity.func == "selectTextEntry"): buttonFunc = selectTextEntry
+                        if (len(entity.args) == 0): buttonFunc()
+                        else: buttonFunc(*entity.args)
+                        break
             if event.type == pygame.KEYDOWN:
-                text = npcTextEntryParagraph.text
+                if (selectedTextEntry is None): break
+                text = selectedTextEntry.text
                 if event.key == pygame.K_BACKSPACE:
                         text = text[:-1]
                         delCharacterTimer = 40
                 else:
                     text = f"{text}{event.unicode}"
-                npcTextEntryParagraph.updateText(text)
+                selectedTextEntry.updateText(text)
+
+
+        ### Make Hover Buttons shine funny color
+        for button in buttons:
+            if (type(button) == HoverShapeButton):
+                button.mouseInRegion(mouse)
 
 
         keys = pygame.key.get_pressed()
         if (delCharacterTimer > 0): delCharacterTimer -= 1
 
         if (keys[pygame.K_BACKSPACE]):
+            if (selectedTextEntry is None): break
             if (delCharacterTimer <= 0):
-                npcTextEntryParagraph.updateText(npcTextEntryParagraph.text[:-1])
+                selectedTextEntry.updateText(selectedTextEntry.text[:-1])
                 delCharacterTimer = 8
 
         ## Frame Limiter ##

@@ -40,10 +40,12 @@
         "yPosition": 0.25,
         "width": 0.2,
         "height": 0.055,
-        "entityType": "Shape",
-        "color": "white",
-        "isBorder": false,
-        "shape": "rectangle"
+        "entityType": "HoverShapeButton",
+        "primaryColor": "white",
+        "secondaryColor": "cyan",
+        "shape": "rectangle",
+        "func": "selectTextEntry",
+        "args": ["NPCNameEntryParagraph"]
     },{
         "name": "NPCNameEntryParagraph",
         "isShowing": true,
@@ -78,10 +80,12 @@
         "yPosition": 0.35,
         "width": 0.2,
         "height": 0.055,
-        "entityType": "Shape",
-        "color": "white",
-        "isBorder": false,
-        "shape": "rectangle"
+        "entityType": "HoverShapeButton",
+        "primaryColor": "white",
+        "secondaryColor": "cyan",
+        "shape": "rectangle",
+        "func": "selectTextEntry",
+        "args": ["NPCImgEntryParagraph"]
     },{
         "name": "NPCImgEntryParagraph",
         "isShowing": true,
