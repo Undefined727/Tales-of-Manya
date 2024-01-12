@@ -124,7 +124,7 @@ class DBNPC(Base):
     __tablename__ = "NPC"
     id : Mapped[int] = mapped_column(Integer, primary_key = True)
     name : Mapped[str] = mapped_column(String(120), nullable = False)
-    img : Mapped[str] = mapped_column(String(120), nullable = False)
+    imgFolder : Mapped[str] = mapped_column(String(120), nullable = False)
     defaultDialogue : Mapped[int] = mapped_column(ForeignKey("Conversation.id"), nullable = False)
 
     def __repr__(self) -> str:
