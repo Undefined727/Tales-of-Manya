@@ -11,10 +11,10 @@ class NPC:
     defaultDialogue:Conversation
     currentDialogue:Conversation
 
-    def __init__(self, NPCID, name, img, conversation):
+    def __init__(self, NPCID, name, imgFolder, conversation):
         self.NPCID = NPCID
         self.NPCName = name
-        self.imgPath = f"entities/{img}"
+        self.imgPath = f"entities/{imgFolder}/overworld.png"
         self.defaultDialogue = conversation
         self.currentDialogue = conversation
 

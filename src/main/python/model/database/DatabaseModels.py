@@ -128,7 +128,7 @@ class DBNPC(Base):
     defaultDialogue : Mapped[int] = mapped_column(ForeignKey("Conversation.id"), nullable = False)
 
     def __repr__(self) -> str:
-        return f"ID: {self.id}, name: {self.name}, image: {self.img}, Default_Dialogue: {self.defaultDialogue}"
+        return f"ID: {self.id}, name: {self.name}, image: {self.imgFolder}, Default_Dialogue: {self.defaultDialogue}"
 
 class DBConversation(Base):
     __tablename__ = "Conversation"

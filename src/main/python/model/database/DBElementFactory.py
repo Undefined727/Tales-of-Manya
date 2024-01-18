@@ -124,7 +124,7 @@ class DBElementFactory:
         statement = select(DBNPC).where(DBNPC.id == npc_ID)
         npcdata = connection.execute(statement).first()
 
-        npc = NPC(npc_ID, npcdata.name, npcdata.img, self.fetchConversation(npcdata.defaultDialogue))
+        npc = NPC(npc_ID, npcdata.name, npcdata.imgFolder, self.fetchConversation(npcdata.defaultDialogue))
 
         connection.close()
         return npc
