@@ -68,6 +68,7 @@ class Player:
                 self.currentQuests.remove(quest)
     
     def completeSubquest(self, subquest:Subquest):
+        print(subquest.name)
         for currentsubquest in self.currentSubquests[:]:
             if subquest.id == currentsubquest.id:
                 self.currentSubquests.remove(currentsubquest)

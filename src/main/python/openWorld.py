@@ -92,6 +92,7 @@ def continueText(buttons:list):
         gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
 
     # Add friendship and xp handling here later
+    # Add displaying npc spriting here, have it be changed through this (not in visualNovel), and have it be a global variable in visualEntities
 
     if (result == "Options"):
         buttons.extend(visualNovel.optionButtons)
@@ -99,7 +100,7 @@ def continueText(buttons:list):
         currentSubquests = gameData.player.getCurrentSubquests()
         for quest in currentSubquests:
             if (quest.type == "talk"):
-                if (quest.data == currentNPC):
+                if (int(quest.data) == int(currentNPC.NPCID)):
                     gameData.player.completeSubquest(quest)
                     refreshQuestListing()
         visualNovel.isShowing = False
@@ -551,7 +552,7 @@ def loadOpenWorld(transferredData):
                             if (type(entity) == NPC):
                                 visualNovel.updateDialogue(entity.currentDialogue.dialogues.head)
                                 visualNovel.isShowing = True
-                                currentNPC = entity.NPCID
+                                currentNPC = entity
                                  
 
         ## Move Enemies ##
