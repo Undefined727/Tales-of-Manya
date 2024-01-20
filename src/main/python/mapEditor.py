@@ -98,7 +98,7 @@ def loadMapEditor(importedData:Singleton):
             for npc in npcdata:
                 if (npc.NPCID == npcID):
                     img = npc.imgPath
-            img = pygame.image.load(f"src/main/python/sprites/{img}")
+            img = pygame.image.load(f"src/main/python/sprites/{img}/overworld.png")
         elif (entity['type'] == "enemy"):
             img = pygame.image.load(f"src/main/python/sprites/entities/{entity['image']}")
 
@@ -188,7 +188,7 @@ def loadMapEditor(importedData:Singleton):
             }
             entitydata.append(jsonAddition)
 
-            img = pygame.image.load(f"src/main/python/sprites/{selectedNPCData.imgPath}")
+            img = pygame.image.load(f"src/main/python/sprites/{selectedNPCData.imgPath}/overworld.png")
             entityImages.update({jsonAddition['name']:img})
             img2 = pygame.transform.scale(img, (tileSize, tileSize))
             entityImagesDisplayed.update({jsonAddition['name']:img2})
@@ -394,7 +394,7 @@ def loadMapEditor(importedData:Singleton):
         visualEntities.append(button)
         buttons.append(button)
         visualEntities.append(TextEntity(f"NPC_Selection_Text_Entry{counter}", False, 0.1925, 0.115 + 0.05*counter, 0.075, 0.05, [Tag.EDITOR_NPC_SELECTION], npc.NPCName, "mono", 20))
-        visualEntities.append(ImageEntity(f"NPC_Selection_Image_Entry{counter}", False, 0.24, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_NPC_SELECTION], npc.imgPath))
+        visualEntities.append(ImageEntity(f"NPC_Selection_Image_Entry{counter}", False, 0.24, 0.095 + 0.05*counter, 0.04*screenY/screenX, 0.04, [Tag.EDITOR_NPC_SELECTION], f"{npc.imgPath}/overworld.png"))
         counter += 1
     button = HoverShapeButton(f"Add_NPC_Selection_Button", False, 0.155, 0.09 + 0.05*counter, 0.12, 0.05, [Tag.EDITOR_NPC_SELECTION], "white", "cyan", "rectangle", "equipNPC", ["npcNotFound"])
     visualEntities.append(button)
@@ -447,7 +447,7 @@ def loadMapEditor(importedData:Singleton):
                             if (entity['type'] == "npc"):
                                 for npc in npcdata:
                                     if (npc.NPCID == entity['id']):
-                                        equippedEntityImage.updateImg(npc.imgPath)
+                                        equippedEntityImage.updateImg(f"{npc.imgPath}/overworld.png")
                                         break
                             elif (equippedEntityData['type'] == "spawnPoint"):
                                 equippedEntityImage.updateImg("entities/spawn.png")

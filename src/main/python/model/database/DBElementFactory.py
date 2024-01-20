@@ -136,7 +136,7 @@ class DBElementFactory:
 
         npc_list = []
         for npc_row in npcdata:
-            npc_list.append(NPC(npc_row.id, npc_row.name, npc_row.img, self.fetchConversation(npc_row.defaultDialogue)))
+            npc_list.append(NPC(npc_row.id, npc_row.name, npc_row.imgFolder, self.fetchConversation(npc_row.defaultDialogue)))
 
         connection.close()
         return npc_list
