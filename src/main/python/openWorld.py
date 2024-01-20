@@ -9,6 +9,7 @@ from model.openworld.Circle import Circle
 from model.character.Character import Character
 import model.openworld.ShapeMath as ShapeMath
 from view.visualentity.VisualNovel import VisualNovel
+from view.visualentity.ImageEntity import ImageEntity
 from model.dialogue.DialogueTreeNode import DialogueTreeNode
 from view.visualentity.HoverShapeButton import HoverShapeButton
 from model.player.Player import Player
@@ -29,6 +30,7 @@ gameData:Singleton
 currentSceneData:list
 
 visualNovel:VisualNovel
+displayedNPCTalkSprite:ImageEntity
 currentNPC = None
 
 def refreshMenu(screen):
@@ -83,10 +85,12 @@ def refreshQuestListing():
 
 def continueText(buttons:list):
     global visualNovel
+    global displayedNPCTalkSprite
     global currentNPC
     global gameData
 
     result = visualNovel.continueText()
+    displayedNPCTalkSprite.updateImg(f"{currentNPC.imgPath}/talk_{visualNovel.currentDialogue.emotion}.png")
 
     if (result != "Finished" and visualNovel.currentDialogue.follow_up is not None):
         gameData.player.addQuest(visualNovel.currentDialogue.follow_up)
@@ -105,9 +109,12 @@ def continueText(buttons:list):
                     refreshQuestListing()
         visualNovel.isShowing = False
         visualNovel.optionButtons = []
+        displayedNPCTalkSprite.isShowing = False
 
 def textOption(data:DialogueTreeNode, buttons):
     global visualNovel
+    global displayedNPCTalkSprite
+    global currentNPC
     global visualEntities
     global gameData
 
@@ -127,6 +134,7 @@ def textOption(data:DialogueTreeNode, buttons):
     if (data.main_dialogue.content is not None):
         visualNovel.isShowing = True
         visualNovel.updateDialogue(data)
+        displayedNPCTalkSprite.updateImg(f"{currentNPC.imgPath}/talk_{visualNovel.currentDialogue.emotion}.png")
 
 
 
@@ -146,6 +154,7 @@ def loadOpenWorld(transferredData):
     global visualEntities
     global buttons
     global visualNovel
+    global displayedNPCTalkSprite
     global gameData
     global currentNPC
     gameData = transferredData
@@ -162,6 +171,9 @@ def loadOpenWorld(transferredData):
 
     visualEntities = []
     buttons = []
+    displayedNPCTalkSprite = ImageEntity("NPCTalkSprite", False, 0.7, 0.35, 0.25, 0.5, [], "nekoarc.png", True)
+    displayedNPCTalkSprite.scale(screenX, screenY)
+    visualEntities.append(displayedNPCTalkSprite)
 
     pygame.mixer.init()
     randInt = random.randint(1, 200)
@@ -550,9 +562,12 @@ def loadOpenWorld(transferredData):
                                 combatButton(trigger.enemyStats)
                                 trigger.respawnTimer = 120
                             if (type(entity) == NPC):
-                                visualNovel.updateDialogue(entity.currentDialogue.dialogues.head)
-                                visualNovel.isShowing = True
                                 currentNPC = entity
+                                visualNovel.isShowing = True
+                                visualNovel.updateDialogue(entity.currentDialogue.dialogues.head)
+                                displayedNPCTalkSprite.isShowing = True
+                                displayedNPCTalkSprite.updateImg(f"{currentNPC.imgPath}/talk_{visualNovel.currentDialogue.emotion}.png")
+                                
                                  
 
         ## Move Enemies ##
