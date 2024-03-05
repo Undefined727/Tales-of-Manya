@@ -339,7 +339,7 @@ def loadOpenWorld(transferredData):
                                 textOption(*entity.args, buttons)
                                 break
                             if (entity.func == "continueText"): 
-                                continueText(simulatedObjects, buttons)
+                                continueText(buttons)
                                 break
                             if (len(entity.args) == 0): buttonFunc()
                             else: buttonFunc(*entity.args)
